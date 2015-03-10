@@ -1,5 +1,6 @@
 
 import "dart:async";
+import "package:quiver/cache.dart";
 
 class ProductSource{
   
@@ -19,20 +20,31 @@ class Edition{
   DateTime validTo;
   var dartum;
 }
-class Timeseries{
+class TimeseriesKey{
   Location location;
   ProductSource productsource;
-  ElementSource elementsource;
-  List<Edition> editions;
+  ElementSource elementsource;  
+  DateTime analysisAt;
 }
 
 class TimeseriesDataCache{
+
+  MapCache<TimeseriesKey, List<Edition>> cache = new MapCache.lru();
+  
+  Future<List<Edition>> getTimeseries( TimeseriesKey key, DateTime from, Duration period){
+
+    //todo add a filter
+    return cache.get( key, ifAbsent:loaderOnCacheMiss  );
+   
+  }
+  Future<Map<TimeseriesKey, Edition>> getTimeseriesSet( List<TimeseriesKey> key, DateTime from, Duration period){
     
-  Future<List<Timeseries>> getTimeseriesForAnalysis( ProductSource ps, Location l, ElementSource es, DateTime analysis, DateTime from, Duration period){
+    //Create a set of futures, wait for them to return, then produce the map.
     return null;
   }
-
-  Future<List<Timeseries>> getLatestTimeseries( ProductSource ps, Location l, ElementSource es, DateTime from, Duration period){
+  
+  
+  Future<List<Edition>> loaderOnCacheMiss (TimeseriesKey key){
     return null;
   }
 }
