@@ -5,5 +5,7 @@ environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
   args: '>=0.10.0 <0.13.0'
-  quiver: any
+  quiver: '>=0.21.0<0.22.0'
   shelf: '>=0.5.5 <0.6.0'
+dev_dependencies:
+  unittest: '>=0.11.5+4 <0.12.0'

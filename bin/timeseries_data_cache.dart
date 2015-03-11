@@ -1,6 +1,7 @@
 
 import "dart:async";
 import "package:quiver/cache.dart";
+import "package:quiver/async.dart";
 
 class ProductSource{
   
@@ -14,37 +15,60 @@ class Location{
 class ElementSource{
   
 }
-class Edition{
-  DateTime analysisAt;
-  DateTime validFrom;
-  DateTime validTo;
-  var dartum;
-}
-class TimeseriesKey{
+
+class TimeseriesRootAnalysis{
   Location location;
   ProductSource productsource;
   ElementSource elementsource;  
   DateTime analysisAt;
 }
 
+
+class Edition{
+  TimeseriesRootAnalysis key;
+  DateTime analysisAt;
+  DateTime validFrom;
+  DateTime validTo;
+  var dartum;
+}
+
+class TimeseriesAssembly{
+  TimeseriesRootAnalysis key;
+  List<Edition> editions;  
+}
+
+/**Used to load timeseres data when there is a cache miss*/
+typedef   Future<TimeseriesAssembly> LoadTimeseres (TimeseriesRootAnalysis key);
+
+  
 class TimeseriesDataCache{
 
-  MapCache<TimeseriesKey, List<Edition>> cache = new MapCache.lru();
+  LoadTimeseres loader;
+  MapCache<TimeseriesRootAnalysis, TimeseriesAssembly> cache = new MapCache.lru();
   
-  Future<List<Edition>> getTimeseries( TimeseriesKey key, DateTime from, Duration period){
+  TimeseriesDataCache( this.loader);
+  
+  Future<TimeseriesAssembly> getTimeseries( TimeseriesRootAnalysis key, DateTime from, Duration period){
 
+    print( "inside getTimeseries");
+    
     //todo add a filter
-    return cache.get( key, ifAbsent:loaderOnCacheMiss  );
+    return cache.get( key, ifAbsent:loader);
    
   }
-  Future<Map<TimeseriesKey, Edition>> getTimeseriesSet( List<TimeseriesKey> key, DateTime from, Duration period){
+  
+  
+  Future<List<TimeseriesAssembly>> getTimeseriesSet( List<TimeseriesRootAnalysis> keys, DateTime from, Duration period){
+    
     
     //Create a set of futures, wait for them to return, then produce the map.
-    return null;
+    FutureGroup<TimeseriesAssembly> futures = new FutureGroup();
+    keys.forEach( (TimeseriesRootAnalysis key) {
+        futures.add( getTimeseries( key,  from, period));
+      } 
+    );
+    
+    return futures.future;
   }
   
-  
-  Future<List<Edition>> loaderOnCacheMiss (TimeseriesKey key){
-    return null;
-  }
 }
