@@ -6,41 +6,32 @@ import 'dart:async';
 import 'package:quiver/time.dart';
 
 @proxy
-class MockTimeseriesAssemply extends Mock implements TimeseriesAssembly{}
-
+class MockTimeseriesAssemply extends Mock implements TimeseriesAssembly {}
+class MockTimeseriesRootAnalysis extends Mock implements TimeseriesRootAnalysis{} 
 void main() {
 
-
-
-  
-  test("basic", () {
+  group("getTimeseries", () {
     
+    MockTimeseriesRootAnalysis key  = new MockTimeseriesRootAnalysis();
     MockTimeseriesAssemply assembly = new MockTimeseriesAssemply();
-
-    Future<TimeseriesAssembly> loadTimeseries(TimeseriesRootAnalysis key) {
-      print("inside loadTimeseries");      
-      return new Future.value( assembly);
-    }
-
-
-    TimeseriesDataCache cache = new TimeseriesDataCache(loadTimeseries);
-
-    TimeseriesRootAnalysis key;
     Clock clock = new Clock();
+    Duration period = new Duration();
+    
+    test("on cache miss should return assembly instance provided by loaded", () {
 
-    return new Future.value().then((_) {
-      Future<TimeseriesAssembly> future = cache.getTimeseries(key, clock.now(), new Duration());
-      expect(future, isNotNull);
-      future.then( (TimeseriesAssembly a){
-        
-        expect( a, isNotNull);
-        expect( a, same( assembly));
-      } );
+      TimeseriesDataCache cache = new TimeseriesDataCache((_) => new Future.value(assembly));
+
+      Future<TimeseriesAssembly> future = cache.getTimeseries(key, clock.now(), period);
+
+      return future.then((_) {
+
+        //test the future returned by getTimeseries
+        future.then((TimeseriesAssembly a) {
+          expect(a, isNotNull);
+          expect(a, same(assembly));
+        });
+      });
     });
-
-
-
-
   });
 
 }
