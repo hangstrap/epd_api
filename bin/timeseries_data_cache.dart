@@ -3,24 +3,35 @@ import "dart:async";
 import "package:quiver/cache.dart";
 import "package:quiver/async.dart";
 
-class ProductSource{
-  
+
+class Product {
+  final String name;
+  Product(this.name);
+}
+class Model{
+  final String name;
+  Model(this.name);  
 }
 
 
 class Location{
-  
+  final String name;
+  Location(this.name);  
 }
 
-class ElementSource{
-  
+class Element{
+  final String name;
+  Element(this.name);
 }
 
 class TimeseriesRootAnalysis{
+  final Product product;
+  final Model model;
   Location location;
-  ProductSource productsource;
-  ElementSource elementsource;  
-  DateTime analysisAt;
+  Element element;  
+  final DateTime analysisAt;
+  
+  TimeseriesRootAnalysis( this.product, this.model, this.analysisAt );
 }
 
 
@@ -39,8 +50,7 @@ class TimeseriesAssembly{
 
 /**Used to load timeseres data when there is a cache miss*/
 typedef   Future<TimeseriesAssembly> LoadTimeseres (TimeseriesRootAnalysis key);
-
-  
+ 
 class TimeseriesDataCache{
 
   LoadTimeseres loader;
