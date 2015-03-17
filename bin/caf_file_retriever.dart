@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import "dart:async";
 import "timeseries_data_cache.dart";
 
@@ -23,8 +24,10 @@ String fileNameForTimeseriesAnalysis( TimeseriesRootAnalysis key){
   
   String product = sanitise( key.product.name);
   String model = sanitise( key.model.name);
-  String analysisAt = key.analysisAt.toIso8601String();
-  return "${product}/${model}/${analysisAt}";
+  
+  var formatter = new DateFormat('yyyyMMddHHmm');
+  String analysisAt = formatter.format(key.analysisAt);
+  return "${product}/${model}/${analysisAt}Z";
 }
 
 String fileNameForCafFile( List<String> cafFileContents){
