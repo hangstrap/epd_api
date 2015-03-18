@@ -20,7 +20,7 @@ main(){
     test( "check pattern for a 99xxx station", (){
       
       DateTime analysisAt = new DateTime.utc(2015, 2, 15, 3,0);
-      TimeseriesRootAnalysis key = new TimeseriesRootAnalysis( new Product("City, Town & Spot Forecasts"), new Model( "PDF-PROFOUND"),analysisAt );
+      TimeseriesRootAnalysis key = new TimeseriesRootAnalysis( new Product("City, Town & Spot Forecasts"), new Model( "PDF-PROFOUND"),analysisAt, new Element("TTTTT"), new Location("99647", "INTL") );
       
       String cafFileName = caf.fileNameForTimeseriesAnalysis( key);
       expect( cafFileName, equals( "CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.99647-INTL.caf"));

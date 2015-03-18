@@ -27,7 +27,13 @@ String fileNameForTimeseriesAnalysis( TimeseriesRootAnalysis key){
   
   var formatter = new DateFormat('yyyyMMddHHmm');
   String analysisAt = formatter.format(key.analysisAt);
-  return "${product}/${model}/${analysisAt}Z";
+  String element = sanitise( key.element.name);
+  String nameSuffix  = _createLocationSuffix( sanitise( key.location.name), key.location.suffex);
+  
+  
+  
+  
+  return "${product}/${model}/${analysisAt}Z/${element}/${product}.${model}.${analysisAt}Z.${element}.${nameSuffix}.caf";
 }
 
 String fileNameForCafFile( List<String> cafFileContents){
@@ -46,13 +52,19 @@ String fileNameForCafFile( List<String> cafFileContents){
   String analysis = sanitise( findToken("init-time"));
   String element = sanitise( findToken("vha-code"));
   String location = sanitise( findToken( "station"));
-  if( 5 == location.length || 6 == location.length ){
-    if( location.indexOf( "99") == 0){
-      String suffix = findToken( "station-99suffix");
-      location = "${location}-${suffix}";
+  String suffix = findToken( "station-99suffix");  
+  String locationSuffix  = _createLocationSuffix(location, suffix);
+  
+  return "${product}/${model}/${analysis}/${element}/${product}.${model}.${analysis}.${element}.${locationSuffix}.caf";
+  
+}
+
+String _createLocationSuffix( String name, String suffix){
+
+    if(name.length==5 || name.length==6){
+      if( name.indexOf("99") ==0){
+        return "${name}-${suffix}";
+      }
     }
-  }
-  
-  return "${product}/${model}/${analysis}/${element}/${product}.${model}.${analysis}.${element}.${location}.caf";
-  
+    return name;
 }

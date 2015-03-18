@@ -16,7 +16,9 @@ class Model{
 
 class Location{
   final String name;
-  Location(this.name);  
+  final String suffex;
+  Location(this.name, this.suffex);
+  
 }
 
 class Element{
@@ -27,11 +29,11 @@ class Element{
 class TimeseriesRootAnalysis{
   final Product product;
   final Model model;
-  Location location;
-  Element element;  
+  final Location location;
+  final Element element;  
   final DateTime analysisAt;
   
-  TimeseriesRootAnalysis( this.product, this.model, this.analysisAt );
+  TimeseriesRootAnalysis( this.product, this.model, this.analysisAt, this.element, this.location );
 }
 
 
