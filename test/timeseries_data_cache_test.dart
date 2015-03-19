@@ -8,7 +8,7 @@ import 'package:quiver/time.dart';
 @proxy
 class MockTimeseriesAssemply extends Mock implements TimeseriesAssembly {}
 @proxy
-class MockTimeseriesRootAnalysis extends Mock implements TimeseriesRootAnalysis {}
+class MockTimeseriesRootAnalysis extends Mock implements TimeseriesAnalysis {}
 void main() {
 
   group("getTimeseries", () {

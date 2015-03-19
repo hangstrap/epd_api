@@ -26,19 +26,19 @@ class Element{
   Element(this.name);
 }
 
-class TimeseriesRootAnalysis{
+class TimeseriesAnalysis{
   final Product product;
   final Model model;
   final Location location;
   final Element element;  
   final DateTime analysisAt;
   
-  TimeseriesRootAnalysis( this.product, this.model, this.analysisAt, this.element, this.location );
+  TimeseriesAnalysis( this.product, this.model, this.analysisAt, this.element, this.location );
 }
 
 
 class Edition{
-  TimeseriesRootAnalysis key;
+  TimeseriesAnalysis key;
   DateTime analysisAt;
   DateTime validFrom;
   DateTime validTo;
@@ -46,21 +46,21 @@ class Edition{
 }
 
 class TimeseriesAssembly{
-  TimeseriesRootAnalysis key;
+  TimeseriesAnalysis key;
   List<Edition> editions;  
 }
 
 /**Used to load timeseres data when there is a cache miss*/
-typedef   Future<TimeseriesAssembly> LoadTimeseres (TimeseriesRootAnalysis key);
+typedef   Future<TimeseriesAssembly> LoadTimeseres (TimeseriesAnalysis key);
  
 class TimeseriesDataCache{
 
   LoadTimeseres loader;
-  MapCache<TimeseriesRootAnalysis, TimeseriesAssembly> cache = new MapCache.lru();
+  MapCache<TimeseriesAnalysis, TimeseriesAssembly> cache = new MapCache.lru();
   
   TimeseriesDataCache( this.loader);
   
-  Future<TimeseriesAssembly> getTimeseries( TimeseriesRootAnalysis key, DateTime from, Duration period){
+  Future<TimeseriesAssembly> getTimeseries( TimeseriesAnalysis key, DateTime from, Duration period){
 
     print( "inside getTimeseries");
     
@@ -70,12 +70,12 @@ class TimeseriesDataCache{
   }
   
   
-  Future<List<TimeseriesAssembly>> getTimeseriesSet( List<TimeseriesRootAnalysis> keys, DateTime from, Duration period){
+  Future<List<TimeseriesAssembly>> getTimeseriesSet( List<TimeseriesAnalysis> keys, DateTime from, Duration period){
     
     
     //Create a set of futures, wait for them to return, then produce the map.
     FutureGroup<TimeseriesAssembly> futures = new FutureGroup();
-    keys.forEach( (TimeseriesRootAnalysis key) {
+    keys.forEach( (TimeseriesAnalysis key) {
         futures.add( getTimeseries( key,  from, period));
       } 
     );
