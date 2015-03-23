@@ -75,6 +75,21 @@ TimeseriesAnalysis toTimeseriesAnalysis(List<String> cafHeaderBlock) {
     return new TimeseriesAnalysis( product, model, analysis, element, location);
   
 }
+Edition toEdition( List<String> cafBlock, TimeseriesAnalysis analysis){
+  
+    String findToken(String token) {
+      String line = cafBlock.firstWhere((String line) => line.indexOf(token) == 0);
+      return line.substring(token.length + 2);
+    }
+  
+    String progPeriod = findToken( "prog");
+    
+      
+}
+
+
+
+
 TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {
 
 

@@ -38,11 +38,14 @@ class TimeseriesAnalysis{
 
 
 class Edition{
-  TimeseriesAnalysis key;
-  DateTime analysisAt;
-  DateTime validFrom;
-  DateTime validTo;
+  final TimeseriesAnalysis key;
+  final DateTime validFrom;
+  final DateTime validTo;
+  //For the moment, mean will be mean as a number 
   var dartum;
+  
+  Edition.createMean ( this.key, this.validFrom, this.validTo, num mean );
+      
 }
 
 class TimeseriesAssembly{

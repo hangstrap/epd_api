@@ -8,12 +8,12 @@ import 'package:quiver/time.dart';
 @proxy
 class MockTimeseriesAssemply extends Mock implements TimeseriesAssembly {}
 @proxy
-class MockTimeseriesRootAnalysis extends Mock implements TimeseriesAnalysis {}
+class MockTimeseriesAnalysis extends Mock implements TimeseriesAnalysis {}
 void main() {
 
   group("getTimeseries", () {
 
-    MockTimeseriesRootAnalysis key = new MockTimeseriesRootAnalysis();
+    MockTimeseriesAnalysis key = new MockTimeseriesAnalysis();
     MockTimeseriesAssemply assembly = new MockTimeseriesAssemply();
     Clock clock = new Clock();
     Duration period = new Duration();
@@ -66,10 +66,10 @@ void main() {
  
     group("getTimeseriesSet", () {
 
-      MockTimeseriesRootAnalysis key1 = new MockTimeseriesRootAnalysis();
+      MockTimeseriesAnalysis key1 = new MockTimeseriesAnalysis();
       MockTimeseriesAssemply assembly1 = new MockTimeseriesAssemply();
 
-      MockTimeseriesRootAnalysis key2 = new MockTimeseriesRootAnalysis();
+      MockTimeseriesAnalysis key2 = new MockTimeseriesAnalysis();
       MockTimeseriesAssemply assembly2 = new MockTimeseriesAssemply();
 
 
