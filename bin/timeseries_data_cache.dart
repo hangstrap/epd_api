@@ -37,14 +37,14 @@ class TimeseriesAnalysis{
 }
 
 
-class Edition{
-  final TimeseriesAnalysis key;
+class Edition{ 
+  final TimeseriesAnalysis analysis;
   final DateTime validFrom;
   final DateTime validTo;
-  //For the moment, mean will be mean as a number 
-  var dartum;
+
+  final Map dartum;
   
-  Edition.createMean ( this.key, this.validFrom, this.validTo, num mean );
+  Edition.createMean ( this.analysis, this.validFrom, this.validTo, this.dartum );
       
 }
 

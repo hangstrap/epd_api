@@ -82,15 +82,15 @@ main() {
       test( "", (){
         MockTimeseriesAnalysis analysis = new MockTimeseriesAnalysis();
         DateTime analysisAt = new DateTime.utc(2015, 2, 15, 3, 00);
-        analysis.when( callsTo( "analysis")).thenReturn( analysisAt);
+         analysis.when( callsTo( "get analysisAt")).thenReturn( analysisAt);
         
         Edition result =caf.toEdition(cafFileBlock, analysis);
-        expect( result, same( analysis));
+        expect( result.analysis, same( analysis));
         expect( result.validFrom, equals( analysisAt.add( new Duration(hours: 1))));
         expect( result.validTo, equals( analysisAt.add( new Duration(hours: 1))));
         
         
-        expect( result.dartum, equals( 5.516087));
+        expect( result.dartum['mean'], equals( 5.516087));
       });
       
     });
