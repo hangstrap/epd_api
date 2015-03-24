@@ -49,8 +49,9 @@ class Edition{
 }
 
 class TimeseriesAssembly{
-  TimeseriesAnalysis key;
-  List<Edition> editions;  
+  final TimeseriesAnalysis key;
+  final List<Edition> editions;
+  TimeseriesAssembly( this.key, this.editions);
 }
 
 /**Used to load timeseres data when there is a cache miss*/

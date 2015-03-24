@@ -73,17 +73,26 @@ Edition toEdition( List<String> cafBlock, TimeseriesAnalysis analysis){
     
     Map datum = { 'mean': mean};
     
-    return new Edition.createMean( analysis, validFrom, validFrom, datum);
-      
+    return new Edition.createMean( analysis, validFrom, validFrom, datum);    
 }
-
-
-
 
 TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {
 
-
+  List<List<String>> blocks = breakIntoCafBlocks( cafFileContents);
+  
+  TimeseriesAnalysis analysis;
+  List<Edition> editions =[];
+  
+  blocks.forEach((List<String> block) {
+    if( analysis == null){
+      analysis = toTimeseriesAnalysis(block);
+    }else{
+      editions.add( toEdition(block, analysis));
+    }
+  }); 
+  return new TimeseriesAssembly( analysis, editions);
 }
+
 List<List<String>> breakIntoCafBlocks(List<String> cafFileContents) {
 
   List<List<String>> result = [];
