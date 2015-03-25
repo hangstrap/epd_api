@@ -49,6 +49,8 @@ class Edition{
 }
 
 class TimeseriesAssembly{
+  //TODO add a equals method
+  
   final TimeseriesAnalysis key;
   final List<Edition> editions;
   TimeseriesAssembly( this.key, this.editions);

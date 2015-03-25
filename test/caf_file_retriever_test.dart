@@ -100,11 +100,26 @@ main() {
         checkEdition( assembly.editions[0], assembly.key);
       });
     });
-
-
   });
 
-
+  group( "CafFileRetriever", (){
+    caf.CafFileRetriever retriever = new caf.CafFileRetriever("../data");
+    
+    test("Load real data",(){
+      TimeseriesAnalysis analysis = new TimeseriesAnalysis( new Product("City Town & Spot Forecasts"), new Model("PDF-PROFOUND"), 
+          new DateTime.utc( 2015, 02, 15, 03, 00), 
+          new Element("TTTTT"), 
+          new Location("01492", "INTL"));
+      
+      return retriever.loadTimeseres( analysis).then((TimeseriesAssembly assembly){
+        
+        expect( assembly.key, equals( analysis));
+        expect( assembly.editions.length, equals(150));
+      });
+      
+    });    
+    
+  });
 }
 
 void checkEdition( Edition edition,  TimeseriesAnalysis analysis){
