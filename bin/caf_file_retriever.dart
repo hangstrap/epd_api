@@ -1,12 +1,12 @@
+library caf_file_retriever;
+
 import 'package:intl/intl.dart';
 import "dart:async";
 import "timeseries_data_cache.dart";
 import "utils.dart" as utils;
+
 import "dart:io";
 
-class CAF {
-
-}
 
 class CafFileRetriever {
 

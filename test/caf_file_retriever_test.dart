@@ -1,6 +1,6 @@
 import 'package:unittest/unittest.dart';
 import 'package:mock/mock.dart';
-import 'dart:io';
+
 
 import '../bin/caf_file_retriever.dart' as caf;
 import '../bin/timeseries_data_cache.dart';
@@ -113,8 +113,11 @@ main() {
       
       return retriever.loadTimeseres( analysis).then((TimeseriesAssembly assembly){
         
-        expect( assembly.key, equals( analysis));
-        expect( assembly.editions.length, equals(150));
+        //test some arbitary data
+        expect( assembly.key.analysisAt, equals( new DateTime.utc(2015, 02, 15, 03, 00)));
+        expect( assembly.key.location.name, equals( "01492"));
+        expect( assembly.editions.length, equals(361));
+        expect( assembly.editions[0].dartum["mean"], equals(-0.226023));
       });
       
     });    

@@ -1,3 +1,5 @@
+library timeseries_data_cache;
+
 
 import "dart:async";
 import "package:quiver/cache.dart";
@@ -12,6 +14,8 @@ class Model{
   final String name;
   Model(this.name);  
 }
+
+
 
 
 class Location{
@@ -53,6 +57,8 @@ class TimeseriesAssembly{
   
   final TimeseriesAnalysis key;
   final List<Edition> editions;
+  
+  
   TimeseriesAssembly( this.key, this.editions);
 }
 
