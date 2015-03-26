@@ -3,7 +3,7 @@ import 'package:mock/mock.dart';
 
 
 import '../bin/caf_file_retriever.dart' as caf;
-import '../bin/timeseries_data_cache.dart';
+import '../bin/timeseries_model.dart';
 
 
 @proxy

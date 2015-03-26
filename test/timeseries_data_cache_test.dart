@@ -1,6 +1,6 @@
 import 'package:unittest/unittest.dart';
 import 'package:mock/mock.dart';
-
+import '../bin/timeseries_model.dart';
 import '../bin/timeseries_data_cache.dart';
 import 'dart:async';
 import 'package:quiver/time.dart';
@@ -9,6 +9,8 @@ import 'package:quiver/time.dart';
 class MockTimeseriesAssemply extends Mock implements TimeseriesAssembly {}
 @proxy
 class MockTimeseriesAnalysis extends Mock implements TimeseriesAnalysis {}
+
+
 void main() {
 
   group("getTimeseries", () {

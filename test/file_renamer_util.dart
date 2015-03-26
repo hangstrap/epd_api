@@ -3,6 +3,8 @@ import "dart:io";
 import "dart:async";
 import '../bin/caf_file_retriever.dart' as caf;
 
+//*Util method to move and rename CAF files
+
 void main(){
   
   var source = "/home/richard/Downloads/TTTTT";
