@@ -1,7 +1,7 @@
 import "package:quiver/io.dart" as io;
 import "dart:io";
 import "dart:async";
-import '../bin/caf_file_retriever.dart' as caf;
+import '../bin/caf_file_decoder.dart' as caf;
 
 //*Util method to move and rename CAF files
 
