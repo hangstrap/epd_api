@@ -7,18 +7,19 @@ void main() {
   CafFileRetriever retriever = new CafFileRetriever("../data");
 
   test("Load real data", () {
-    TimeseriesAnalysis analysis = new TimeseriesAnalysis(
-        new Product("City Town & Spot Forecasts"), 
-        new Model("PDF-PROFOUND"), 
-        new DateTime.utc(2015, 02, 15, 03, 00), 
-        new Element("TTTTT"), 
-        new Location("01492", "INTL"));
+    TimeseriesNode node = new TimeseriesNode("City Town & Spot Forecasts", "PDF-PROFOUND", 
 
-    return retriever.loadTimeseres(analysis).then((TimeseriesAssembly assembly) {
+        "TTTTT", 
+        "01492", "INTL");
+
+    DateTime analysis = new DateTime.utc(2015, 02, 15, 03, 00); 
+    
+    return retriever.loadTimeseres( node, analysis).then((TimeseriesAssembly assembly) {
 
       //test some arbitary data
-      expect(assembly.key.analysisAt, equals(new DateTime.utc(2015, 02, 15, 03, 00)));
-      expect(assembly.key.location.name, equals("01492"));
+      expect(assembly.analysis, equals(new DateTime.utc(2015, 02, 15, 03, 00)));
+      expect(assembly.node.locationName, equals("01492"));
+      expect(assembly.node.locationSuffix, equals("INTL"));      
       expect(assembly.editions.length, equals(361));
       expect(assembly.editions[0].dartum["mean"], equals(-0.226023));
     });

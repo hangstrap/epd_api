@@ -3,28 +3,33 @@ import 'package:mock/mock.dart';
 import '../bin/timeseries_model.dart';
 import '../bin/timeseries_data_cache.dart';
 import 'dart:async';
-import 'package:quiver/time.dart';
 
 @proxy
 class MockTimeseriesAssemply extends Mock implements TimeseriesAssembly {}
 @proxy
-class MockTimeseriesAnalysis extends Mock implements TimeseriesAnalysis {}
+class MockTimeseriesNode extends Mock implements TimeseriesNode {}
 
 
 void main() {
 
   group("getTimeseries", () {
 
-    MockTimeseriesAnalysis key = new MockTimeseriesAnalysis();
+    MockTimeseriesNode node = new MockTimeseriesNode();
     MockTimeseriesAssemply assembly = new MockTimeseriesAssemply();
-    Clock clock = new Clock();
+    DateTime analysis = new DateTime.now();
+    DateTime validFrom = new DateTime.now();
     Duration period = new Duration();
 
     test("on cache miss should return assembly instance provided by loaded", () {
 
-      TimeseriesDataCache cache = new TimeseriesDataCache((_) => new Future.value(assembly));
+      Future<TimeseriesAssembly> timeseriesLoader (TimeseriesNode key, DateTime analysis){
+        return new Future.value(assembly);
+      }
 
-      Future<TimeseriesAssembly> future = cache.getTimeseries(key, clock.now(), period);
+      
+      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader);
+
+      Future<TimeseriesAssembly> future = cache.getTimeseriesAnalysis(node, analysis, validFrom, period);
 
 
         //test the future returned by getTimeseries
@@ -36,13 +41,17 @@ void main() {
 
     test("on cache hit, should not access the loader", () {
 
-      TimeseriesDataCache cache = new TimeseriesDataCache((_) {
+      
+      Future<TimeseriesAssembly> timeseriesLoader (TimeseriesNode key, DateTime analysis){
         return new Future.error("cache accessed loader");
-      });
-      //add item to cache
-    cache.cache.set(key, assembly);
+      }
+      
+      
+      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader);
+      //preloader add item to cache      
+      cache.cache.set( new Key( node, analysis), assembly);
 
-      Future<TimeseriesAssembly> future = cache.getTimeseries(key, clock.now(), period);
+      Future<TimeseriesAssembly> future = cache.getTimeseriesAnalysis(node, analysis, validFrom, period);
 
         //test the future returned by getTimeseries
         return future.then((TimeseriesAssembly a) {
@@ -52,11 +61,13 @@ void main() {
     });
     test("exceptions", () {
 
-      TimeseriesDataCache cache = new TimeseriesDataCache((_) {
+      Future<TimeseriesAssembly> timeseriesLoader (TimeseriesNode key, DateTime analysis){
         return new Future.error( "back end failure");
-      });
+      }
 
-      Future<TimeseriesAssembly> future = cache.getTimeseries(key, clock.now(), period);
+      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader);
+      
+      Future<TimeseriesAssembly> future = cache.getTimeseriesAnalysis(node, analysis, validFrom, period);
 
       return future.catchError((a) {
 
@@ -68,20 +79,21 @@ void main() {
  
     group("getTimeseriesSet", () {
 
-      MockTimeseriesAnalysis key1 = new MockTimeseriesAnalysis();
+      MockTimeseriesNode key1 = new MockTimeseriesNode();
       MockTimeseriesAssemply assembly1 = new MockTimeseriesAssemply();
 
-      MockTimeseriesAnalysis key2 = new MockTimeseriesAnalysis();
+      MockTimeseriesNode key2 = new MockTimeseriesNode();
       MockTimeseriesAssemply assembly2 = new MockTimeseriesAssemply();
 
 
-      Clock clock = new Clock();
+      DateTime analysis = new DateTime.now();
+      DateTime validFrom = new DateTime.now();
       Duration period = new Duration();
 
 
       test("will call getTimeseries for each key", () {
 
-        TimeseriesDataCache cache = new TimeseriesDataCache((key) {
+        TimeseriesDataCache cache = new TimeseriesDataCache((key, analysis) {
           if (key == key1) {
             return new Future.value(assembly1);
           }
@@ -91,7 +103,7 @@ void main() {
         });
 
 
-        Future<List<TimeseriesAssembly>> future = cache.getTimeseriesSet([key1, key2], clock.now(), period);
+        Future<List<TimeseriesAssembly>> future = cache.getTimeseriesAnalysisSet([key1, key2], analysis, validFrom, period);
 
         return future.then((List<TimeseriesAssembly> results) {
           expect(results, isNotNull);
@@ -104,7 +116,7 @@ void main() {
 
       test("when backend returns failing future, then entire set fails ", () {
 
-        TimeseriesDataCache cache = new TimeseriesDataCache((key) {
+        TimeseriesDataCache cache = new TimeseriesDataCache((key, analysis) {
           if (key == key1) {
             return new Future.value(assembly1);
           }
@@ -115,7 +127,7 @@ void main() {
         });
 
 
-        Future<List<TimeseriesAssembly>> future = cache.getTimeseriesSet([key1, key2], clock.now(), period);
+        Future<List<TimeseriesAssembly>> future = cache.getTimeseriesAnalysisSet([key1, key2], analysis, validFrom, period);
 
         return future.catchError(( e) {
           expect(e, equals( "bugger"));

@@ -9,34 +9,36 @@ TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {
 
   List<List<String>> blocks = breakIntoCafBlocks(cafFileContents);
 
-  TimeseriesAnalysis analysis;
+  TimeseriesNode node;
+  DateTime analysis;
   List<Edition> editions = [];
 
   blocks.forEach((List<String> block) {
     if (analysis == null) {
-      analysis = toTimeseriesAnalysis(block);
+      analysis = DateTime.parse(_findToken("init-time", block));
+      node = toTimeseriesNode(block);
     } else {
       editions.add(toEdition(block, analysis));
     }
   });
-  return new TimeseriesAssembly(analysis, editions);
+  return new TimeseriesAssembly(node, analysis, editions);
 }
 
 
 
-String fileNameForTimeseriesAnalysis(TimeseriesAnalysis key) {
+String fileNameForTimeseriesAnalysis(TimeseriesNode node, DateTime analysis) {
 
   String sanitise(String str) {
     return str.replaceAll(new RegExp("[^0-9a-zA-Z/-]"), "");
   }
 
-  String product = sanitise(key.product.name);
-  String model = sanitise(key.model.name);
+  String product = sanitise(node.product);
+  String model = sanitise(node.model);
 
   var formatter = new DateFormat('yyyyMMddHHmm');
-  String analysisAt = formatter.format(key.analysisAt);
-  String element = sanitise(key.element.name);
-  String nameSuffix = _createLocationSuffix(sanitise(key.location.name), key.location.suffex);
+  String analysisAt = formatter.format(analysis);
+  String element = sanitise(node.element);
+  String nameSuffix = _createLocationSuffix(sanitise(node.locationName), node.locationSuffix);
 
   return "${product}/${model}/${analysisAt}Z/${element}/${product}.${model}.${analysisAt}Z.${element}.${nameSuffix}.caf";
 }
@@ -58,23 +60,23 @@ String fileNameForCafFile(List<String> cafFileContents) {
   return "${product}/${model}/${analysis}/${element}/${product}.${model}.${analysis}.${element}.${locationSuffix}.caf";
 
 }
-TimeseriesAnalysis toTimeseriesAnalysis(List<String> cafHeaderBlock) {
+TimeseriesNode toTimeseriesNode(List<String> cafHeaderBlock) {
 
 
-  Product product = new Product(_findToken("product", cafHeaderBlock));
-  Model model = new Model(_findToken("model-group", cafHeaderBlock));
-  DateTime analysis = DateTime.parse(_findToken("init-time", cafHeaderBlock));
-  Element element = new Element(_findToken("vha-code", cafHeaderBlock));
-  Location location = new Location(_findToken("station", cafHeaderBlock), _findToken("station-99suffix", cafHeaderBlock));
+  String product = _findToken("product", cafHeaderBlock);
+  String model = _findToken("model-group", cafHeaderBlock);
+  String element = _findToken("vha-code", cafHeaderBlock);
+  String locationName = _findToken("station", cafHeaderBlock);
+  String locationSuffix = _findToken("station-99suffix", cafHeaderBlock);
 
 
-  return new TimeseriesAnalysis(product, model, analysis, element, location);
+  return new TimeseriesNode(product, model, element, locationName, locationSuffix);
 
 }
-Edition toEdition(List<String> cafBlock, TimeseriesAnalysis analysis) {
+Edition toEdition(List<String> cafBlock, DateTime analysis) {
 
   Duration progPeriod = utils.parseDuration(_findToken("prog", cafBlock));
-  DateTime validFrom = analysis.analysisAt.add(progPeriod);
+  DateTime validFrom = analysis.add(progPeriod);
 
   var mean = num.parse(_findToken("mean", cafBlock));
 

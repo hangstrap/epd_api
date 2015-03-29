@@ -8,7 +8,7 @@ import '../bin/timeseries_model.dart';
 
 
 @proxy
-class MockTimeseriesAnalysis extends Mock implements TimeseriesAnalysis {}
+class MockTimeseriesNode extends Mock implements TimeseriesNode {}
 
 main() {
   group("create correct file name based on CAF file contents", () {
@@ -25,10 +25,10 @@ main() {
   group("create correct file name based on TimeseriesAnalysis", () {
     test("check pattern for a 99xxx station", () {
 
-      DateTime analysisAt = new DateTime.utc(2015, 2, 15, 3, 0);
-      TimeseriesAnalysis key = new TimeseriesAnalysis(new Product("City, Town & Spot Forecasts"), new Model("PDF-PROFOUND"), analysisAt, new Element("TTTTT"), new Location("99647", "INTL"));
+      DateTime analysis = new DateTime.utc(2015, 2, 15, 3, 0);
+      TimeseriesNode node = new TimeseriesNode("City, Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "99647", "INTL");
 
-      String cafFileName = caf.fileNameForTimeseriesAnalysis(key);
+      String cafFileName = caf.fileNameForTimeseriesAnalysis(node, analysis);
       expect(cafFileName, equals("CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.99647-INTL.caf"));
     });
   });
@@ -71,20 +71,18 @@ main() {
       test("parse of 99XXXX header", () {
 
 
-        TimeseriesAnalysis analysis = caf.toTimeseriesAnalysis(cafFileHeader99xxxx);
+        TimeseriesNode analysis = caf.toTimeseriesNode(cafFileHeader99xxxx);
 
-        check99647Analysis(analysis);
+        check99647Node(analysis);
       });
     });
 
     group("parse of data block", () {
       test("", () {
-        MockTimeseriesAnalysis analysis = new MockTimeseriesAnalysis();
         DateTime analysisAt = new DateTime.utc(2015, 2, 15, 3, 00);
-        analysis.when(callsTo("get analysisAt")).thenReturn(analysisAt, 3);
 
-        Edition edition = caf.toEdition(cafFileBlock, analysis);
-        checkEdition(edition, analysis);
+        Edition edition = caf.toEdition(cafFileBlock, analysisAt);
+        checkEdition(edition, analysisAt);
       });
     });
 
@@ -97,8 +95,10 @@ main() {
       test("", () {
 
         TimeseriesAssembly assembly = caf.toTimeseiesAssembly(lines);
-        check99647Analysis(assembly.key);
-        checkEdition( assembly.editions[0], assembly.key);
+        check99647Node(assembly.node);
+        DateTime analysis  = new DateTime.utc(2015, 2, 15, 3, 00);
+        expect( assembly.analysis, equals( analysis));
+        checkEdition( assembly.editions[0], analysis);
       });
     });
   });
@@ -106,22 +106,21 @@ main() {
   
 }
 
-void checkEdition( Edition edition,  TimeseriesAnalysis analysis){
+void checkEdition( Edition edition,  DateTime analysis){
 
-  expect(edition.analysis, same(analysis));
-  expect(edition.validFrom, equals(analysis.analysisAt.add(new Duration(hours: 1))));
-  expect(edition.validTo, equals(analysis.analysisAt.add(new Duration(hours: 1))));
+  expect(edition.analysisAt, equals(analysis));
+  expect(edition.validFrom, equals(analysis.add(new Duration(hours: 1))));
+  expect(edition.validTo, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.dartum['mean'], equals(5.516087));
 
 }
 
-void check99647Analysis(TimeseriesAnalysis analysis) {
-  expect(analysis.product.name, equals('City, Town & Spot Forecasts'));
-  expect(analysis.model.name, equals('PDF-PROFOUND'));
-  expect(analysis.location.name, equals('99647'));
-  expect(analysis.location.suffex, equals('INTL'));
-  expect(analysis.element.name, equals('TTTTT'));
-  expect(analysis.analysisAt, equals(new DateTime.utc(2015, 2, 15, 3, 00)));
+void check99647Node(TimeseriesNode analysis) {
+  expect(analysis.product, equals('City, Town & Spot Forecasts'));
+  expect(analysis.model, equals('PDF-PROFOUND'));
+  expect(analysis.locationName, equals('99647'));
+  expect(analysis.locationSuffix, equals('INTL'));
+  expect(analysis.element, equals('TTTTT'));
 }
 
 List<String> cafFileHeader99xxxx = """status:=ok

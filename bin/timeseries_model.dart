@@ -1,56 +1,58 @@
 library timeseries_model;
 
-
-class Product {
-  final String name;
-  Product(this.name);
-}
-class Model{
-  final String name;
-  Model(this.name);  
-}
+import "package:quiver/core.dart";
 
 
-
-
-class Location{
-  final String name;
-  final String suffex;
-  Location(this.name, this.suffex);
+class TimeseriesNode{
+  String product;
+  String model;
+  String element;
+  String locationName;
+  String locationSuffix;
   
-}
-
-class Element{
-  final String name;
-  Element(this.name);
-}
-
-class TimeseriesAnalysis{
-  final Product product;
-  final Model model;
-  final Location location;
-  final Element element;  
-  final DateTime analysisAt;
+  TimeseriesNode( this.product, this.model, this.element, this.locationName, this.locationSuffix);
+ 
   
-  TimeseriesAnalysis( this.product, this.model, this.analysisAt, this.element, this.location );
+  int get hashCode {
+    return hashObjects([product, model, element, locationName, locationSuffix]);
+  }
+
+  bool operator ==(other) {
+    if (other is! TimeseriesNode) return false;
+    TimeseriesNode key = other;
+    return (key.element == element && key.locationName == locationName && key.locationSuffix == locationSuffix
+        && key.model == model && key.product == product);
+  }
+
+  
 }
 
 
 class Edition{ 
-  final TimeseriesAnalysis analysis;
-  final DateTime validFrom;
-  final DateTime validTo;
+  DateTime analysisAt;
+  DateTime validFrom;
+  DateTime validTo;
 
-  final Map dartum;
+  Map dartum;
   
-  Edition.createMean ( this.analysis, this.validFrom, this.validTo, this.dartum );
+  Edition.createMean ( this.analysisAt, this.validFrom, this.validTo, this.dartum );
       
 }
 
 class TimeseriesAssembly{
   
-  final TimeseriesAnalysis key;
-  final List<Edition> editions;
+  TimeseriesNode node;
+  DateTime analysis;
+  List<Edition> editions;
   
-  TimeseriesAssembly( this.key, this.editions);
+  TimeseriesAssembly( this.node, this.analysis, this.editions);
+}
+
+class TimeseriesLatestSeries{
+  TimeseriesNode node;
+  DateTime latestAt;
+  List<Edition> editions;
+  
+  TimeseriesLatestSeries( this.node, this.latestAt, this.editions);
+  
 }

@@ -19,21 +19,19 @@ void main(List<String> args) {
 
   Future<shelf.Response> _echoRequest(shelf.Request request) {
 
-    TimeseriesAnalysis analysis = new TimeseriesAnalysis(
-        new Product("City Town & Spot Forecasts"), 
-        new Model("PDF-PROFOUND"), 
-        new DateTime.utc(2015, 02, 15, 03, 00), 
-        new Element("TTTTT"), 
-        new Location("01492", "INTL"));
+    TimeseriesNode node = new TimeseriesNode("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
 
-    Future<TimeseriesAssembly> futureAssembly = cache.getTimeseries(analysis, null, null);
+    DateTime analysis = new DateTime.utc(2015, 02, 15, 03, 00);
+
+
+    Future<TimeseriesAssembly> futureAssembly = cache.getTimeseriesAnalysis(node, analysis, null, null);
 
 
     return futureAssembly.then((TimeseriesAssembly assembly) {
 
 
       //convert to json
-      String json = encode( assembly);
+      String json = encode(assembly);
 
       return new shelf.Response.ok(json);
 
