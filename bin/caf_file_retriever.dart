@@ -17,9 +17,8 @@ class CafFileRetriever {
 
     String cafFileName = decoder.fileNameForTimeseriesAnalysis(node, analysis);
     File cafFile = new File("${pathToData}/${cafFileName}");
- 
-    return cafFile.readAsLines().then( (List<String> lines) => decoder.toTimeseiesAssembly(lines));
-   
-   }
-}
 
+    return cafFile.readAsLines().then((List<String> lines) => decoder.toTimeseiesAssembly(lines));
+
+  }
+}

@@ -131,4 +131,3 @@ String _findToken(String token, List<String> lines) {
   String line = lines.firstWhere((String line) => line.indexOf(token) == 0);
   return line.substring(line.indexOf("=") + 1);
 }
-
