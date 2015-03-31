@@ -8,6 +8,7 @@ import "timeseries_data_cache.dart";
 import "caf_file_retriever.dart";
 import "timeseries_model.dart";
 import "dart:async";
+import "dart:io";
 
 
 import 'package:jsonx/jsonx.dart';
@@ -68,7 +69,7 @@ void main(List<String> args) {
   var port = 8080;
   var handler = const shelf.Pipeline().addMiddleware(shelf.logRequests()).addHandler(processRequest);
 
-  io.serve(handler, 'localhost', port).then((server) {
+  io.serve(handler, InternetAddress.ANY_IP_V6, port).then((server) {
     print('Serving at http://${server.address.host}:${server.port}');
   });
 }

@@ -112,7 +112,12 @@ void checkEdition( Edition edition,  DateTime analysis){
   expect(edition.validFrom, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.validTo, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.dartum['mean'], equals(5.516087));
-
+  expect(edition.dartum['control-points'], equals([1.587835,4.687500,5.524008]));
+  expect(edition.dartum['logn-pdf-values'], equals([-6.502432,-1.297167,-0.893834]));  
+  expect(edition.dartum['curvature-values'], equals([0.416317,0.094229,0.000001]));
+  expect(edition.dartum['tail-left'], equals(1));
+  expect(edition.dartum['tail-right'], equals(1));
+  expect(edition.dartum['variance'], equals(1.111753));
 }
 
 void check99647Node(TimeseriesNode analysis) {
@@ -147,9 +152,9 @@ init-time:=20150215 0300 Z
 
 
 List<String> cafFileBlock = """prog=1h
-control-points=1.587835,4.687500,5.524008,5.572896,5.621868,5.671056,5.720611,5.770676,5.821387,5.872947,5.925555,5.979398,6.034721,6.091823,6.151055,9.233932
-logn-pdf-values=-6.502432,-1.297167,-0.893834,-0.894224,-0.897291,-0.903001,-0.912123,-0.923514,-0.937722,-0.956673,-0.977992,-1.002985,-1.032189,-1.066187,-1.105389,-6.431419
-curvature-values=0.416317,0.094229,0.000001,-0.000002,-0.000003,-0.000020,-0.000029,-0.000051,-0.000086,-0.000111,-0.000154,-0.000211,-0.000290,-0.000381,0.608794
+control-points=1.587835,4.687500,5.524008
+logn-pdf-values=-6.502432,-1.297167,-0.893834
+curvature-values=0.416317,0.094229,0.000001
 tail-left=1
 tail-right=1
 mean=5.516087

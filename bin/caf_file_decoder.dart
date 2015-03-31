@@ -78,10 +78,24 @@ Edition toEdition(List<String> cafBlock, DateTime analysis) {
   Duration progPeriod = utils.parseDuration(_findToken("prog", cafBlock));
   DateTime validFrom = analysis.add(progPeriod);
 
-  var mean = num.parse(_findToken("mean", cafBlock));
+  
+  List<num> parseToNumbers( String str){
+    
+    List<num> result = [];
+    str.split(",").forEach((token) => result.add( num.parse( token)));
+        
+    return result;    
+  }
+  
 
   Map datum = {
-    'mean': mean
+    'mean': num.parse(_findToken("mean", cafBlock)),
+    'control-points': parseToNumbers( _findToken("control-points", cafBlock)),
+    'logn-pdf-values':parseToNumbers( _findToken("logn-pdf-values", cafBlock)),
+    'curvature-values':parseToNumbers( _findToken("curvature-values", cafBlock)),
+    'tail-left': num.parse(_findToken("tail-left", cafBlock)),
+    'tail-right': num.parse(_findToken("tail-right", cafBlock)),
+    'variance': num.parse(_findToken("variance", cafBlock)),
   };
 
   return new Edition.createMean(analysis, validFrom, validFrom, datum);
