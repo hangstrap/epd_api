@@ -13,7 +13,7 @@ import 'package:jsonx/jsonx.dart';
 
 void main(List<String> args) {
 
-  CafFileRetriever retriever = new CafFileRetriever("../data");
+  CafFileRetriever retriever = new CafFileRetriever("data");
   TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres);
 
 

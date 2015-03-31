@@ -4,7 +4,7 @@ import '../bin/timeseries_model.dart';
 
 void main() {
 
-  CafFileRetriever retriever = new CafFileRetriever("../data");
+  CafFileRetriever retriever = new CafFileRetriever("data");
 
   test("Load real data", () {
     TimeseriesNode node = new TimeseriesNode("City Town & Spot Forecasts", "PDF-PROFOUND", 
