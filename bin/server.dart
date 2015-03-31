@@ -37,6 +37,9 @@ List<TimeseriesNode> extractNodes(List<String> pathSegments, Map<String, String>
  
 void main(List<String> args) {
 
+  //Insure json encodes DateTimes in ISO 8601 format
+  objectToJsons[DateTime] = (DateTime input) => input.toIso8601String();
+  
   CafFileRetriever retriever = new CafFileRetriever("data");
   TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres);
 
