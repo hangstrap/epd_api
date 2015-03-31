@@ -21,7 +21,7 @@ void main() {
       expect(assembly.node.locationName, equals("01492"));
       expect(assembly.node.locationSuffix, equals("INTL"));      
       expect(assembly.editions.length, equals(361));
-      expect(assembly.editions[0].dartum["mean"], equals(-0.226023));
+      expect(assembly.editions[0].datum["mean"], equals(-0.226023));
     });
 
   });

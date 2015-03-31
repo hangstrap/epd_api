@@ -33,9 +33,9 @@ class Edition{
   DateTime validFrom;
   DateTime validTo;
 
-  Map dartum;
+  Map datum;
   
-  Edition.createMean ( this.analysisAt, this.validFrom, this.validTo, this.dartum );
+  Edition.createMean ( this.analysisAt, this.validFrom, this.validTo, this.datum );
       
 }
 

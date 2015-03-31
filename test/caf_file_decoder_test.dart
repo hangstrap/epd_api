@@ -111,13 +111,13 @@ void checkEdition( Edition edition,  DateTime analysis){
   expect(edition.analysisAt, equals(analysis));
   expect(edition.validFrom, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.validTo, equals(analysis.add(new Duration(hours: 1))));
-  expect(edition.dartum['mean'], equals(5.516087));
-  expect(edition.dartum['control-points'], equals([1.587835,4.687500,5.524008]));
-  expect(edition.dartum['logn-pdf-values'], equals([-6.502432,-1.297167,-0.893834]));  
-  expect(edition.dartum['curvature-values'], equals([0.416317,0.094229,0.000001]));
-  expect(edition.dartum['tail-left'], equals(1));
-  expect(edition.dartum['tail-right'], equals(1));
-  expect(edition.dartum['variance'], equals(1.111753));
+  expect(edition.datum['mean'], equals(5.516087));
+  expect(edition.datum['control-points'], equals([1.587835,4.687500,5.524008]));
+  expect(edition.datum['logn-pdf-values'], equals([-6.502432,-1.297167,-0.893834]));  
+  expect(edition.datum['curvature-values'], equals([0.416317,0.094229,0.000001]));
+  expect(edition.datum['tail-left'], equals(1));
+  expect(edition.datum['tail-right'], equals(1));
+  expect(edition.datum['variance'], equals(1.111753));
 }
 
 void check99647Node(TimeseriesNode analysis) {
