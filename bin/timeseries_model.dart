@@ -11,8 +11,7 @@ class TimeseriesNode{
   String locationSuffix;
   
   TimeseriesNode( this.product, this.model, this.element, this.locationName, this.locationSuffix);
- 
-  
+   
   int get hashCode {
     return hashObjects([product, model, element, locationName, locationSuffix]);
   }
@@ -23,8 +22,6 @@ class TimeseriesNode{
     return (key.element == element && key.locationName == locationName && key.locationSuffix == locationSuffix
         && key.model == model && key.product == product);
   }
-
-  
 }
 
 
@@ -35,8 +32,7 @@ class Edition{
 
   Map datum;
   
-  Edition.createMean ( this.analysisAt, this.validFrom, this.validTo, this.datum );
-      
+  Edition.createMean ( this.analysisAt, this.validFrom, this.validTo, this.datum );     
 }
 
 class TimeseriesAssembly{
@@ -54,5 +50,25 @@ class TimeseriesLatestSeries{
   List<Edition> editions;
   
   TimeseriesLatestSeries( this.node, this.latestAt, this.editions);
+}
+
+List<Edition> filter( List<Edition> editions, DateTime validFrom, Duration period ){
   
+    if(( validFrom == null)|| (period == null)){
+      return editions;
+    }
+  
+    DateTime validTo = validFrom.add( period);
+    
+    return editions.where((edition){
+      
+      
+      if( !edition.validFrom.isBefore(validFrom)){
+        if( !edition.validTo.isAfter(validTo)){
+          return true;
+        }
+      }
+      return false;
+        
+    }).toList();
 }
