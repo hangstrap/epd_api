@@ -42,6 +42,12 @@ class TimeseriesAssembly{
   List<Edition> editions;
   
   TimeseriesAssembly( this.node, this.analysis, this.editions);
+  
+  TimeseriesAssembly.filter( TimeseriesAssembly orignal, DateTime validFrom, Duration period){
+    this.node = orignal.node;
+    this.analysis = orignal.analysis;
+    this.editions = _filter(orignal.editions, validFrom, period);
+  }
 }
 
 class TimeseriesLatestSeries{
@@ -52,7 +58,11 @@ class TimeseriesLatestSeries{
   TimeseriesLatestSeries( this.node, this.latestAt, this.editions);
 }
 
-List<Edition> filter( List<Edition> editions, DateTime validFrom, Duration period ){
+
+
+
+
+List<Edition> _filter( List<Edition> editions, DateTime validFrom, Duration period ){
   
     if(( validFrom == null)|| (period == null)){
       return editions;
@@ -63,8 +73,8 @@ List<Edition> filter( List<Edition> editions, DateTime validFrom, Duration perio
     return editions.where((edition){
       
       
-      if( !edition.validFrom.isBefore(validFrom)){
-        if( !edition.validTo.isAfter(validTo)){
+      if( !edition.validTo.isBefore(validFrom)){
+        if( !edition.validFrom.isAfter(validTo)){
           return true;
         }
       }

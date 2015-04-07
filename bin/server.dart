@@ -13,8 +13,6 @@ import "dart:io";
 
 import 'package:jsonx/jsonx.dart';
 
-///epd/byAnalysis/product/model/201502150300Z?locations=01492.INTL,&elements=TTTTT
-
 List<TimeseriesNode> extractNodes(List<String> pathSegments, Map<String, String> queryParams){
   
   String product = pathSegments[2];
@@ -50,13 +48,25 @@ void main(List<String> args) {
     if(( pathSegments.length != 5)|| ( pathSegments[0] != "epd") || ( pathSegments[1] != "byAnalysis")){
       
       return new Future.value( new shelf.Response.internalServerError(
-          body:'url must be like /epd/byAnalysis/City Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z?locations=01492.INTL,03266.INTL&elements=TTTTT'));
+          body:'url must be like /epd/byAnalysis/City Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z?locations=01492.INTL,03266.INTL&elements=TTTTT&validFrom=20150215T0400Z&validTo=20150215T0600Z\nvalidFrom and validTo are optional'));
     }
   
     DateTime analysis = DateTime.parse( pathSegments[4]);
-    List<TimeseriesNode> nodes = extractNodes( pathSegments, request.url.queryParameters);
+    Map<String, String> queryParams = request.url.queryParameters;
+    List<TimeseriesNode> nodes = extractNodes( pathSegments, queryParams);
     
-    Future<List<TimeseriesAssembly>> futureAssembly = cache.getTimeseriesAnalysisSet(nodes, analysis, null, null);
+    DateTime validFrom = null;
+    Duration  period = null;
+    if( queryParams["validFrom"]!=null){
+      validFrom = DateTime.parse( queryParams["validFrom"]);
+    }
+    if( queryParams["validTo"]!=null){
+      DateTime validTo = DateTime.parse( queryParams["validTo"]);
+      period = validTo.difference( validFrom);
+    }
+    
+    
+    Future<List<TimeseriesAssembly>> futureAssembly = cache.getTimeseriesAnalysisSet(nodes, analysis, validFrom, period);
 
 
     return futureAssembly.then((assembly) {

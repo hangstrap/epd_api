@@ -24,14 +24,19 @@ class TimeseriesDataCache {
     return loader(key.node, key.analysis);
   }
 
-  Future<TimeseriesAssembly> getTimeseriesAnalysis(TimeseriesNode node, DateTime analysis, DateTime from, Duration period) {
+  Future<TimeseriesAssembly> getTimeseriesAnalysis(TimeseriesNode node, DateTime analysis, DateTime validFrom, Duration period) {
 
     print("inside getTimeseries");
 
     Key key = new Key(node, analysis);
 
     //todo add a filter
-    return cache.get(key, ifAbsent: _loader);
+    Future<TimeseriesAssembly> futureAssembly = cache.get(key, ifAbsent: _loader);
+    
+    return futureAssembly.then( (assembly) {
+      
+      return new Future.value(new TimeseriesAssembly.filter(assembly, validFrom, period));
+    });
 
   }
 
