@@ -4,6 +4,7 @@ description: A minimal web server using the shelf package.
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
+  html: any
   intl: any
   jsonx: any
   quiver: '>=0.21.3 <0.22.0'
