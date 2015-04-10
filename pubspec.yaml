@@ -5,6 +5,7 @@ environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
   html: any
+  http: any
   intl: any
   jsonx: any
   quiver: '>=0.21.3 <0.22.0'

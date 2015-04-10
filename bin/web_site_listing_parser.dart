@@ -14,7 +14,7 @@ class Item {
   Item(this.uri, this.name, this.size, this.lastModifiedAt);
 }
 
-typedef bool ProcessItem(Item item);
+typedef void ProcessItem(Item item);
 
 void parseWebSite(String htmlPage, ProcessItem callback) {
   Document document = parse(htmlPage);
@@ -28,13 +28,12 @@ void parseWebSite(String htmlPage, ProcessItem callback) {
     throw new FormatException(
         "Html page did not contain a table with at least 4 rows");
   }
-
-  _displayRows(rows);  
+ 
   //remove the header stuff
   rows = rows.sublist(3);
   
   rows.forEach((row) {
-    print("processing row ${row.outerHtml}");
+
     List<Element> tableDatas = row.getElementsByTagName("td");
 
     //ignore empty rows
@@ -59,6 +58,4 @@ void parseWebSite(String htmlPage, ProcessItem callback) {
   });
 }
 
-void _displayRows( var rows){
-  rows.forEach((row) => print("${row.outerHtml}"));
-}
+

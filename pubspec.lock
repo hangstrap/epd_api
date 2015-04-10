@@ -25,6 +25,10 @@ packages:
     description: html
     source: hosted
     version: "0.12.1+1"
+  http:
+    description: http
+    source: hosted
+    version: "0.11.2"
   http_parser:
     description: http_parser
     source: hosted
