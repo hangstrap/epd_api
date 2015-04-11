@@ -6,6 +6,7 @@ environment:
 dependencies:
   html: any
   http: any
+  http_server: any
   intl: any
   jsonx: any
   quiver: '>=0.21.3 <0.22.0'
