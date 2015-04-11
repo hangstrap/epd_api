@@ -9,7 +9,7 @@ import 'package:quiver/async.dart';
 
 class Link {
   final Uri _baseUrl;
-  final parser.Item _item;
+  final parser.Item _item;x
   Link(this._baseUrl, this._item);
 
   Uri get url => _baseUrl.resolve(_item.uri);
