@@ -17,6 +17,7 @@ class Link {
   String get size => _item.size;
   String get lastModifiedAt => _item.lastModifiedAt;
   bool get isDirectory => _item.isDirectory;
+  bool get isFile => !_item.isDirectory;
 }
 ///Callback fuction used by the web site listing crawler function.
 typedef bool FoundLink(Link link);
@@ -24,9 +25,11 @@ typedef bool FoundLink(Link link);
 
 ///Itterates through the links on the web site, optionally  decending into subpages
 Future crawl(Uri url, FoundLink callback) {
+
   print("about to crawl ${url}");
 
   FutureGroup fg = new FutureGroup();
+  
   fg.add(http.get(url).then((response) {
     parser.parseWebSite(response.body, (parser.Item item) {
       Link link = new Link(url, item);
