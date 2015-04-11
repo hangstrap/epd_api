@@ -6,6 +6,7 @@ import "dart:async";
 import 'package:http/http.dart' as http;
 import 'package:quiver/async.dart';
 
+
 class Link {
   final Uri _baseUrl;
   final parser.Item _item;
@@ -17,9 +18,11 @@ class Link {
   String get lastModifiedAt => _item.lastModifiedAt;
   bool get isDirectory => _item.isDirectory;
 }
-
+///Callback fuction used by the web site listing crawler function.
 typedef bool FoundLink(Link link);
 
+
+///Itterates through the links on the web site, optionally  decending into subpages
 Future crawl(Uri url, FoundLink callback) {
   print("about to crawl ${url}");
 
