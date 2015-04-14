@@ -2,6 +2,8 @@ import 'package:unittest/unittest.dart';
 import '../bin/timeseries_model.dart';
 import 'package:jsonx/jsonx.dart' as jsonx;
 
+
+
 TimeseriesNode node = new TimeseriesNode(
     "City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
 DateTime analysisAt = new DateTime.utc(2013, 4, 1, 00, 00);
@@ -80,6 +82,69 @@ void main() {
         expect(result[2], equals(editions[2]));
       });
     });
+  });
+  group( "TimeseriesAudit", (){
+
+    test("Add a single Analysis with a single spot edition", (){
+      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+        new  Edition.createMean(analysisAt, am1, am1, {})]);
+      catalog.addAnalysis( assembly);
+      
+      expect( catalog.catalogue.length, equals( 1));
+      Map<DateTime, Period> analysisMap = catalog.catalogue[node];
+      expect( analysisMap.length, equals( 1));
+      expect( analysisMap[ analysisAt], equals( new Period.create( am1, am1)));
+      
+      
+    });
+
+    test("Add a single Analysis with a two interval period editions", (){
+      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+        new  Edition.createMean(analysisAt, am1, am2, {}),
+        new  Edition.createMean(analysisAt, am2, am3, {})
+        ]);
+      catalog.addAnalysis( assembly);
+      
+      expect( catalog.catalogue.length, equals( 1));
+      Map<DateTime, Period> analysisMap = catalog.catalogue[node];
+      expect( analysisMap.length, equals( 1));
+      expect( analysisMap[ analysisAt], equals( new Period.create(am1, am3)));      
+    });
+
+
+    test("Add a two Analysis for the same node", (){
+      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+        new  Edition.createMean(analysisAt, am1, am1, {}),
+        ]);      
+      catalog.addAnalysis( assembly);
+      
+      DateTime analysisAt2 = analysisAt.add( new Duration(hours:1));
+      TimeseriesAssembly assembly2 = new TimeseriesAssembly(node, analysisAt2,[ 
+        new  Edition.createMean(analysisAt, am2, am2, {}),
+        ]);
+       catalog.addAnalysis(assembly2);
+      
+      expect( catalog.catalogue.length, equals( 1));
+      Map<DateTime, Period> analysisMap = catalog.catalogue[node];
+      expect( analysisMap.length, equals( 2));
+      expect( analysisMap[ analysisAt], equals( new Period.create( am1, am1)));      
+      expect( analysisMap[ analysisAt2], equals( new Period.create( am2, am2)));         
+      
+    });
+    solo_test("Json encoding of catalog", (){
+
+      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+        new  Edition.createMean(analysisAt, am1, am1, {}),
+        ]);      
+      catalog.addAnalysis( assembly);
+
+      print( jsonx.encode( catalog)); 
+    });
+
   });
 }
 

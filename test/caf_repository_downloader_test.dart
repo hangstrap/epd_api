@@ -40,16 +40,31 @@ main() {
     Uri uri = new Uri.http("localhost:8080", "DLITE.html");
     
     
-    test( "a long time ago", (){
-        DateTime lastDownloaded = new DateTime( 2000);
-        downloader.downloaderCafFilesFromWebSite( uri, output, lastDownloaded).then( (DateTime on){
-          print( on.toIso8601String());
+    test( "Last parsing was a  long time ago", (){
+        DateTime lastDownloaded;
+
+        downloader.downloaderCafFilesFromWebSite( uri, output, new DateTime( 2000)).then( (DateTime on){
+          lastDownloaded = on;
         });
         
-        Duration d = new Duration( seconds:10);
+        Duration d = new Duration( seconds:1);
         return new Future.delayed(d).then((_){
           File output = new File( 'temp/CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.03772.caf');
-          expect( output.exists(), isTrue);
+          expect( output.existsSync(), isTrue);
+          expect( lastDownloaded, equals( new DateTime(2015,04,01,01,19)));
+        });    
+    });
+    test( "No files have been downloaded since last parse", (){
+        DateTime lastDownloaded;
+        downloader.downloaderCafFilesFromWebSite( uri, output, new DateTime( 2015, 04,01,01,20)).then( (DateTime on){
+          lastDownloaded = on;
+        });
+        
+        Duration d = new Duration( seconds:1);
+        return new Future.delayed(d).then((_){
+          File output = new File( 'temp/CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.03772.caf');
+          expect( output.existsSync(), isFalse);
+          expect( lastDownloaded, equals( new DateTime(2015,04,01,01,20)));
         });
     });
     
