@@ -29,7 +29,7 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url,Directory destination, Da
     }
     
     if( link.name.endsWith( '.caf')){
-      print( "print downloading caf file from ${link.url}");
+      print( "downloading caf file from ${link.url}");
       http.get( link.url).then((response){
         
         String contents = response.body;
@@ -49,4 +49,14 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url,Directory destination, Da
 
    
   return crawler.crawl(url, foundLink).then( (_) => latestLastModifiedTime);
+}
+
+
+void main(){
+  Uri url = new Uri.http( "amps-caf-output.met.co.nz", "/ICE/DLITE");
+  DateTime timeOfLastFileDownloaded = new DateTime(2015);
+  Directory destination = new Directory("/temp/epdapi/");
+ 
+  downloaderCafFilesFromWebSite(url, destination, timeOfLastFileDownloaded);
+  
 }
