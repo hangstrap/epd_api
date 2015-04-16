@@ -12,7 +12,13 @@ class Link {
   Link(this._baseUrl, this._item);
 
   Uri get url {
-    return new Uri.http( _baseUrl.authority, "${_baseUrl.path}/${_item.uri}");
+    
+    String path = _baseUrl.path;
+    //Remove any extentions
+    if( path.lastIndexOf( ".") > 0){
+      path = path.substring(0,path.lastIndexOf( ".") );
+    }
+    return new Uri.http( _baseUrl.authority, "${path}/${_item.uri}");
    }
   String get name => _item.name;
   String get size => _item.size;
@@ -30,6 +36,9 @@ Future crawl(Uri url, FoundLink callback) {
   FutureGroup fg = new FutureGroup();
 
   fg.add(http.get(url).then((response) {
+    if( response.statusCode != 200){
+      throw "request return status of ${response.statusCode}";
+    }
     parser.parseWebSite(response.body, (parser.Item item) {
       Link link = new Link(url, item);
       bool goInto = callback(link);
@@ -37,7 +46,7 @@ Future crawl(Uri url, FoundLink callback) {
         fg.add(crawl(link.url, callback));
       }
     });
-  }).catchError((onError) => print("Error ${url} ${onError}")));
+  }).catchError((onError) => print("Error ${url}  ${onError}")));
 
   return fg.future;
 }

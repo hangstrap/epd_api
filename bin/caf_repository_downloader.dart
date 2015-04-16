@@ -32,6 +32,10 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url,Directory destination, Da
       print( "downloading caf file from ${link.url}");
       http.get( link.url).then((response){
         
+        if( response.statusCode != 200){
+          throw "web request failed with code of ${response.statusCode}";
+        }
+        
         String contents = response.body;
         String fileName = deconder.fileNameForCafFile( contents.split("\n"));
         File file = new File( destination.path + fileName);
@@ -42,7 +46,7 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url,Directory destination, Da
         }
 
         file.writeAsString(contents).then((file)=>print( "downloaded caf file ${file}"));
-      });
+      }).catchError((onError)=>print( "error downloading caf file ${link.url} ${onError}"));
     } 
     return true;
   }

@@ -7,15 +7,12 @@ import 'package:http_server/http_server.dart' show VirtualDirectory;
 void main() {
   group("main", () {
     HttpServer testServer;
-    
+
     setUp(() {
       final MY_HTTP_ROOT_PATH = Platform.script.resolve('www').toFilePath();
-      final virDir = new VirtualDirectory(MY_HTTP_ROOT_PATH)
-        ..allowDirectoryListing = true;
+      final virDir = new VirtualDirectory(MY_HTTP_ROOT_PATH)..allowDirectoryListing = true;
 
-      return HttpServer
-          .bind(InternetAddress.LOOPBACK_IP_V4, 8080)
-          .then((server) {
+      return HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 8080).then((server) {
         testServer = server;
         server.listen((request) {
           virDir.serveRequest(request);
@@ -37,23 +34,24 @@ void main() {
         result = link;
         return false;
       }
+      
       return crawler.crawl(uri, foundLink).then((_) {
         expect(result, isNotNull);
-        expect(
-            result.url, equals(new Uri.http("localhost:8080", "TTTTT.html")));
+        expect(result.url, equals(new Uri.http("localhost:8080", "DLITE/TTTTT.html")));
         expect(result.name, equals("TTTTT/"));
         expect(result.size, equals(""));
         expect(result.lastModifiedAt, equals("01-Apr-2015 01:19  "));
         expect(result.isDirectory, isTrue);
       });
     });
-    test("finds links in all pages", () {
+    solo_test("finds links in all pages", () {
       List<crawler.Link> result = [];
 
       bool foundLink(crawler.Link link) {
         result.add(link);
         return true;
       }
+      
       return crawler.crawl(uri, foundLink).then((_) {
         expect(result.length, equals(3));
         expect(result[0].name, equals("TTTTT/"));
@@ -66,8 +64,7 @@ void main() {
 
 void startTestServer() {
   final MY_HTTP_ROOT_PATH = Platform.script.resolve('www').toFilePath();
-  final virDir = new VirtualDirectory(MY_HTTP_ROOT_PATH)
-    ..allowDirectoryListing = true;
+  final virDir = new VirtualDirectory(MY_HTTP_ROOT_PATH)..allowDirectoryListing = true;
 
   HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 8080).then((server) {
     server.listen((request) {
