@@ -117,7 +117,7 @@ class Period{
 class TimeseriesCatalogue{
 
   
-  Map<String, Map<String, Period>> catalogue={};
+  Map<TimeseriesNode, Map<DateTime, Period>> catalogue={};
 
   int get numberOfNodes => catalogue.length;
   
@@ -125,11 +125,8 @@ class TimeseriesCatalogue{
   TimeseriesCatalogue();
   
   Map<DateTime,Period> analysisFor( TimeseriesNode node){
-    Map<DateTime,Period> result= {};
-    catalogue[ node.toNamespace()].forEach( (String analysisStr, Period period){
-      result[DateTime.parse( analysisStr)] = period;
-    });
-    return result;
+    
+    return catalogue[ node];
   }
   
   Period periodFor( TimeseriesNode node, DateTime analysis){
@@ -138,8 +135,8 @@ class TimeseriesCatalogue{
   
   void addAnalysis( TimeseriesAssembly assembly){
     
-      Map<String, Period> analayisMap = catalogue.putIfAbsent(assembly.node.toNamespace(), ()  => {});      
-     analayisMap[assembly.analysis.toIso8601String()]= assembly.timePeriodOfEditions;
+      Map<DateTime, Period> analayisMap = catalogue.putIfAbsent(assembly.node, ()  => {});      
+     analayisMap[assembly.analysis]= assembly.timePeriodOfEditions;
   }  
 }
 
