@@ -24,19 +24,15 @@ class TimeseriesDataCache {
     return loader(key.node, key.analysis);
   }
 
-  Future<TimeseriesAssembly> getTimeseriesAnalysis(TimeseriesNode node, DateTime analysis, DateTime validFrom, Duration period) {
+  Future<TimeseriesAssembly> getTimeseriesAnalysis(TimeseriesNode node, DateTime analysis, DateTime validFrom, Duration period) async{
 
     print("inside getTimeseries");
 
     Key key = new Key(node, analysis);
-
-    //todo add a filter
-    Future<TimeseriesAssembly> futureAssembly = cache.get(key, ifAbsent: _loader);
     
-    return futureAssembly.then( (assembly) {
-      
-      return new Future.value(new TimeseriesAssembly.filter(assembly, validFrom, period));
-    });
+    TimeseriesAssembly assembly = await cache.get(key, ifAbsent: _loader);
+    TimeseriesAssembly filteredAssembly =   new TimeseriesAssembly.filter(assembly, validFrom, period);
+    return new Future.value( filteredAssembly);
 
   }
 
