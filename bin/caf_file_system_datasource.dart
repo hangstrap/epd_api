@@ -18,7 +18,7 @@ class CafFileSystemDatasource {
   }
 }
 
-Future<TimeseriesCatalogue> generateCataloge(Directory source) {
+Future<TimeseriesCatalogue>  generateCataloge (Directory source) async {
   TimeseriesCatalogue result = new TimeseriesCatalogue();
 
   Future<bool> _visit(FileSystemEntity f) {
@@ -37,7 +37,7 @@ Future<TimeseriesCatalogue> generateCataloge(Directory source) {
 
   return visitDirectory(source, _visit).then((_) => new Future.value(result));
 }
-
+/*
 main(){
   
   setUpJsonConverters();
@@ -47,3 +47,4 @@ main(){
   new Future.delayed( new Duration( seconds:20)).then( (_) => print( jsonx.encode( ds, indent:" ")));
   
 }
+*/

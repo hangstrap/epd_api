@@ -26,7 +26,7 @@ void main() {
 
     Uri uri = new Uri.http("localhost:8080", "DLITE.html");
 
-    test("finds link in first page", () {
+    test("finds link in first page", () async {
       crawler.Link result;
 
       bool foundLink(crawler.Link link) {
@@ -34,30 +34,28 @@ void main() {
         result = link;
         return false;
       }
-      
-      return crawler.crawl(uri, foundLink).then((_) {
-        expect(result, isNotNull);
-        expect(result.url, equals(new Uri.http("localhost:8080", "DLITE/TTTTT.html")));
-        expect(result.name, equals("TTTTT/"));
-        expect(result.size, equals(""));
-        expect(result.lastModifiedAt, equals("01-Apr-2015 01:19  "));
-        expect(result.isDirectory, isTrue);
-      });
+
+      await crawler.crawl(uri, foundLink);
+      expect(result, isNotNull);
+      expect(result.url, equals(new Uri.http("localhost:8080", "DLITE/TTTTT.html")));
+      expect(result.name, equals("TTTTT/"));
+      expect(result.size, equals(""));
+      expect(result.lastModifiedAt, equals("01-Apr-2015 01:19  "));
+      expect(result.isDirectory, isTrue);
     });
-    solo_test("finds links in all pages", () {
+    test("finds links in all pages", () async {
       List<crawler.Link> result = [];
 
       bool foundLink(crawler.Link link) {
         result.add(link);
         return true;
       }
-      
-      return crawler.crawl(uri, foundLink).then((_) {
-        expect(result.length, equals(3));
-        expect(result[0].name, equals("TTTTT/"));
-        expect(result[1].name, equals("20150327T22Z/"));
-        expect(result[2].name, equals("TTTTT_20150327T18Z_03772.caf"));
-      });
+
+      await crawler.crawl(uri, foundLink);
+      expect(result.length, equals(3));
+      expect(result[0].name, equals("TTTTT/"));
+      expect(result[1].name, equals("20150327T22Z/"));
+      expect(result[2].name, equals("TTTTT_20150327T18Z_03772.caf"));
     });
   });
 }

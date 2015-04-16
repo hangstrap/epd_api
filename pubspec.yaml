@@ -2,7 +2,7 @@ name: epd_api_shelf
 version: 0.0.1
 description: A minimal web server using the shelf package.
 environment:
-  sdk: '>=1.0.0 <2.0.0'
+  sdk: '>=1.9.0 <2.0.0'
 dependencies:
   html: any
   http: any

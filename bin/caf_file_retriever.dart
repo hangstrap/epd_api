@@ -13,12 +13,13 @@ class CafFileRetriever {
 
   CafFileRetriever(this.pathToData);
 
-  Future<TimeseriesAssembly> loadTimeseres(TimeseriesNode node, DateTime analysis) {
+  Future<TimeseriesAssembly> loadTimeseres(TimeseriesNode node, DateTime analysis) async {
 
     String cafFileName = decoder.fileNameForTimeseriesAnalysis(node, analysis);
     File cafFile = new File("${pathToData}/${cafFileName}");
 
-    return cafFile.readAsLines().then((List<String> lines) => decoder.toTimeseiesAssembly(lines));
+    List<String> lines = await cafFile.readAsLines();
+    return decoder.toTimeseiesAssembly(lines);
 
   }
 }

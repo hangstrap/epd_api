@@ -62,6 +62,17 @@ class TimeseriesAssembly{
 
   Period get timePeriodOfEditions => new Period.create( editions.first.validFrom, editions.last.validTo); 
 
+  int get hashCode {
+    return hashObjects([node, analysis]);
+  }
+
+  bool operator ==(other) {
+    if (other is! TimeseriesAssembly) return false;
+    TimeseriesAssembly key = other;
+    return (key.node == node && key.analysis == analysis );
+  }
+
+  
   List<Edition> _filter( List<Edition> editions, DateTime validFrom, Duration period ){
     
       if(( validFrom == null)|| (period == null)){
@@ -137,6 +148,8 @@ class TimeseriesCatalogue{
       Map<DateTime, Period> analayisMap = catalogue.putIfAbsent(assembly.node, ()  => {});      
      analayisMap[assembly.analysis]= assembly.timePeriodOfEditions;
   }  
+  
+  
 }
 
 
