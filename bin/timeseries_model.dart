@@ -112,8 +112,7 @@ class Period{
     return "${from.toIso8601String()} - ${to.toIso8601String()}"; 
   }
 }
-///
-///Note class is designed to make it easy to convert to JSON. Hence keys in maps are primatives
+
 class TimeseriesCatalogue{
 
   
