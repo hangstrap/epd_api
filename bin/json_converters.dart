@@ -8,7 +8,7 @@ void setUpJsonConverters(){
   
   jsonx.objectToJsons[DateTime] = (DateTime input) => input.toIso8601String();  
   jsonx.jsonToObjects[DateTime] = (String input) => DateTime.parse( input);
-
+/*
   //TimeseriesCatalog cannot directly be converted to JSON, as keys in maps are objects, not strings.
   //Hence this messy convertsion
   jsonx.objectToJsons[ TimeseriesCatalog] = (TimeseriesCatalog timeseriesCatalog) {
@@ -55,6 +55,6 @@ void setUpJsonConverters(){
     
     return result;
   };
-
+*/
 }
 

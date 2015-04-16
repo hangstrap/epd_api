@@ -97,16 +97,16 @@ void main() {
       });
     });
   });
-  group( "TimeseriesAudit", (){
+  group( "TimeseriesCatalog", (){
 
     test("Add a single Analysis with a single spot edition", (){
-      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue();
       TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am1, {})]);
       catalog.addAnalysis( assembly);
       
-      expect( catalog.catalogue.length, equals( 1));
-      Map<DateTime, Period> analysisMap = catalog.catalogue[node];
+      expect( catalog.numberOfNodes, equals( 1));
+      Map<DateTime, Period> analysisMap = catalog.analysisFor( node);
       expect( analysisMap.length, equals( 1));
       expect( analysisMap[ analysisAt], equals( new Period.create( am1, am1)));
       
@@ -114,22 +114,22 @@ void main() {
     });
 
     test("Add a single Analysis with a two interval period editions", (){
-      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue();
       TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am2, {}),
         new  Edition.createMean(analysisAt, am2, am3, {})
         ]);
       catalog.addAnalysis( assembly);
       
-      expect( catalog.catalogue.length, equals( 1));
-      Map<DateTime, Period> analysisMap = catalog.catalogue[node];
+      expect( catalog.numberOfNodes, equals( 1));
+      Map<DateTime, Period> analysisMap = catalog.analysisFor( node);
       expect( analysisMap.length, equals( 1));
       expect( analysisMap[ analysisAt], equals( new Period.create(am1, am3)));      
     });
 
 
     test("Add a two Analysis for the same node", (){
-      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue();
       TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am1, {}),
         ]);      
@@ -141,16 +141,16 @@ void main() {
         ]);
        catalog.addAnalysis(assembly2);
       
-      expect( catalog.catalogue.length, equals( 1));
-      Map<DateTime, Period> analysisMap = catalog.catalogue[node];
+      expect( catalog.numberOfNodes, equals( 1));
+      Map<DateTime, Period> analysisMap = catalog.analysisFor( node);
       expect( analysisMap.length, equals( 2));
       expect( analysisMap[ analysisAt], equals( new Period.create( am1, am1)));      
       expect( analysisMap[ analysisAt2], equals( new Period.create( am2, am2)));         
       
     });
-    test("Json encoding of catalog", (){
+    test("Json encoding of catalogue", (){
                
-      TimeseriesCatalog catalog = new TimeseriesCatalog();
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue();
       TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am1, {}),
         ]);      
@@ -159,7 +159,7 @@ void main() {
       expect( json,equals(  jsonCatalog)); 
     });
     test( "Json decoding of catalog", (){
-      TimeseriesCatalog catalog = jsonx.decode( jsonCatalog, type:TimeseriesCatalog);
+      TimeseriesCatalogue catalog = jsonx.decode( jsonCatalog, type:TimeseriesCatalogue);
       //test it by coverting it back again
       String json = jsonx.encode( catalog, indent:' ');
       expect( json,equals(  jsonCatalog)); 
@@ -177,7 +177,7 @@ String jsonNode = """{
 }""";
 
 String jsonCatalog="""{
- "catalog": {
+ "catalogue": {
   "City Town & Spot Forecasts/PDF-PROFOUND/TTTTT/01492.INTL": {
    "2013-04-01T00:00:00.000Z": {
     "from": "2013-04-01T01:00:00.000Z",

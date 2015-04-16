@@ -112,17 +112,35 @@ class Period{
     return "${from.toIso8601String()} - ${to.toIso8601String()}"; 
   }
 }
+///
+///Note class is designed to make it easy to convert to JSON. Hence keys in maps are primatives
+class TimeseriesCatalogue{
 
-class TimeseriesCatalog{
-  Map<TimeseriesNode, Map<DateTime, Period>> catalogue={};
   
-  TimeseriesCatalog();
+  Map<String, Map<String, Period>> catalogue={};
+
+  int get numberOfNodes => catalogue.length;
+  
+  
+  TimeseriesCatalogue();
+  
+  Map<DateTime,Period> analysisFor( TimeseriesNode node){
+    Map<DateTime,Period> result= {};
+    catalogue[ node.toNamespace()].forEach( (String analysisStr, Period period){
+      result[DateTime.parse( analysisStr)] = period;
+    });
+    return result;
+  }
+  
+  Period periodFor( TimeseriesNode node, DateTime analysis){
+    return catalogue[ node.toNamespace()][analysis.toIso8601String()];
+  }
+  
   void addAnalysis( TimeseriesAssembly assembly){
     
-      Map<DateTime, Period> analayisMap = catalogue.putIfAbsent(assembly.node, ()  => {});      
-     analayisMap[assembly.analysis]= assembly.timePeriodOfEditions;
+      Map<String, Period> analayisMap = catalogue.putIfAbsent(assembly.node.toNamespace(), ()  => {});      
+     analayisMap[assembly.analysis.toIso8601String()]= assembly.timePeriodOfEditions;
   }  
 }
-
 
 
