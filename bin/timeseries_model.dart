@@ -12,6 +12,15 @@ class TimeseriesNode{
   
   TimeseriesNode( this.product, this.model, this.element, this.locationName, this.locationSuffix);
    
+  TimeseriesNode.fromNamespace( String namespace){
+    List<String> tokens = namespace.split("/");
+    product = tokens[0];
+    model = tokens[1];
+    element = tokens[2];
+    locationName = tokens[3].split( ".")[0];
+    locationSuffix = tokens[3].split( ".")[1];
+  }
+  
   int get hashCode {
     return hashObjects([product, model, element, locationName, locationSuffix]);
   }
@@ -22,6 +31,8 @@ class TimeseriesNode{
     return (key.element == element && key.locationName == locationName && key.locationSuffix == locationSuffix
         && key.model == model && key.product == product);
   }
+  String toNamespace() =>"${product}/${model}/${element}/${locationName}.${locationSuffix}"; 
+  String toString()=>toNamespace();
 }
 
 
@@ -48,8 +59,29 @@ class TimeseriesAssembly{
     this.analysis = orignal.analysis;
     this.editions = _filter(orignal.editions, validFrom, period);
   }
-  
+
   Period get timePeriodOfEditions => new Period.create( editions.first.validFrom, editions.last.validTo); 
+
+  List<Edition> _filter( List<Edition> editions, DateTime validFrom, Duration period ){
+    
+      if(( validFrom == null)|| (period == null)){
+        return editions;
+      }
+    
+      DateTime validTo = validFrom.add( period);
+      
+      return editions.where((edition){
+        
+        
+        if( !edition.validTo.isBefore(validFrom)){
+          if( !edition.validFrom.isAfter(validTo)){
+            return true;
+          }
+        }
+        return false;
+          
+      }).toList();
+  }  
 }
 
 class TimeseriesLatestSeries{
@@ -76,7 +108,9 @@ class Period{
     return (key.from== from  && key.to == to);
   }
 
-  
+  String toString(){
+    return "${from.toIso8601String()} - ${to.toIso8601String()}"; 
+  }
 }
 
 class TimeseriesCatalog{
@@ -86,30 +120,9 @@ class TimeseriesCatalog{
   void addAnalysis( TimeseriesAssembly assembly){
     
       Map<DateTime, Period> analayisMap = catalogue.putIfAbsent(assembly.node, ()  => {});      
-      analayisMap[assembly.analysis]= assembly.timePeriodOfEditions;
+     analayisMap[assembly.analysis]= assembly.timePeriodOfEditions;
   }  
 }
 
 
 
-
-List<Edition> _filter( List<Edition> editions, DateTime validFrom, Duration period ){
-  
-    if(( validFrom == null)|| (period == null)){
-      return editions;
-    }
-  
-    DateTime validTo = validFrom.add( period);
-    
-    return editions.where((edition){
-      
-      
-      if( !edition.validTo.isBefore(validFrom)){
-        if( !edition.validFrom.isAfter(validTo)){
-          return true;
-        }
-      }
-      return false;
-        
-    }).toList();
-}

@@ -1,8 +1,7 @@
 import 'package:unittest/unittest.dart';
 import '../bin/timeseries_model.dart';
 import 'package:jsonx/jsonx.dart' as jsonx;
-
-
+import'../bin/json_converters.dart';
 
 TimeseriesNode node = new TimeseriesNode(
     "City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
@@ -12,14 +11,29 @@ DateTime am2 = new DateTime.utc(2013, 4, 1, 2, 0);
 DateTime am3 = new DateTime.utc(2013, 4, 1, 3, 0);
 DateTime am4 = new DateTime.utc(2013, 4, 1, 4, 0);
 
+
+
 void main() {
+
+  setUpJsonConverters();
+  
   test("JSON encode node", () {
     String json = jsonx.encode(node, indent: ' ');
     expect(json, equalsIgnoringWhitespace(jsonNode));
   });
+  group("TimeseriesNode", (){
+     
+     test("convert to namespace string", (){
+       expect( node.toNamespace(), equals( "City Town & Spot Forecasts/PDF-PROFOUND/TTTTT/01492.INTL"));       
+     });
+     test("convert from namespace string", (){
+       expect( new TimeseriesNode.fromNamespace("City Town & Spot Forecasts/PDF-PROFOUND/TTTTT/01492.INTL"), equals( node));       
+     });
+     
+   });
+ 
   group("Timeseries Analysis", () {
   
-
     group("Filter Editions of spot data", () {
       List<Edition> editions = [
         new Edition.createMean(analysisAt, am1, am1, {}),
@@ -134,17 +148,23 @@ void main() {
       expect( analysisMap[ analysisAt2], equals( new Period.create( am2, am2)));         
       
     });
-    solo_test("Json encoding of catalog", (){
-
+    test("Json encoding of catalog", (){
+               
       TimeseriesCatalog catalog = new TimeseriesCatalog();
       TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am1, {}),
         ]);      
       catalog.addAnalysis( assembly);
-
-      print( jsonx.encode( catalog)); 
+      String json = jsonx.encode( catalog, indent:' ');
+      expect( json,equals(  jsonCatalog)); 
     });
-
+    test( "Json decoding of catalog", (){
+      TimeseriesCatalog catalog = jsonx.decode( jsonCatalog, type:TimeseriesCatalog);
+      //test it by coverting it back again
+      String json = jsonx.encode( catalog, indent:' ');
+      expect( json,equals(  jsonCatalog)); 
+      
+    });
   });
 }
 
@@ -155,3 +175,15 @@ String jsonNode = """{
  "locationName": "01492",
  "locationSuffix": "INTL"
 }""";
+
+String jsonCatalog="""{
+ "catalog": {
+  "City Town & Spot Forecasts/PDF-PROFOUND/TTTTT/01492.INTL": {
+   "2013-04-01T00:00:00.000Z": {
+    "from": "2013-04-01T01:00:00.000Z",
+    "to": "2013-04-01T01:00:00.000Z"
+   }
+  }
+ }
+}""";
+

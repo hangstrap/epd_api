@@ -6,6 +6,8 @@ import 'package:shelf/shelf_io.dart' as io;
 
 import "timeseries_data_cache.dart";
 import "caf_file_retriever.dart";
+import'json_converters.dart';
+
 import "timeseries_model.dart";
 import "dart:async";
 import "dart:io";
@@ -35,8 +37,7 @@ List<TimeseriesNode> extractNodes(List<String> pathSegments, Map<String, String>
  
 void main(List<String> args) {
 
-  //Insure json encodes DateTimes in ISO 8601 format
-  objectToJsons[DateTime] = (DateTime input) => input.toIso8601String();
+  setUpJsonConverters();
   
   CafFileRetriever retriever = new CafFileRetriever("data");
   TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres);
