@@ -9,8 +9,11 @@ dependencies:
   http_server: any
   intl: any
   jsonx: any
-  quiver: '>=0.21.3 <0.22.0'
+  rpc: any
+  quiver: any
   shelf: any
 dev_dependencies:
   mock: any
   unittest: any
+dependency_overrides:
+  quiver: '>=0.21.3'  
