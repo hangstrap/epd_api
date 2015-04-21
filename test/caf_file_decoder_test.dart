@@ -26,7 +26,7 @@ main() {
     test("check pattern for a 99xxx station", () {
 
       DateTime analysis = new DateTime.utc(2015, 2, 15, 3, 0);
-      TimeseriesNode node = new TimeseriesNode("City, Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "99647", "INTL");
+      TimeseriesNode node = new TimeseriesNode.create("City, Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "99647", "INTL");
 
       String cafFileName = caf.fileNameForTimeseriesAnalysis(node, analysis);
       expect(cafFileName, equals("CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.99647-INTL.caf"));

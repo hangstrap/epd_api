@@ -10,7 +10,8 @@ class TimeseriesNode{
   String locationName;
   String locationSuffix;
   
-  TimeseriesNode( this.product, this.model, this.element, this.locationName, this.locationSuffix);
+  TimeseriesNode();
+  TimeseriesNode.create( this.product, this.model, this.element, this.locationName, this.locationSuffix);
    
   TimeseriesNode.fromNamespace( String namespace){
     List<String> tokens = namespace.split("/");
@@ -41,7 +42,9 @@ class Edition{
   DateTime validFrom;
   DateTime validTo;
 
-  Map datum;
+  Map<String, Object> datum;
+  
+  Edition();
   
   Edition.createMean ( this.analysisAt, this.validFrom, this.validTo, this.datum );     
 }
@@ -52,7 +55,8 @@ class TimeseriesAssembly{
   DateTime analysis;
   List<Edition> editions;
   
-  TimeseriesAssembly( this.node, this.analysis, this.editions);
+  TimeseriesAssembly();
+  TimeseriesAssembly.create( this.node, this.analysis, this.editions);
   
   TimeseriesAssembly.filter( TimeseriesAssembly orignal, DateTime validFrom, Duration period){
     this.node = orignal.node;

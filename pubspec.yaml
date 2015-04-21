@@ -9,11 +9,12 @@ dependencies:
   http_server: any
   intl: any
   jsonx: any
-  rpc: any
   quiver: any
+  rpc: any
   shelf: any
+  shelf_route: any
 dev_dependencies:
   mock: any
   unittest: any
 dependency_overrides:
-  quiver: '>=0.21.3'  
+  quiver: '>=0.21.3'

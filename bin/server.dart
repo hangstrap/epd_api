@@ -28,7 +28,7 @@ List<TimeseriesNode> extractNodes(List<String> pathSegments, Map<String, String>
     elements.forEach((element) {
       String locationName = location.split("\.")[0];
       String locationSuffix = location.split("\.")[1];      
-      result.add( new TimeseriesNode(product, model, element, locationName, locationSuffix));
+      result.add( new TimeseriesNode.create(product, model, element, locationName, locationSuffix));
     });
   });
   

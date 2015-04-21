@@ -1,5 +1,5 @@
 import 'package:unittest/unittest.dart';
-import 'package:mock/mock.dart';
+
 import '../bin/timeseries_model.dart';
 import '../bin/timeseries_data_cache.dart';
 import 'dart:async';
@@ -8,8 +8,8 @@ DateTime analysisAt = new DateTime.utc(2013, 04, 07, 20, 23);
 
 void main() {
   group("getTimeseries", () {
-    TimeseriesNode node = new TimeseriesNode("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
-    TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt, []);
+    TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
+    TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, []);
 
     DateTime analysis = new DateTime.now();
     DateTime validFrom = new DateTime.now();
@@ -58,12 +58,12 @@ void main() {
     });
 
     group("getTimeseriesSet", () {
-      TimeseriesNode node1 = new TimeseriesNode("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
+      TimeseriesNode node1 = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
 
-      TimeseriesNode node2 = new TimeseriesNode("City Town & Spot Forecasts", "PDF-PROFOUND", "BBBBB", "01492", "INTL");
+      TimeseriesNode node2 = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "BBBBB", "01492", "INTL");
 
-      TimeseriesAssembly assembly1 = new TimeseriesAssembly(node1, analysisAt, []);
-      TimeseriesAssembly assembly2 = new TimeseriesAssembly(node2, analysisAt, []);
+      TimeseriesAssembly assembly1 = new TimeseriesAssembly.create(node1, analysisAt, []);
+      TimeseriesAssembly assembly2 = new TimeseriesAssembly.create(node2, analysisAt, []);
 
       DateTime analysis = new DateTime.now();
       DateTime validFrom = new DateTime.now();

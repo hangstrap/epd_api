@@ -21,7 +21,7 @@ TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {
       editions.add(toEdition(block, analysis));
     }
   });
-  return new TimeseriesAssembly(node, analysis, editions);
+  return new TimeseriesAssembly.create(node, analysis, editions);
 }
 
 
@@ -70,7 +70,7 @@ TimeseriesNode toTimeseriesNode(List<String> cafHeaderBlock) {
   String locationSuffix = _findToken("station-99suffix", cafHeaderBlock);
 
 
-  return new TimeseriesNode(product, model, element, locationName, locationSuffix);
+  return new TimeseriesNode.create(product, model, element, locationName, locationSuffix);
 
 }
 Edition toEdition(List<String> cafBlock, DateTime analysis) {

@@ -85,6 +85,14 @@ packages:
     description: shelf
     source: hosted
     version: "0.6.1+1"
+  shelf_path:
+    description: shelf_path
+    source: hosted
+    version: "0.1.2"
+  shelf_route:
+    description: shelf_route
+    source: hosted
+    version: "0.12.0"
   source_span:
     description: source_span
     source: hosted

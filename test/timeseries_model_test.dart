@@ -3,7 +3,7 @@ import '../bin/timeseries_model.dart';
 import 'package:jsonx/jsonx.dart' as jsonx;
 import'../bin/json_converters.dart';
 
-TimeseriesNode node = new TimeseriesNode(
+TimeseriesNode node = new TimeseriesNode.create(
     "City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
 DateTime analysisAt = new DateTime.utc(2013, 4, 1, 00, 00);
 DateTime am1 = new DateTime.utc(2013, 4, 1, 1, 0);
@@ -40,7 +40,7 @@ void main() {
         new Edition.createMean(analysisAt, am2, am2, {}),
         new Edition.createMean(analysisAt, am3, am3, {}),
       ];
-      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt, editions);  
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, editions);  
       
       test("Null does not filter", () {
         TimeseriesAssembly  result = new  TimeseriesAssembly.filter(assembly, null, null);
@@ -73,7 +73,7 @@ void main() {
         new Edition.createMean(analysisAt, am2, am3, {}),
         new Edition.createMean(analysisAt, am3, am4, {}),
       ];
-      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt, editions);  
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, editions);  
       test("Null does not filter", () {
         List<Edition> result = new  TimeseriesAssembly.filter(assembly,null, null).editions;
         expect(result, equals(editions));
@@ -101,7 +101,7 @@ void main() {
 
     test("Add a single Analysis with a single spot edition", (){
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am1, {})]);
       catalog.addAnalysis( assembly);
       
@@ -115,7 +115,7 @@ void main() {
 
     test("Add a single Analysis with a two interval period editions", (){
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am2, {}),
         new  Edition.createMean(analysisAt, am2, am3, {})
         ]);
@@ -130,13 +130,13 @@ void main() {
 
     test("Add a two Analysis for the same node", (){
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am1, {}),
         ]);      
       catalog.addAnalysis( assembly);
       
       DateTime analysisAt2 = analysisAt.add( new Duration(hours:1));
-      TimeseriesAssembly assembly2 = new TimeseriesAssembly(node, analysisAt2,[ 
+      TimeseriesAssembly assembly2 = new TimeseriesAssembly.create(node, analysisAt2,[ 
         new  Edition.createMean(analysisAt, am2, am2, {}),
         ]);
        catalog.addAnalysis(assembly2);
@@ -151,7 +151,7 @@ void main() {
     test("Json encoding of catalogue", (){
                
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly(node, analysisAt,[ 
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt,[ 
         new  Edition.createMean(analysisAt, am1, am1, {}),
         ]);      
       catalog.addAnalysis( assembly);

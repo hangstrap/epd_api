@@ -6,7 +6,7 @@ void main() {
   CafFileRetriever retriever = new CafFileRetriever("data");
 
   test("Load real data", () async {
-    TimeseriesNode node = new TimeseriesNode("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
+    TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
 
     DateTime analysis = new DateTime.utc(2015, 02, 15, 03, 00);
 
