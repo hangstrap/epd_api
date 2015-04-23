@@ -19,9 +19,15 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
         throw "web request failed with code of ${response.statusCode}";
       }
 
+      print("downloaded caf file ${link.url}");
+      
       String contents = response.body;
-      String fileName = deconder.fileNameForCafFile(contents.split("\n"));
-
+      String fileName ;
+      try{
+        fileName = deconder.fileNameForCafFile(contents.split("\n"));
+      }catch( e){
+        print( "could not parse ${link.url} due to ${e}");
+      }
       File file = new File(destination.path + fileName);
 
       Directory newParent = file.parent;
@@ -30,14 +36,14 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
       }
 
       await file.writeAsString(contents);
-      print("downloaded caf file ${file}");
+      print("saved caf file ${file}");
     } catch (onError) {
-      print("error downloading caf file ${link.url} ${onError}");
+      print("error downloading caf file ${link.url} error='${onError}'");
     }
   }
 
   bool foundLink(crawler.Link link) {
-    print("found link ${link.name}");
+ //  print("found link ${link.name}");
     DateTime lastModified = df.parse(link.lastModifiedAt);
     if (lastModified.isBefore(timeOfLastFileDownloaded)) {
       return false;
