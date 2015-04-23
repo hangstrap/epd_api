@@ -17,6 +17,8 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
   
   downloadCafFile(crawler.Link link) async {
     try {
+      
+//      print("downloading caf file from ${link.url}");      
       http.Response response = await pool.withResource(() => http.get(link.url));
       
     
@@ -24,7 +26,7 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
         throw "web request failed with code of ${response.statusCode}";
       }
 
-      print("downloaded caf file ${link.url}");
+//      print("downloaded caf file ${link.url}");
       
       String contents = response.body;
       String fileName ;
@@ -41,7 +43,7 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
       }
 
       await file.writeAsString(contents);
-      print("saved caf file ${file}");
+//      print("saved caf file ${file}");
     } catch (onError) {
       print("error downloading caf file ${link.url} error='${onError}'");
     }
@@ -61,7 +63,6 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
     }
 
     if (link.name.endsWith('.caf')) {
-      print("downloading caf file from ${link.url}");
       downloadCafFile(link);
     }
     return true;
@@ -77,5 +78,5 @@ void main() {
   DateTime timeOfLastFileDownloaded = new DateTime(2015);
   Directory destination = new Directory("/temp/epdapi/");
 
-  downloaderCafFilesFromWebSite(url, destination, timeOfLastFileDownloaded);
+  downloaderCafFilesFromWebSite(url, destination, timeOfLastFileDownloaded).then( (dt) => "Finished downloaded all files");
 }
