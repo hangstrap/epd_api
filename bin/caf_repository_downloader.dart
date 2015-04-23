@@ -7,14 +7,19 @@ import 'dart:core';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:pool/pool.dart';
 
 Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, DateTime timeOfLastFileDownloaded) async {
   DateFormat df = new DateFormat("d-MMM-y HH:mm");
   DateTime latestLastModifiedTime = timeOfLastFileDownloaded;
 
+  Pool pool = new Pool(10);
+  
   downloadCafFile(crawler.Link link) async {
     try {
-      http.Response response = await http.get(link.url);
+      http.Response response = await pool.withResource(() => http.get(link.url));
+      
+    
       if (response.statusCode != 200) {
         throw "web request failed with code of ${response.statusCode}";
       }

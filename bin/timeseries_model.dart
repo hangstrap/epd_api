@@ -42,7 +42,7 @@ class Edition{
   DateTime validFrom;
   DateTime validTo;
 
-  Map<String, Object> datum;
+  Map<String, double> datum;
   
   Edition();
   

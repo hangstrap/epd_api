@@ -9,6 +9,7 @@ dependencies:
   http_server: any
   intl: any
   jsonx: any
+  pool: any
   quiver: any
   rpc: any
   shelf: any
