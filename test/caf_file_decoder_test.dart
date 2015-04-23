@@ -1,8 +1,7 @@
 import 'package:unittest/unittest.dart';
 import 'package:mock/mock.dart';
+import 'matchers.dart';
 
-
-//import '../bin/caf_file_retriever.dart' as caf;
 import '../bin/caf_file_decoder.dart' as caf;
 import '../bin/timeseries_model.dart';
 
@@ -100,6 +99,20 @@ main() {
         expect( assembly.analysis, equals( analysis));
         checkEdition( assembly.editions[0], analysis);
       });
+    });
+    
+    test( "throw meaningful error message when token missing", (){
+      List<String> lines = ["aaaa=aaaa,bbbb=bbbb"];
+      expect(() =>  caf.toTimeseriesNode( lines),  throwsA( formatExceptionMatching( "Could not find token 'product'"))); 
+      
+      
+    });
+    
+    test( "", (){
+      List<String> lines = ["aa=1", "bb=2" ,"cc=3"];
+
+      String line = lines.firstWhere((String line) => line.indexOf("bb") == 0, orElse: throw "could not find 'bb'");
+      expect( line, equals( "bb=2"));
     });
   });
 
