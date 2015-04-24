@@ -119,9 +119,8 @@ String _createLocationSuffix(String name, String suffix) {
 
 String _findToken(String token, List<String> lines) {
   try {
-    String line = lines.firstWhere((String line) => line.indexOf(token) == 0);
-//TODO fix this stupid exception  
-//    String line = lines.firstWhere((String line) => line.indexOf(token) == 0, orElse : throw new FormatException( "Could not find tokean ${token}"));
+   
+    String line = lines.firstWhere((String line) => line.indexOf(token) == 0, orElse : ()=> throw new FormatException( "Could not find tokean ${token}"));
     return line.substring(line.indexOf("=") + 1);
   } catch (e) {
     throw new FormatException("Could not find token '${token}'");
