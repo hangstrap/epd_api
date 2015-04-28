@@ -59,13 +59,14 @@ main() {
     test("async version", () async {
       MockTimeseriesCatalogue catalogue = new MockTimeseriesCatalogue();
       catalogue.when(callsTo("isDownloaded")).thenReturn(false, 0);
-
-      await downloader.downloaderCafFilesFromWebSite(uri, outputDirectory, catalogue);
+//TODO make this cleaner!
+      expect( await downloader.downloaderCafFilesFromWebSite(uri, outputDirectory, catalogue), same( catalogue));
 
       File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.03772.caf');
       expect(output.existsSync(), isTrue);
 
       //catalog should have been updated
+      //TODO check parameters passed to method
       catalogue.getLogs(callsTo("addAnalysis")).verify(happenedExactly(1));
     });
 

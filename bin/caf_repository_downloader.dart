@@ -10,7 +10,7 @@ import 'dart:async';
 import 'package:pool/pool.dart';
 import "package:quiver/async.dart";
 
-Future downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesCatalogue catalog) async {
+Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesCatalogue catalog) async {
 
   FutureGroup fg =new FutureGroup();
   
@@ -78,8 +78,10 @@ Future downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesC
 
   await crawler.crawl(url, foundLink);
 
+  //wait for everything to finish
+  await fg.future; 
   
-  return fg.future; 
+  return new Future.value( catalog);
 }
 /**
 void main() {
