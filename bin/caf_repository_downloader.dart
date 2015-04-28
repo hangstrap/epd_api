@@ -8,12 +8,17 @@ import 'dart:core';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:pool/pool.dart';
+import "package:quiver/async.dart";
 
 Future downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesCatalogue catalog) async {
 
-  Pool pool = new Pool(10);
+  FutureGroup fg =new FutureGroup();
   
-  downloadCafFile(crawler.Link link) async {
+  Pool pool = new Pool(10);
+
+  
+  
+  Future downloadCafFile(crawler.Link link) async {
     try {
       
       print("downloading caf file from ${link.url}");      
@@ -46,6 +51,7 @@ Future downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesC
       
       catalog.addAnalysis( deconder.toTimeseiesAssembly( contentLines), link.url);
       
+      return new Future.value();
       
     } catch (onError) {
       print("error downloading caf file ${link.url} error='${onError}'");
@@ -62,7 +68,7 @@ Future downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesC
     if (link.name.endsWith('.caf')) {
       
       if( !catalog.isDownloaded( link.url)){
-        downloadCafFile(link);
+        fg.add( downloadCafFile(link));
       }else{
         print( "has been download");
       }
@@ -73,7 +79,7 @@ Future downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesC
   await crawler.crawl(url, foundLink);
 
   
-  return new Future.value();
+  return fg.future; 
 }
 /**
 void main() {
