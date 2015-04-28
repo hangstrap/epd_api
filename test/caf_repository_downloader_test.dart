@@ -1,10 +1,15 @@
 import 'package:unittest/unittest.dart';
 
 import "../bin/caf_repository_downloader.dart" as downloader;
+import '../bin/timeseries_model.dart';
 import 'dart:io';
 import 'dart:async';
+import "package:mock/mock.dart";
 
 import 'package:http_server/http_server.dart' show VirtualDirectory;
+
+@proxy
+class MockTimeseriesCatalogue extends Mock implements TimeseriesCatalogue{}
 
 main() {
   group("main", () {
@@ -39,32 +44,38 @@ main() {
 
     Uri uri = new Uri.http("localhost:8080", "DLITE.html");
     
-    
-    test( "Last parsing was a  long time ago", (){
-        DateTime lastDownloaded;
+    test( "Empty catalog will download all caf files", () async {
+        MockTimeseriesCatalogue catalogue =  new MockTimeseriesCatalogue();
+        catalogue.when( callsTo( "isDownloaded")).thenReturn( false, 0);
 
-        downloader.downloaderCafFilesFromWebSite( uri, output, new DateTime( 2000)).then( (DateTime on){
-          lastDownloaded = on;
-        });
+
+        downloader.downloaderCafFilesFromWebSite( uri, output, catalogue);
         
         Duration d = new Duration( seconds:1);
         return new Future.delayed(d).then((_){
           File output = new File( 'temp/CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.03772.caf');
           expect( output.existsSync(), isTrue);
-          expect( lastDownloaded, equals( new DateTime(2015,04,01,01,19)));
+          
+          //catalog should have been updated
+          catalogue.getLogs( callsTo( "addAnalysis")).verify(happenedExactly(1));
         });    
     });
-    test( "No files have been downloaded since last parse", (){
-        DateTime lastDownloaded;
-        downloader.downloaderCafFilesFromWebSite( uri, output, new DateTime( 2015, 04,01,01,20)).then( (DateTime on){
-          lastDownloaded = on;
-        });
+    
+    test( "No files have been downloaded as catalog contains entry", (){
+ 
+      MockTimeseriesCatalogue catalogue =  new MockTimeseriesCatalogue();
+       catalogue.when( callsTo( "isDownloaded")).thenReturn( true);
+
+        downloader.downloaderCafFilesFromWebSite( uri, output, catalogue);
         
         Duration d = new Duration( seconds:1);
         return new Future.delayed(d).then((_){
           File output = new File( 'temp/CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.03772.caf');
           expect( output.existsSync(), isFalse);
-          expect( lastDownloaded, equals( new DateTime(2015,04,01,01,20)));
+
+          //catalog should not be updated
+          catalogue.getLogs( callsTo( "addAnalysis")).verify(neverHappened);
+
         });
     });
     

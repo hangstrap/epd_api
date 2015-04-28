@@ -2,23 +2,21 @@ library caf_repository_downloader;
 
 import 'web_site_listing_crawler.dart' as crawler;
 import 'caf_file_decoder.dart' as deconder;
+import 'timeseries_model.dart';
 import "dart:io";
 import 'dart:core';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:pool/pool.dart';
 
-Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, DateTime timeOfLastFileDownloaded) async {
-  DateFormat df = new DateFormat("d-MMM-y HH:mm");
-  DateTime latestLastModifiedTime = timeOfLastFileDownloaded;
+Future downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesCatalogue catalog) async {
 
   Pool pool = new Pool(10);
   
   downloadCafFile(crawler.Link link) async {
     try {
       
-//      print("downloading caf file from ${link.url}");      
+      print("downloading caf file from ${link.url}");      
       http.Response response = await pool.withResource(() => http.get(link.url));
       
     
@@ -26,12 +24,14 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
         throw "web request failed with code of ${response.statusCode}";
       }
 
-//      print("downloaded caf file ${link.url}");
+      print("downloaded caf file ${link.url}");
       
       String contents = response.body;
+      List<String> contentLines= contents.split( "\n");
       String fileName ;
+      
       try{
-        fileName = deconder.fileNameForCafFile(contents.split("\n"));
+        fileName = deconder.fileNameForCafFile(contentLines);
       }catch( e){
         print( "could not parse ${link.url} due to ${e}");
       }
@@ -43,36 +43,39 @@ Future<DateTime> downloaderCafFilesFromWebSite(Uri url, Directory destination, D
       }
 
       await file.writeAsString(contents);
-//      print("saved caf file ${file}");
+      
+      catalog.addAnalysis( deconder.toTimeseiesAssembly( contentLines), link.url);
+      
+      
     } catch (onError) {
       print("error downloading caf file ${link.url} error='${onError}'");
     }
   }
 
   bool foundLink(crawler.Link link) {
- //  print("found link ${link.name}");
-    DateTime lastModified = df.parse(link.lastModifiedAt);
-    if (lastModified.isBefore(timeOfLastFileDownloaded)) {
-      return false;
-    }
-    if (latestLastModifiedTime.isBefore(lastModified)) {
-      latestLastModifiedTime = lastModified;
-    }
+
+    print("found link ${link.name}");
     if (link.isDirectory) {
       return true;
     }
 
     if (link.name.endsWith('.caf')) {
-      downloadCafFile(link);
+      
+      if( !catalog.isDownloaded( link.url)){
+        downloadCafFile(link);
+      }else{
+        print( "has been download");
+      }
     }
     return true;
   }
 
   await crawler.crawl(url, foundLink);
 
-  return latestLastModifiedTime;
+  
+  return new Future.value();
 }
-
+/**
 void main() {
   Uri url = new Uri.http("amps-caf-output.met.co.nz", "/ICE/DLITE");
   DateTime timeOfLastFileDownloaded = new DateTime(2015);
@@ -80,3 +83,4 @@ void main() {
 
   downloaderCafFilesFromWebSite(url, destination, timeOfLastFileDownloaded).then( (dt) => "Finished downloaded all files");
 }
+*/
