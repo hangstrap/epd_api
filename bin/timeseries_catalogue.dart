@@ -6,17 +6,16 @@ import "timeseries_model.dart";
 
 
 class CatalogueItem{
-  TimeseriesNode node;
   Uri source;
   DateTime analyis;
   Period fromTo;
-  
-  CatalogueItem( this.node, this.source, this.analyis, this.fromTo);
+  CatalogueItem.create( this.source, this.analyis, this.fromTo);
+  CatalogueItem();
 }
 
 class TimeseriesCatalogue {
   Map<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue = {};
-  Map<Uri, CatalogueItem> itemsDownloaded = {};
+  List<Uri> itemsDownloaded = [];
 
   int get numberOfNodes => catalogue.length;
 
@@ -32,15 +31,15 @@ class TimeseriesCatalogue {
 
   void addAnalysis(TimeseriesAssembly assembly, Uri source) {
 
-    CatalogueItem item = new CatalogueItem(assembly.node, source, assembly.analysis, assembly.timePeriodOfEditions);
+    CatalogueItem item = new CatalogueItem.create(source, assembly.analysis, assembly.timePeriodOfEditions);
     
-    itemsDownloaded[ source] =  item;
+    itemsDownloaded.add( source);
     
     Map<DateTime, CatalogueItem> analayisMap = catalogue.putIfAbsent(assembly.node, () => {});
     analayisMap[assembly.analysis] = item;
   }
   
   bool isDownloaded(Uri source) {
-    return itemsDownloaded.containsValue( source);
+    return itemsDownloaded.contains(source);
   }
 }

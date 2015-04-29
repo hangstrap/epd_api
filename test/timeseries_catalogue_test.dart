@@ -27,8 +27,7 @@ main(){
       expect(catalog.numberOfNodes, equals(1));
       Map<DateTime, CatalogueItem> analysisMap = catalog.analysisFor(node);
       expect(analysisMap.length, equals(1));
-      expect(analysisMap[analysisAt].analyis, equals(analysisAt));
-      expect(analysisMap[analysisAt].node, equals(node));      
+      expect(analysisMap[analysisAt].analyis, equals(analysisAt));      
       expect(analysisMap[analysisAt].fromTo, equals(new Period.create(am1, am1)));
       
     });
@@ -42,7 +41,6 @@ main(){
       Map<DateTime, CatalogueItem> analysisMap = catalog.analysisFor(node);
       expect(analysisMap.length, equals(1));
       expect(analysisMap[analysisAt].analyis, equals(analysisAt));
-      expect(analysisMap[analysisAt].node, equals(node));      
       expect(analysisMap[analysisAt].fromTo, equals(new Period.create(am1, am3)));
     });
 
@@ -92,8 +90,11 @@ String jsonCatalog = """{
  "catalogue": {
   "City Town & Spot Forecasts/PDF-PROFOUND/TTTTT/01492.INTL": {
    "2013-04-01T00:00:00.000Z": {
-    "from": "2013-04-01T01:00:00.000Z",
-    "to": "2013-04-01T01:00:00.000Z"
+    "fromTo": {
+     "from": "2013-04-01T01:00:00.000Z",
+     "to": "2013-04-01T01:00:00.000Z"
+    },
+    "source": "http://caf-server/aCafFile.caf"
    }
   }
  }
