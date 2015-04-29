@@ -90,6 +90,7 @@ class TimeseriesAssembly {
   }
 }
 
+
 class TimeseriesLatestSeries {
   TimeseriesNode node;
   DateTime latestAt;
@@ -97,6 +98,7 @@ class TimeseriesLatestSeries {
 
   TimeseriesLatestSeries(this.node, this.latestAt, this.editions);
 }
+
 
 class Period {
   DateTime from;
@@ -119,26 +121,3 @@ class Period {
   }
 }
 
-class TimeseriesCatalogue {
-  Map<TimeseriesNode, Map<DateTime, Period>> catalogue = {};
-
-  int get numberOfNodes => catalogue.length;
-
-  TimeseriesCatalogue();
-
-  Map<DateTime, Period> analysisFor(TimeseriesNode node) {
-    return catalogue[node];
-  }
-
-  Period periodFor(TimeseriesNode node, DateTime analysis) {
-    return catalogue[node.toNamespace()][analysis.toIso8601String()];
-  }
-
-  void addAnalysis(TimeseriesAssembly assembly, Uri source) {
-    Map<DateTime, Period> analayisMap = catalogue.putIfAbsent(assembly.node, () => {});
-    analayisMap[assembly.analysis] = assembly.timePeriodOfEditions;
-  }
-  bool isDownloaded(Uri source) {
-    return false;
-  }
-}

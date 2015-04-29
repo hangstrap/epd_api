@@ -1,6 +1,7 @@
 library json_converters;
 
 import 'package:jsonx/jsonx.dart' as jsonx;
+import 'timeseries_catalogue.dart';
 import 'timeseries_model.dart';
 
 
@@ -13,16 +14,15 @@ void setUpJsonConverters(){
   jsonx.objectToJsons[ TimeseriesCatalogue] = (TimeseriesCatalogue source) {          
 
     Map result = {};
-    Map catalogue = {};
+    List catalogue = [];
     result[ "catalogue"] = catalogue;  
     
-    source.catalogue.forEach( (TimeseriesNode node, Map<DateTime, Period> analysiss){
+    source.catalogue.forEach( (TimeseriesNode node, Map<DateTime, CatalogueItem> analysiss){
+
       
-      Map<String, Period> analysisMap = {};
-      catalogue[ node.toNamespace()] = analysisMap;
-      analysiss.forEach( (DateTime analysis, Period period){
-          analysisMap[ analysis.toIso8601String()] = period;
-      });
+    analysiss.forEach( (DateTime analysis, CatalogueItem item){
+      catalogue.add(item);  
+    });
     });
     return result;
   
@@ -33,20 +33,20 @@ void setUpJsonConverters(){
     
     TimeseriesCatalogue result = new TimeseriesCatalogue();
     
-    Map catalogMap = rawMap ["catalogue"];
-    
-    catalogMap.forEach(( String nodeKey, Map  analysisis){
-      TimeseriesNode node = new TimeseriesNode.fromNamespace( nodeKey);
-      result.catalogue[node]=  {};
-      
-      analysisis.forEach( (String analysisStr, Map periodMap ){
-        
-        DateTime analysis = DateTime.parse(analysisStr);
-        Period period = jsonx.decode( jsonx.encode(periodMap), type:Period);
-        result.catalogue[node][analysis]= period;
-      });
-      
-    });
+//    Map catalogMap = rawMap ["catalogue"];
+//    
+//    catalogMap.forEach(( String nodeKey, Map  analysisis){
+//      TimeseriesNode node = new TimeseriesNode.fromNamespace( nodeKey);
+//      result.catalogue[node]=  {};
+//      
+//      analysisis.forEach( (String analysisStr, Map periodMap ){
+//        
+//        DateTime analysis = DateTime.parse(analysisStr);
+//        Period period = jsonx.decode( jsonx.encode(periodMap), type:Period);
+//        result.catalogue[node][analysis]= period;
+//      });
+//      
+//    });
     
     return result;
   };

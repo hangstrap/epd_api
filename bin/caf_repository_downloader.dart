@@ -2,7 +2,7 @@ library caf_repository_downloader;
 
 import 'web_site_listing_crawler.dart' as crawler;
 import 'caf_file_decoder.dart' as deconder;
-import 'timeseries_model.dart';
+import 'timeseries_catalogue.dart';
 import "dart:io";
 import 'dart:core';
 import 'package:http/http.dart' as http;

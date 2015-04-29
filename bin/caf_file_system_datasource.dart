@@ -2,7 +2,7 @@ library caf_files_system_datasource;
 
 import "dart:io";
 import "dart:async";
-import "timeseries_model.dart";
+import "timeseries_catalogue.dart";
 import "package:quiver/io.dart";
 import "caf_file_decoder.dart" as decoder;
 
@@ -27,7 +27,7 @@ Future<TimeseriesCatalogue>  generateCataloge (Directory source) async {
       File cafFile = f;
 
       cafFile.readAsLines().then((cafFileContents) {
-        result.addAnalysis(decoder.toTimeseiesAssembly(cafFileContents));
+        result.addAnalysis(decoder.toTimeseiesAssembly(cafFileContents), new Uri.file( f.path));
       });
     }
     return new Future.value(true);

@@ -1,7 +1,7 @@
 import 'package:unittest/unittest.dart';
 
 import "../bin/caf_repository_downloader.dart" as downloader;
-import '../bin/timeseries_model.dart';
+import '../bin/timeseries_catalogue.dart';
 import 'dart:io';
 import 'dart:async';
 import "package:mock/mock.dart";
