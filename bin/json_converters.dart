@@ -5,7 +5,7 @@ import 'timeseries_catalogue.dart';
 import 'timeseries_model.dart';
 
 void setUpJsonConverters() {
-  
+  print( "Setting up Json Coverters");
   jsonx.objectToJsons[DateTime] = (DateTime input) => input.toIso8601String();
   jsonx.jsonToObjects[DateTime] = (String input) => DateTime.parse(input);
   

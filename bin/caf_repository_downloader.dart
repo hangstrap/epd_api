@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:pool/pool.dart';
 import "package:quiver/async.dart";
+import 'package:jsonx/jsonx.dart' as jsonx;
+import '../bin/json_converters.dart';
 
 Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(Uri url, Directory destination, TimeseriesCatalogue catalog) async {
 
@@ -83,12 +85,42 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(Uri url, Directory des
   
   return new Future.value( catalog);
 }
-/**
+
+
+Future<String> download( Uri uri, Directory baseDir) async {
+  
+  File catalogFile = new File( baseDir.path +"/catalog.json");
+  
+  TimeseriesCatalogue catalog = await _load( catalogFile);
+  
+  catalog = await downloaderCafFilesFromWebSite(uri, baseDir,  catalog);
+  
+  return _save( catalog, catalogFile);
+}
+
+Future<TimeseriesCatalogue> _load( File sourceFile) async{
+
+    if( await sourceFile.exists()){
+      
+      String contents = await sourceFile.readAsString();
+      return jsonx.decode(contents, type: TimeseriesCatalogue);
+    }
+    return new TimeseriesCatalogue();
+}
+
+Future<String> _save( TimeseriesCatalogue catalogue, File catalogueFle) async{
+  
+  String contents = jsonx.encode( catalogue, indent: ' ');
+  await catalogueFle.writeAsString( contents);
+  return contents;
+}
+
 void main() {
+  
+  setUpJsonConverters();
+  
   Uri url = new Uri.http("amps-caf-output.met.co.nz", "/ICE/DLITE");
-  DateTime timeOfLastFileDownloaded = new DateTime(2015);
   Directory destination = new Directory("/temp/epdapi/");
 
-  downloaderCafFilesFromWebSite(url, destination, timeOfLastFileDownloaded).then( (dt) => "Finished downloaded all files");
+  print( download(url, destination));
 }
-*/
