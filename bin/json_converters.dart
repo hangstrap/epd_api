@@ -44,6 +44,7 @@ void setUpJsonConverters() {
         DateTime analysis = DateTime.parse(analysisStr);
         CatalogueItem item = jsonx.decode( jsonx.encode(periodMap), type:CatalogueItem);
         result.catalogue[node][analysis]= item;
+        result.itemsDownloaded.add( item.source);
       });
 
     });

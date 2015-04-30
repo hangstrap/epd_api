@@ -53,6 +53,8 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(Uri url, Directory des
       
       catalog.addAnalysis( deconder.toTimeseiesAssembly( contentLines), link.url);
       
+      print( "processed file ${file.path}");
+      
       return new Future.value();
       
     } catch (onError) {
@@ -115,12 +117,15 @@ Future<String> _save( TimeseriesCatalogue catalogue, File catalogueFle) async{
   return contents;
 }
 
-void main() {
+Future main() async {
   
   setUpJsonConverters();
   
-  Uri url = new Uri.http("amps-caf-output.met.co.nz", "/ICE/DLITE");
+  Uri url = new Uri.http("amps-caf-output.met.co.nz", "/ICE");
   Directory destination = new Directory("/temp/epdapi/");
 
-  print( download(url, destination));
+  await download(url, destination);
+   
+  print( "Download finished");
+  return null;
 }
