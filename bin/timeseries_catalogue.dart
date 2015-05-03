@@ -2,7 +2,7 @@ library timeseries_catalogue;
 
 
 import "timeseries_model.dart";
-
+import 'utils.dart';
 
 
 class CatalogueItem{

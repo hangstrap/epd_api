@@ -2,6 +2,7 @@ import 'package:unittest/unittest.dart';
 import '../bin/caf_file_system_datasource.dart';
 import '../bin/timeseries_model.dart';
 import '../bin/timeseries_catalogue.dart';
+import '../bin/utils.dart';
 
 import 'dart:io';
 

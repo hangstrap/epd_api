@@ -3,7 +3,7 @@ import "../bin/timeseries_model.dart";
 import 'package:unittest/unittest.dart';
 import '../bin/json_converters.dart';
 import 'package:jsonx/jsonx.dart' as jsonx;
-
+import '../bin/utils.dart';
 
 
 main(){

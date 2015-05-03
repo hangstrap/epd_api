@@ -1,6 +1,7 @@
 library timeseries_model;
 
 import "package:quiver/core.dart";
+import 'utils.dart';
 
 class TimeseriesNode {
   String product;
@@ -100,24 +101,4 @@ class TimeseriesLatestSeries {
 }
 
 
-class Period {
-  DateTime from;
-  DateTime to;
-  Period();
-  Period.create(this.from, this.to);
-
-  int get hashCode {
-    return hashObjects([from, to]);
-  }
-
-  bool operator ==(other) {
-    if (other is! Period) return false;
-    Period key = other;
-    return (key.from == from && key.to == to);
-  }
-
-  String toString() {
-    return "${from.toIso8601String()} - ${to.toIso8601String()}";
-  }
-}
 
