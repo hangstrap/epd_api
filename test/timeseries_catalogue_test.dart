@@ -84,6 +84,8 @@ main(){
       });
     });
   });  
+  
+  group( "", (){});
 }
 
 String jsonCatalog = """{

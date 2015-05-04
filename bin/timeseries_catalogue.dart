@@ -24,10 +24,10 @@ class TimeseriesCatalogue {
   Map<DateTime, CatalogueItem> analysisFor(TimeseriesNode node) {
     return catalogue[node];
   }
-//
-//  Period periodFor(TimeseriesNode node, DateTime analysis) {
-//    return catalogue[node.toNamespace()][analysis.toIso8601String()];
-//  }
+  
+  Map<DateTime, Period> analysisCoveredByPeriod( TimeseriesNode node, Period validFromTo){
+    
+  }
 
   void addAnalysis(TimeseriesAssembly assembly, Uri source) {
 
