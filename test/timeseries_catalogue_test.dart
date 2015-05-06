@@ -12,9 +12,16 @@ main(){
 
   TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
   DateTime analysisAt = new DateTime.utc(2013, 4, 1, 00, 00);
-  DateTime am1 = new DateTime.utc(2013, 4, 1, 1, 0);
-  DateTime am2 = new DateTime.utc(2013, 4, 1, 2, 0);
-  DateTime am3 = new DateTime.utc(2013, 4, 1, 3, 0);
+  
+  DateTime beforeAnalysis = analysisAt.subtract( new Duration( hours:1)); 
+  DateTime wellBeforeAnalysis = analysisAt.subtract( new Duration( hours:2));
+  
+  DateTime am1 = analysisAt.add( new Duration( hours:1));
+  DateTime am2 = analysisAt.add( new Duration( hours:2));
+  DateTime am3 = analysisAt.add( new Duration( hours:3));
+  
+  DateTime afterAnalysis = analysisAt.add( new Duration( hours:100)); 
+  DateTime wellAfterAnalysis = analysisAt.add( new Duration( hours:101));
 
 
   group("TimeseriesCatalog", () {
@@ -82,6 +89,40 @@ main(){
         catalog.addAnalysis(assembly, uri);
         expect(catalog.isDownloaded(uri), isTrue);
       });
+    });
+    
+    group( "findAnalysisCoveredByPeriod", (){
+      test( "an unknown node should return a empty map", (){
+        TimeseriesCatalogue catalog = new TimeseriesCatalogue();
+        expect( catalog.findAnalysisCoveredByPeriod( node, new Period.create( am1, am2)),isEmpty);
+      });
+      test( "an period before the analysis should return a empty map", (){
+        
+        TimeseriesCatalogue catalog = new TimeseriesCatalogue();
+        TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
+        catalog.addAnalysis( assembly, uri);
+        
+        expect( catalog.findAnalysisCoveredByPeriod( node, new Period.create( wellBeforeAnalysis, beforeAnalysis)),isEmpty);
+      });
+
+      test( "an period after the analysis should return a empty map", (){
+        
+        TimeseriesCatalogue catalog = new TimeseriesCatalogue();
+        TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
+        catalog.addAnalysis( assembly, uri);
+        
+        expect( catalog.findAnalysisCoveredByPeriod( node, new Period.create( afterAnalysis, wellAfterAnalysis)),isEmpty);
+      });
+      skip_test( "an period that exactly matches the only analysis should that analysis and period", (){
+        
+        TimeseriesCatalogue catalog = new TimeseriesCatalogue();
+        TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
+        catalog.addAnalysis( assembly, uri);
+        var result = catalog.findAnalysisCoveredByPeriod( node, new Period.create( am1, am1));
+        expect( result.length,equals(1));
+        expect( result[analysisAt],equals( new Period.create( am1, am1)));
+      });
+
     });
   });  
   

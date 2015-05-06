@@ -25,7 +25,9 @@ class TimeseriesCatalogue {
     return catalogue[node];
   }
   
-  Map<DateTime, Period> analysisCoveredByPeriod( TimeseriesNode node, Period validFromTo){
+  Map<DateTime, Period> findAnalysisCoveredByPeriod( TimeseriesNode node, Period validFromTo){
+    
+
     return {};
   }
 
