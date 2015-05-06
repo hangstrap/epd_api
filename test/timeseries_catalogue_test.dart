@@ -124,7 +124,7 @@ main(){
         expect( result.elementAt(1),equals( _1am ));
         expect( result.elementAt(2),equals( _2am ));
       });
-      test( "an period that intersects the last anaysis period should return the last analysis", (){
+      test( "an period that is totally within the last anaysis period should only return the last analysis", (){
         
         List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _2am, _5am));
         expect( result.length,equals(1));
@@ -132,7 +132,7 @@ main(){
       });
       test( "an period that intersects with the last twp anaysis periods should return the last two analysis", (){
         
-        List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _1am, _5am));
+        List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _3am, _5am));
         expect( result.length,equals(2));
         expect( result.elementAt(0),equals( _1am ));
         expect( result.elementAt(1),equals( _2am ));
