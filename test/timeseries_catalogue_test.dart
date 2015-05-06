@@ -94,7 +94,7 @@ String jsonCatalog = """{
    "2013-04-01T00:00:00.000Z": {
     "fromTo": {
      "from": "2013-04-01T01:00:00.000Z",
-     "to": "2013-04-01T01:00:00.000Z"
+     "toEx": "2013-04-01T01:00:00.000Z"
     },
     "source": "http://caf-server/aCafFile.caf"
    }

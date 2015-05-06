@@ -26,7 +26,7 @@ class TimeseriesCatalogue {
   }
   
   Map<DateTime, Period> analysisCoveredByPeriod( TimeseriesNode node, Period validFromTo){
-    
+    return {};
   }
 
   void addAnalysis(TimeseriesAssembly assembly, Uri source) {
