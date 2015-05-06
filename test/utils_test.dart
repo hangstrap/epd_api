@@ -1,6 +1,7 @@
 import 'package:unittest/unittest.dart';
 
 import '../bin/utils.dart';
+import 'matchers.dart';
 
 main() {
   group("Duration decoder", () {
@@ -30,12 +31,18 @@ main() {
     DateTime from = new DateTime(2015, 5, 1, 0, 0, 0);
     DateTime toEx = from.add(new Duration(hours: 1));
 
+    DateTime wellBefore = from.subtract(new Duration(hours: 2));
     DateTime before = from.subtract(new Duration(hours: 1));
     DateTime inside = from.add(new Duration(minutes: 30));
     DateTime after = toEx.add(new Duration(hours: 1));
 
 
     Period underTest = new Period.create(from, toEx);
+    
+    test("From time must preceed to time", (){
+
+      expect(() => new Period.create(toEx, from), throwsA(exceptionMatching( ArgumentError, "From time must preceed toEx")));
+    });
 
     test("method isInside ", () {
       expect(underTest.isPointInside(before), isFalse);
@@ -58,6 +65,30 @@ main() {
       expect(underTest.isPointAfter(inside), isFalse);
       expect(underTest.isPointAfter(toEx), isTrue);
       expect(underTest.isPointAfter(after), isTrue);
+    });
+    
+    group( "method isPeriodsOverlap",(){
+      
+      test( "period must overlap with itself", (){        
+        expect( underTest.isPeriodsOverlaps( underTest), isTrue);
+      });
+      test( "period completely before will not overlap", (){        
+        expect( underTest.isPeriodsOverlaps( new Period.create( wellBefore, before)), isFalse);        
+      });
+      test( "period completely after will not overlap", (){        
+        expect( underTest.isPeriodsOverlaps( new Period.create( toEx, after)), isFalse);        
+      });
+      test( "period inside will overlap", (){        
+        expect( underTest.isPeriodsOverlaps( new Period.create( from, inside)), isTrue);
+        expect( underTest.isPeriodsOverlaps( new Period.create( inside, toEx)), isTrue);        
+      });
+      test( "period covering will overlap", (){        
+        expect( underTest.isPeriodsOverlaps( new Period.create( before, after)), isTrue);
+        expect( underTest.isPeriodsOverlaps( new Period.create( before, inside)), isTrue);
+        expect( underTest.isPeriodsOverlaps( new Period.create( inside, after)), isTrue);        
+      });
+
+    
     });
     
     

@@ -6,7 +6,12 @@ class Period {
   DateTime from;
   DateTime toEx;
   Period();
-  Period.create(this.from, this.toEx);
+  Period.create(this.from, this.toEx){
+   if( from.isAfter( toEx)){
+     throw new ArgumentError( "From time must preceed toEx");
+   }
+    
+  }
 
   int get hashCode {
     return hashObjects([from, toEx]);
@@ -34,6 +39,18 @@ class Period {
       return true;
     }
     if (dt.isAtSameMomentAs(toEx)) {
+      return true;
+    }
+    return false;
+  }
+  bool isPeriodsOverlaps( Period other){
+    if( other == this){
+      return true;
+    }
+    if( isPointInside( other.from) || isPointInside( other.toEx)){
+      return true;
+    }
+    if( isPointBefore( other.from) && isPointAfter( other.toEx)){
       return true;
     }
     return false;

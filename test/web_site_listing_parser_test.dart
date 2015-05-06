@@ -12,7 +12,7 @@ void main() {
       return false;
     }
 
-    expect(() => parseWebSite(html, processItem), throwsA(formatExceptionMatching("Html page did not contain one and only one table element")));
+    expect(() => parseWebSite(html, processItem), throwsA(exceptionMatching(FormatException,"Html page did not contain one and only one table element")));
   });
 
   test("throw exception when table doesnt contain at least 4 rows", () {
@@ -26,7 +26,7 @@ void main() {
 
     void processItem(Item item) {}
 
-    expect(() => parseWebSite(html, processItem), throwsA(formatExceptionMatching("Html page did not contain a table with at least 4 rows")));
+    expect(() => parseWebSite(html, processItem), throwsA(exceptionMatching(FormatException,"Html page did not contain a table with at least 4 rows")));
   });
 
   test("throw exception if any rows > 3 do not contain 5 table data cells", () {
@@ -43,7 +43,7 @@ void main() {
 
     void processItem(Item item) {}
 
-    expect(() => parseWebSite(html, processItem), throwsA(formatExceptionMatching("Html page contained a listing row without 5 cells but had 4")));
+    expect(() => parseWebSite(html, processItem), throwsA(exceptionMatching(FormatException,"Html page contained a listing row without 5 cells but had 4")));
   });
 
   test("throw exception if any rows > 3 do not a link in the second cell", () {
@@ -58,7 +58,7 @@ void main() {
 
     void processItem(Item item) {}
 
-    expect(() => parseWebSite(html, processItem), throwsA(formatExceptionMatching("Html page contained a listing row without a link in the second cell")));
+    expect(() => parseWebSite(html, processItem), throwsA(exceptionMatching(FormatException,"Html page contained a listing row without a link in the second cell")));
   });
 
   test("processItem should be called back with the correct values for the row", () {
@@ -83,18 +83,3 @@ void main() {
     expect(result.lastModifiedAt, equals("16-Feb-2015 02:00"));
   });
 }
-/*
-class _FormatExceptionWithMessageMatcher extends Matcher {
-  final String expectedMessage;
-  const _FormatExceptionWithMessageMatcher(this.expectedMessage);
-  bool matches(item, Map matchState) {
-    if (item is FormatException) {
-      FormatException e = item;
-      return (e.message == expectedMessage);
-    }
-    return false;
-  }
-  Description describe(Description description) => description.add('FormatException with a message of ').addDescriptionOf(expectedMessage);
-}
-Matcher formatExceptionMatching(message) => new _FormatExceptionWithMessageMatcher(message);
-*/

@@ -108,7 +108,6 @@ main() {
     });
   });
 
-  
 }
 
 void checkEdition( Edition edition,  DateTime analysis){

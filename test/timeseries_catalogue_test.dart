@@ -11,64 +11,65 @@ main(){
   setUpJsonConverters();
 
   TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
-  DateTime analysisAt = new DateTime.utc(2013, 4, 1, 00, 00);
+  DateTime _0am = new DateTime.utc(2013, 4, 1, 00, 00);
   
-  DateTime beforeAnalysis = analysisAt.subtract( new Duration( hours:1)); 
-  DateTime wellBeforeAnalysis = analysisAt.subtract( new Duration( hours:2));
+  DateTime beforeAnalysis = _0am.subtract( new Duration( hours:1)); 
+  DateTime wellBeforeAnalysis = _0am.subtract( new Duration( hours:2));
   
-  DateTime am1 = analysisAt.add( new Duration( hours:1));
-  DateTime am2 = analysisAt.add( new Duration( hours:2));
-  DateTime am3 = analysisAt.add( new Duration( hours:3));
-  
-  DateTime afterAnalysis = analysisAt.add( new Duration( hours:100)); 
-  DateTime wellAfterAnalysis = analysisAt.add( new Duration( hours:101));
+  DateTime _1am = _0am.add( new Duration( hours:1));
+  DateTime _2am = _0am.add( new Duration( hours:2));
+  DateTime _3am = _0am.add( new Duration( hours:3));
+  DateTime _4am = _0am.add( new Duration( hours:4));
+  DateTime _5am = _0am.add( new Duration( hours:5));
+  DateTime afterAnalysis = _0am.add( new Duration( hours:100)); 
+  DateTime wellAfterAnalysis = _0am.add( new Duration( hours:101));
 
 
   group("TimeseriesCatalog", () {
     Uri uri = new Uri.http("caf-server", "aCafFile.caf");
     test("Add a single Analysis with a single spot edition", () {
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _1am, _1am, {})]);
       catalog.addAnalysis(assembly, uri);
 
       expect(catalog.numberOfNodes, equals(1));
-      Map<DateTime, CatalogueItem> analysisMap = catalog.analysisFor(node);
+      Map<DateTime, CatalogueItem> analysisMap = catalog.analysissFor(node);
       expect(analysisMap.length, equals(1));
-      expect(analysisMap[analysisAt].analyis, equals(analysisAt));      
-      expect(analysisMap[analysisAt].fromTo, equals(new Period.create(am1, am1)));
+      expect(analysisMap[_0am].analyis, equals(_0am));      
+      expect(analysisMap[_0am].fromTo, equals(new Period.create(_1am, _1am)));
       
     });
 
     test("Add a single Analysis with a two interval period editions", () {
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am2, {}), new Edition.createMean(analysisAt, am2, am3, {})]);
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _1am, _2am, {}), new Edition.createMean(_0am, _2am, _3am, {})]);
       catalog.addAnalysis(assembly, uri);
 
       expect(catalog.numberOfNodes, equals(1));
-      Map<DateTime, CatalogueItem> analysisMap = catalog.analysisFor(node);
+      Map<DateTime, CatalogueItem> analysisMap = catalog.analysissFor(node);
       expect(analysisMap.length, equals(1));
-      expect(analysisMap[analysisAt].analyis, equals(analysisAt));
-      expect(analysisMap[analysisAt].fromTo, equals(new Period.create(am1, am3)));
+      expect(analysisMap[_0am].analyis, equals(_0am));
+      expect(analysisMap[_0am].fromTo, equals(new Period.create(_1am, _3am)));
     });
 
     test("Add a two Analysis for the same node", () {
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {}),]);
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _1am, _1am, {}),]);
       catalog.addAnalysis(assembly, uri);
 
-      DateTime analysisAt2 = analysisAt.add(new Duration(hours: 1));
-      TimeseriesAssembly assembly2 = new TimeseriesAssembly.create(node, analysisAt2, [new Edition.createMean(analysisAt, am2, am2, {}),]);
+      DateTime analysisAt2 = _0am.add(new Duration(hours: 1));
+      TimeseriesAssembly assembly2 = new TimeseriesAssembly.create(node, analysisAt2, [new Edition.createMean(_0am, _2am, _2am, {}),]);
       catalog.addAnalysis(assembly2, new Uri.http("caf-server", "anotherCafFile.caf"));
 
       expect(catalog.numberOfNodes, equals(1));
-      Map<DateTime, CatalogueItem> analysisMap = catalog.analysisFor(node);
+      Map<DateTime, CatalogueItem> analysisMap = catalog.analysissFor(node);
       expect(analysisMap.length, equals(2));
-      expect(analysisMap[analysisAt].fromTo, equals(new Period.create(am1, am1)));
-      expect(analysisMap[analysisAt2].fromTo, equals(new Period.create(am2, am2)));
+      expect(analysisMap[_0am].fromTo, equals(new Period.create(_1am, _1am)));
+      expect(analysisMap[analysisAt2].fromTo, equals(new Period.create(_2am, _2am)));
     });
     test("Json encoding of catalogue", () {
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {}),]);
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _1am, _1am, {}),]);
       catalog.addAnalysis(assembly, uri);
       String json = jsonx.encode(catalog, indent: ' ');
       expect(json, equals(jsonCatalog));
@@ -81,7 +82,7 @@ main(){
     });
     group("isDownloaded should return correctly", () {
       TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _1am, _1am, {})]);
       test("Should return false when uri not been added", () {
         expect(catalog.isDownloaded(uri), isFalse);
       });
@@ -92,41 +93,55 @@ main(){
     });
     
     group( "findAnalysisCoveredByPeriod", (){
+      
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue();
+      TimeseriesAssembly assembly00 = new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _0am, _3am, {})]);
+      TimeseriesAssembly assembly01 = new TimeseriesAssembly.create(node, _1am, [new Edition.createMean(_1am, _1am, _4am, {})]);
+      TimeseriesAssembly assembly02 = new TimeseriesAssembly.create(node, _2am, [new Edition.createMean(_2am, _2am, _5am, {})]);      
+      catalog.addAnalysis( assembly00, uri);
+      catalog.addAnalysis( assembly01, uri);
+      catalog.addAnalysis( assembly02, uri);
+      
       test( "an unknown node should return a empty map", (){
         TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-        expect( catalog.findAnalysisCoveredByPeriod( node, new Period.create( am1, am2)),isEmpty);
+        expect( catalog.findAnalysissForPeriod( node, new Period.create( _1am, _2am)),isEmpty);
       });
       test( "an period before the analysis should return a empty map", (){
         
-        TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-        TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
-        catalog.addAnalysis( assembly, uri);
-        
-        expect( catalog.findAnalysisCoveredByPeriod( node, new Period.create( wellBeforeAnalysis, beforeAnalysis)),isEmpty);
+        catalog.addAnalysis( assembly00, uri);        
+        expect( catalog.findAnalysissForPeriod( node, new Period.create( wellBeforeAnalysis, beforeAnalysis)),isEmpty);
       });
 
       test( "an period after the analysis should return a empty map", (){
         
-        TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-        TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
-        catalog.addAnalysis( assembly, uri);
-        
-        expect( catalog.findAnalysisCoveredByPeriod( node, new Period.create( afterAnalysis, wellAfterAnalysis)),isEmpty);
+        expect( catalog.findAnalysissForPeriod( node, new Period.create( afterAnalysis, wellAfterAnalysis)),isEmpty);
       });
-      skip_test( "an period that exactly matches the only analysis should that analysis and period", (){
+      test( "an period that covers all the anaysis period should return all analysis", (){
         
-        TimeseriesCatalogue catalog = new TimeseriesCatalogue();
-        TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [new Edition.createMean(analysisAt, am1, am1, {})]);
-        catalog.addAnalysis( assembly, uri);
-        var result = catalog.findAnalysisCoveredByPeriod( node, new Period.create( am1, am1));
+        List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _0am, _5am));
+        expect( result.length,equals(3));
+        expect( result.elementAt(0),equals( _0am ));
+        expect( result.elementAt(1),equals( _1am ));
+        expect( result.elementAt(2),equals( _2am ));
+      });
+      test( "an period that intersects the last anaysis period should return the last analysis", (){
+        
+        List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _2am, _5am));
         expect( result.length,equals(1));
-        expect( result[analysisAt],equals( new Period.create( am1, am1)));
+        expect( result.elementAt(0),equals( _2am ));
+      });
+      test( "an period that intersects with the last twp anaysis periods should return the last two analysis", (){
+        
+        List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _1am, _5am));
+        expect( result.length,equals(2));
+        expect( result.elementAt(0),equals( _1am ));
+        expect( result.elementAt(1),equals( _2am ));
       });
 
     });
   });  
   
-  group( "", (){});
+
 }
 
 String jsonCatalog = """{
