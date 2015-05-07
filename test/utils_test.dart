@@ -36,12 +36,10 @@ main() {
     DateTime inside = from.add(new Duration(minutes: 30));
     DateTime after = toEx.add(new Duration(hours: 1));
 
-
     Period underTest = new Period.create(from, toEx);
-    
-    test("From time must preceed to time", (){
 
-      expect(() => new Period.create(toEx, from), throwsA(exceptionMatching( ArgumentError, "From time must preceed toEx")));
+    test("From time must preceed to time", () {
+      expect(() => new Period.create(toEx, from), throwsA(exceptionMatching(ArgumentError, "From time must preceed toEx")));
     });
 
     test("method isInside ", () {
@@ -51,7 +49,7 @@ main() {
       expect(underTest.isPointInside(toEx), isFalse);
       expect(underTest.isPointInside(after), isFalse);
     });
-      
+
     test("method isBefore ", () {
       expect(underTest.isPointBefore(before), isTrue);
       expect(underTest.isPointBefore(from), isFalse);
@@ -66,31 +64,47 @@ main() {
       expect(underTest.isPointAfter(toEx), isTrue);
       expect(underTest.isPointAfter(after), isTrue);
     });
-    
-    group( "method isPeriodsOverlap",(){
-      
-      test( "period must overlap with itself", (){        
-        expect( underTest.isPeriodsOverlaps( underTest), isTrue);
-      });
-      test( "period completely before will not overlap", (){        
-        expect( underTest.isPeriodsOverlaps( new Period.create( wellBefore, before)), isFalse);        
-      });
-      test( "period completely after will not overlap", (){        
-        expect( underTest.isPeriodsOverlaps( new Period.create( toEx, after)), isFalse);        
-      });
-      test( "period inside will overlap", (){        
-        expect( underTest.isPeriodsOverlaps( new Period.create( from, inside)), isTrue);
-        expect( underTest.isPeriodsOverlaps( new Period.create( inside, toEx)), isTrue);        
-      });
-      test( "period covering will overlap", (){        
-        expect( underTest.isPeriodsOverlaps( new Period.create( before, after)), isTrue);
-        expect( underTest.isPeriodsOverlaps( new Period.create( before, inside)), isTrue);
-        expect( underTest.isPeriodsOverlaps( new Period.create( inside, after)), isTrue);        
-      });
 
-    
+    group("method isPeriodOverlaping", () {
+      test("period must overlap with itself", () {
+        expect(underTest.isPeriodOverlapping(underTest), isTrue);
+      });
+      test("period completely before will not overlap", () {
+        expect(underTest.isPeriodOverlapping(new Period.create(wellBefore, before)), isFalse);
+      });
+      test("period completely after will not overlap", () {
+        expect(underTest.isPeriodOverlapping(new Period.create(toEx, after)), isFalse);
+      });
+      test("period inside will overlap", () {
+        expect(underTest.isPeriodOverlapping(new Period.create(from, inside)), isTrue);
+        expect(underTest.isPeriodOverlapping(new Period.create(inside, toEx)), isTrue);
+      });
+      test("period covering will overlap", () {
+        expect(underTest.isPeriodOverlapping(new Period.create(before, after)), isTrue);
+        expect(underTest.isPeriodOverlapping(new Period.create(before, inside)), isTrue);
+        expect(underTest.isPeriodOverlapping(new Period.create(inside, after)), isTrue);
+      });
     });
-    
-    
+
+    group("method isPeriodInside", () {
+      test("period must be inside itself", () {
+        expect(underTest.isPeriodInside(underTest), isTrue);
+      });
+      test("period completely before will not be inside", () {
+        expect(underTest.isPeriodInside(new Period.create(wellBefore, before)), isFalse);
+      });
+      test("period completely after will not overlap", () {
+        expect(underTest.isPeriodInside(new Period.create(toEx, after)), isFalse);
+      });
+      test("period inside will overlap", () {
+        expect(underTest.isPeriodInside(new Period.create(from, inside)), isTrue);
+        expect(underTest.isPeriodInside(new Period.create(inside, toEx)), isTrue);
+      });
+      test("period covering will not be inside", () {
+        expect(underTest.isPeriodInside(new Period.create(before, after)), isFalse);
+        expect(underTest.isPeriodInside(new Period.create(before, inside)), isFalse);
+        expect(underTest.isPeriodInside(new Period.create(inside, after)), isFalse);
+      });
+    });
   });
 }

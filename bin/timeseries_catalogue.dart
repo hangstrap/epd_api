@@ -29,13 +29,11 @@ class TimeseriesCatalogue {
     Map<DateTime, CatalogueItem> analysis = analysissFor(node);
     if (analysis != null) {
       analysis.forEach((analysis, catalogueItem) {
-        if (catalogueItem.fromTo.isPeriodsOverlaps(validFromTo)) {
+        if (catalogueItem.fromTo.isPeriodOverlapping(validFromTo)) {
           result.add(analysis);
         }
       });
     }
-    
-    
     
     return result;
   }
