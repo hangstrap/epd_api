@@ -103,7 +103,7 @@ main() {
     
     test( "throw meaningful error message when token missing", (){
       List<String> lines = ["aaaa=aaaa,bbbb=bbbb"];
-      expect(() =>  caf.toTimeseriesNode( lines),  throwsA( formatExceptionMatching( "Could not find token 'product'"))); 
+      expect(() =>  caf.toTimeseriesNode( lines),  throwsA( exceptionMatching( FormatException,  "Could not find token 'product'"))); 
 
     });
   });
