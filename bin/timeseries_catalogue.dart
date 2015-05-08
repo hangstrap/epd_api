@@ -26,14 +26,22 @@ class TimeseriesCatalogue {
   List<DateTime> findAnalysissForPeriod(TimeseriesNode node, Period validFromTo) {
     List<DateTime> result = [];
 
-    Map<DateTime, CatalogueItem> analysis = analysissFor(node);
-    if (analysis != null) {
-      analysis.forEach((analysis, catalogueItem) {
+    Map<DateTime, CatalogueItem> analysiss = analysissFor(node);
+    if (analysiss != null) {
+      analysiss.forEach((analysis, catalogueItem) {
         if (catalogueItem.fromTo.isPeriodOverlapping(validFromTo)) {
           result.add(analysis);
         }
       });
     }
+    result.sort();
+    if( result.length >0){
+      DateTime lastAnalysis = result.last;
+      if( analysiss[ lastAnalysis].fromTo.isPeriodInside( validFromTo)){
+        return [ lastAnalysis];
+      }
+    }
+    
     
     return result;
   }

@@ -53,7 +53,13 @@ class TimeseriesAssembly {
   List<Edition> editions;
 
   TimeseriesAssembly();
-  TimeseriesAssembly.create(this.node, this.analysis, this.editions);
+  TimeseriesAssembly.create(this.node, this.analysis, this.editions){
+    editions.forEach((edition){
+      if( edition.analysisAt != analysis){
+        throw new ArgumentError( "edition's analysis time does not match Assembly analysis time");
+      }
+    });
+  }
 
   TimeseriesAssembly.filter(TimeseriesAssembly orignal, DateTime validFrom, Duration period) {
     this.node = orignal.node;

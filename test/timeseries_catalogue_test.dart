@@ -21,6 +21,8 @@ main(){
   DateTime _3am = _0am.add( new Duration( hours:3));
   DateTime _4am = _0am.add( new Duration( hours:4));
   DateTime _5am = _0am.add( new Duration( hours:5));
+  DateTime _6am = _0am.add( new Duration( hours:6));
+  
   DateTime afterAnalysis = _0am.add( new Duration( hours:100)); 
   DateTime wellAfterAnalysis = _0am.add( new Duration( hours:101));
 
@@ -58,7 +60,7 @@ main(){
       catalog.addAnalysis(assembly, uri);
 
       DateTime analysisAt2 = _0am.add(new Duration(hours: 1));
-      TimeseriesAssembly assembly2 = new TimeseriesAssembly.create(node, analysisAt2, [new Edition.createMean(_0am, _2am, _2am, {}),]);
+      TimeseriesAssembly assembly2 = new TimeseriesAssembly.create(node, analysisAt2, [new Edition.createMean(analysisAt2, _2am, _2am, {}),]);
       catalog.addAnalysis(assembly2, new Uri.http("caf-server", "anotherCafFile.caf"));
 
       expect(catalog.numberOfNodes, equals(1));
@@ -93,14 +95,18 @@ main(){
     });
     
     group( "findAnalysisCoveredByPeriod", (){
-      
-      TimeseriesCatalogue catalog = new TimeseriesCatalogue();
+      TimeseriesCatalogue catalog;
       TimeseriesAssembly assembly00 = new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _0am, _3am, {})]);
       TimeseriesAssembly assembly01 = new TimeseriesAssembly.create(node, _1am, [new Edition.createMean(_1am, _1am, _4am, {})]);
       TimeseriesAssembly assembly02 = new TimeseriesAssembly.create(node, _2am, [new Edition.createMean(_2am, _2am, _5am, {})]);      
-      catalog.addAnalysis( assembly00, uri);
-      catalog.addAnalysis( assembly01, uri);
-      catalog.addAnalysis( assembly02, uri);
+      
+      setUp((){        
+        catalog = new TimeseriesCatalogue();
+        catalog.addAnalysis( assembly00, uri);
+        catalog.addAnalysis( assembly01, uri);
+        catalog.addAnalysis( assembly02, uri);
+
+      });
       
       test( "an unknown node should return a empty map", (){
         TimeseriesCatalogue catalog = new TimeseriesCatalogue();
@@ -130,12 +136,15 @@ main(){
         expect( result.length,equals(1));
         expect( result.elementAt(0),equals( _2am ));
       });
-      test( "an period that intersects with the last twp anaysis periods should return the last two analysis", (){
-        
-        List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _3am, _5am));
+      test( "an period that intersects with the last two anaysis periods should return the last two analysis", (){
+
+        TimeseriesAssembly assembly03 = new TimeseriesAssembly.create(node, _3am, [new Edition.createMean(_3am, _5am, _6am, {})]);      
+        catalog.addAnalysis(assembly03, uri);
+
+        List<DateTime> result = catalog.findAnalysissForPeriod( node, new Period.create( _4am, _6am));
         expect( result.length,equals(2));
-        expect( result.elementAt(0),equals( _1am ));
-        expect( result.elementAt(1),equals( _2am ));
+        expect( result.elementAt(0),equals( _2am ));
+        expect( result.elementAt(1),equals( _3am ));
       });
 
     });
