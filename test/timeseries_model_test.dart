@@ -2,6 +2,7 @@ import 'package:unittest/unittest.dart';
 import '../bin/timeseries_model.dart';
 import 'package:jsonx/jsonx.dart' as jsonx;
 import '../bin/json_converters.dart';
+import 'matchers.dart';
 
 TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
 DateTime analysisAt = new DateTime.utc(2013, 4, 1, 00, 00);
@@ -28,7 +29,11 @@ void main() {
 
   group("Timeseries Analysis", () {
     group("Filter Editions of spot data", () {
-      List<Edition> editions = [new Edition.createMean(analysisAt, am1, am1, {}), new Edition.createMean(analysisAt, am2, am2, {}), new Edition.createMean(analysisAt, am3, am3, {}),];
+      List<Edition> editions = [
+        new Edition.createMean(analysisAt, am1, am1, {}),
+        new Edition.createMean(analysisAt, am2, am2, {}),
+        new Edition.createMean(analysisAt, am3, am3, {}),
+      ];
       TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, editions);
 
       test("Null does not filter", () {
@@ -55,7 +60,11 @@ void main() {
       });
     });
     group("Filter Edition of interval data", () {
-      List<Edition> editions = [new Edition.createMean(analysisAt, am1, am2, {}), new Edition.createMean(analysisAt, am2, am3, {}), new Edition.createMean(analysisAt, am3, am4, {}),];
+      List<Edition> editions = [
+        new Edition.createMean(analysisAt, am1, am2, {}),
+        new Edition.createMean(analysisAt, am2, am3, {}),
+        new Edition.createMean(analysisAt, am3, am4, {}),
+      ];
       TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, editions);
       test("Null does not filter", () {
         List<Edition> result = new TimeseriesAssembly.filter(assembly, null, null).editions;
@@ -80,7 +89,56 @@ void main() {
       });
     });
   });
+  group("TimeseriesBestSeries", () {
+    test("Should be able to have empty set of analysis", () {
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, []);
+      expect(underTest.editions.length, equals(0));
+    });
+    test("Should be able to have an analysis with a set of editions", () {
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, []);
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [assembly]);
+      expect(underTest.editions.length, equals(0));
+    });
+    test("If only have one analys then use the editions in that analysis", () {
+      Edition edition = new Edition.createMean(analysisAt, am1, am1, {});
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [edition]);
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [assembly]);
+      expect(underTest.editions.length, equals(1));
+      expect(underTest.editions.elementAt(0), equals(edition));
+    });
+    test("If have multiple analys and editions independed then result will contain all the edttions", () {
+      Edition earlyEdition = new Edition.createMean(analysisAt, am1, am1, {});
+      TimeseriesAssembly earlyAssembly = new TimeseriesAssembly.create(node, analysisAt, [earlyEdition]);
 
+      DateTime assemblyAt2 = analysisAt.add(new Duration(hours: 1));
+      Edition laterEdition = new Edition.createMean(assemblyAt2, am2, am2, {});
+      TimeseriesAssembly laterAssembly = new TimeseriesAssembly.create(node, assemblyAt2, [laterEdition]);
+
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [earlyAssembly, laterAssembly]);
+      expect(underTest.editions.length, equals(2));
+      expect(underTest.editions.elementAt(0), equals(earlyEdition));
+      expect(underTest.editions.elementAt(1), equals(laterEdition));
+    });
+
+    test("If have multiple analys then the editions in the last analysis must be used if have overlap", () {
+      Edition earlyAssemblyEdition = new Edition.createMean(analysisAt, am1, am1, {});
+      TimeseriesAssembly earlyAssembly = new TimeseriesAssembly.create(node, analysisAt, [earlyAssemblyEdition]);
+
+      DateTime assemblyAt2 = analysisAt.add(new Duration(hours: 1));
+      Edition laterAssemblyEdition = new Edition.createMean(assemblyAt2, am1, am1, {});
+      TimeseriesAssembly laterAssembly = new TimeseriesAssembly.create(node, assemblyAt2, [laterAssemblyEdition]);
+
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [earlyAssembly, laterAssembly]);
+      expect(underTest.editions.length, equals(1));
+      expect(underTest.editions.elementAt(0), equals(laterAssemblyEdition));
+    });
+    test("All assemblies must be for the same node", () {
+      TimeseriesNode anotherNode = new TimeseriesNode.create("Another Product", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
+      TimeseriesAssembly assemblyForAnotherNode = new TimeseriesAssembly.create(anotherNode, analysisAt, []);
+
+      expect(()=>new TimeseriesBestSeries(node, analysisAt, [assemblyForAnotherNode]), throwsA(exceptionMatching(ArgumentError, "An assembly is for the wrong node")));
+    });
+  });
 }
 
 String jsonNode = """{
@@ -90,4 +148,3 @@ String jsonNode = """{
  "locationName": "01492",
  "locationSuffix": "INTL"
 }""";
-

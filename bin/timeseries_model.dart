@@ -53,10 +53,10 @@ class TimeseriesAssembly {
   List<Edition> editions;
 
   TimeseriesAssembly();
-  TimeseriesAssembly.create(this.node, this.analysis, this.editions){
-    editions.forEach((edition){
-      if( edition.analysisAt != analysis){
-        throw new ArgumentError( "edition's analysis time does not match Assembly analysis time");
+  TimeseriesAssembly.create(this.node, this.analysis, this.editions) {
+    editions.forEach((edition) {
+      if (edition.analysisAt != analysis) {
+        throw new ArgumentError("edition's analysis time does not match Assembly analysis time");
       }
     });
   }
@@ -97,14 +97,27 @@ class TimeseriesAssembly {
   }
 }
 
-
-class TimeseriesLatestSeries {
+class TimeseriesBestSeries {
   TimeseriesNode node;
   DateTime latestAt;
-  List<Edition> editions;
+  List<Edition> editions = [];
 
-  TimeseriesLatestSeries(this.node, this.latestAt, this.editions);
+  TimeseriesBestSeries(this.node, this.latestAt, List<TimeseriesAssembly> assemblies) {
+    assemblies.forEach((assembly) {
+      if (assembly.node != node) {
+        throw new ArgumentError("An assembly is for the wrong node");
+      }
+    });
+    //sort earlist analysis first
+    assemblies.sort((assembly1, assembly2) => assembly1.analysis.compareTo(assembly2.analysis));
+
+    //older editions will be replaced by newer ones
+    Map<DateTime, Edition> map = {};
+    assemblies.forEach((assembly) {
+      assembly.editions.forEach((edition) {
+        map[edition.validFrom] = edition;
+      });
+    });
+    editions = map.values.toList();
+  }
 }
-
-
-
