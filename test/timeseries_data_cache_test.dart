@@ -1,13 +1,20 @@
 import 'package:unittest/unittest.dart';
-
 import '../bin/timeseries_model.dart';
 import '../bin/timeseries_data_cache.dart';
+import '../bin/utils.dart';
+
 import 'dart:async';
 
 DateTime analysisAt = new DateTime.utc(2013, 04, 07, 20, 23);
 
+
 void main() {
   group("getTimeseries", () {
+    
+    List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+      return [];
+    }
+    
     TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
     TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, []);
 
@@ -20,7 +27,7 @@ void main() {
         return new Future.value(assembly);
       }
 
-      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader);
+      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader, analysissForPeriodQuery);
 
       TimeseriesAssembly result = await cache.getTimeseriesAnalysis(node, analysis, validFrom, period);
 
@@ -33,7 +40,7 @@ void main() {
         return new Future.error("cache accessed loader");
       }
 
-      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader);
+      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader, analysissForPeriodQuery);
       //preloader add item to cache
       cache.cache.set(new Key(node, analysis), assembly);
 
@@ -47,7 +54,7 @@ void main() {
         return new Future.error("back end failure");
       }
 
-      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader);
+      TimeseriesDataCache cache = new TimeseriesDataCache(timeseriesLoader, analysissForPeriodQuery);
       try {
         await cache.getTimeseriesAnalysis(node, analysis, validFrom, period);
         fail("exception not thrown");
@@ -58,6 +65,11 @@ void main() {
     });
 
     group("getTimeseriesSet", () {
+      List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+        return [];
+      }
+
+      
       TimeseriesNode node1 = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
 
       TimeseriesNode node2 = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "BBBBB", "01492", "INTL");
@@ -70,15 +82,20 @@ void main() {
       Duration period = new Duration();
 
       test("will call getTimeseries for each key", () async {
-        TimeseriesDataCache cache = new TimeseriesDataCache((key, analysis) {
+        
+        Future<TimeseriesAssembly> timeseriesLoader(TimeseriesNode key, DateTime analysis) {
+        
           if (key == node1) {
             return new Future.value(assembly1);
           }
           if (key == node2) {
             return new Future.value(assembly2);
           }
-        });
+          return null; 
+        }
 
+        TimeseriesDataCache cache = new TimeseriesDataCache( timeseriesLoader, analysissForPeriodQuery);
+        
         List<TimeseriesAssembly> results = await cache.getTimeseriesAnalysisSet([node1, node2], analysis, validFrom, period);
 
         expect(results, isNotNull);
@@ -88,14 +105,17 @@ void main() {
       });
 
       test("when backend returns failing future, then entire set fails ", () async {
-        TimeseriesDataCache cache = new TimeseriesDataCache((key, analysis) {
+        Future<TimeseriesAssembly> timeseriesLoader(TimeseriesNode key, DateTime analysis) {
           if (key == node1) {
             return new Future.value(assembly1);
           }
           if (key == node2) {
             return new Future.error("bugger");
-          }
-        });
+          }    
+          return null;
+        }
+        
+        TimeseriesDataCache cache = new TimeseriesDataCache( timeseriesLoader, analysissForPeriodQuery);
         try {
           await cache.getTimeseriesAnalysisSet([node1, node2], analysis, validFrom, period);
           fail("no exception from backend");
@@ -105,5 +125,49 @@ void main() {
         ;
       });
     });
+  });
+  group( "getTimeseriesBestSeries", (){
+    
+    TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
+    
+    DateTime validFrom = analysisAt;
+    Duration period = new Duration( hours:10  );
+    
+    test( "when no analysis available then empty TimeseriesBestSeries returned", () async{
+
+      List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+        return [];
+      }
+      Future<TimeseriesAssembly> timeseriesLoader(TimeseriesNode key, DateTime analysis) {
+        throw "should not be called";
+      }
+
+      TimeseriesDataCache underTest = new TimeseriesDataCache( timeseriesLoader, analysissForPeriodQuery);
+      TimeseriesBestSeries result = await underTest.getTimeseriesBestSeries(node, validFrom, period);
+      expect( result.node, equals( node));
+      expect( result.editions.length, equals( 0));
+      
+    });
+    test( "when one analysis available then TimeseriesBestSeries returned as analysis data", () async{
+
+      Edition edition = new Edition.createMean(analysisAt, analysisAt, analysisAt, {});
+      TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [edition]);
+        
+      
+      List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+        return [analysisAt];
+      }
+      Future<TimeseriesAssembly> timeseriesLoader(TimeseriesNode key, DateTime analysis) {
+        return new Future.value( assembly);
+      }
+
+      TimeseriesDataCache underTest = new TimeseriesDataCache( timeseriesLoader, analysissForPeriodQuery);
+      TimeseriesBestSeries result = await underTest.getTimeseriesBestSeries(node, validFrom, period);
+      expect( result.node, equals( node));
+      expect( result.editions.length, equals( 1));
+      expect( result.editions.elementAt(0), equals( edition));
+    });
+    
+    
   });
 }

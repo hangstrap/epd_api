@@ -1,18 +1,22 @@
 library epd_api;
 
-import 'package:rpc/rpc.dart';
+
 import 'dart:io';
 import 'dart:async';
 import 'dart:core';
+
+
+import 'package:shelf_route/shelf_route.dart' as shelf_route;
+import 'package:shelf/shelf.dart' as shelf;
+import 'package:shelf/shelf_io.dart' as shelf_io;
+import 'package:rpc/rpc.dart';
+
 import "timeseries_model.dart";
 import "timeseries_catalogue.dart";
 
 import "caf_file_retriever.dart";
 import "timeseries_data_cache.dart";
 import "utils.dart";
-import 'package:shelf_route/shelf_route.dart' as shelf_route;
-import 'package:shelf/shelf.dart' as shelf;
-import 'package:shelf/shelf_io.dart' as shelf_io;
 
 //http://localhost:9090/api/discovery/v1/apis
 //http://localhost:9090/api/epd/v1/index
@@ -25,7 +29,6 @@ class MyMessage {
 @ApiClass(version: 'v1', description: 'Epd Api', name: 'epd')
 class EpdApi {
   final TimeseriesDataCache cache;
-  TimeseriesCatalogue catalogue;
 
   EpdApi(this.cache);
 
@@ -70,21 +73,11 @@ class EpdApi {
     
     DateTime validFromAt =_parseDateTime( Uri.decodeComponent(validFrom));
     DateTime validToAt= _parseDateTime( Uri.decodeComponent(validTo));
-    Duration duration = validFromAt.difference( validToAt);
-    Period period = new Period.create( validFromAt, validToAt);
+    Duration duration = validFromAt.difference( validToAt);    
     
     List<TimeseriesNode> nodes = _extractNodes(locations, elements, product, model);
-
-//    nodes.forEach( (node){
-//      FutureGroup<TimeseriesAssembly> futuresForNode = new FutureGroup();
-//      catalogue.findAnalysissForPeriod(node, period).every( (analysis){        
-//        futuresForNode.add( cache.getTimeseriesAnalysis(node, analysis, validFromAt, duration));      
-//      });
-//      
-//    });
     
-    
-    return null;
+    return cache.getTimeseriesBestSeriesSet(nodes, validFromAt, duration);
   }
   
 
@@ -120,7 +113,7 @@ final ApiServer _apiServer = new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: 
 
 Future main() async {
   CafFileRetriever retriever = new CafFileRetriever("data");
-  TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres);
+  TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres, new TimeseriesCatalogue().findAnalysissForPeriod);
 
   _apiServer.addApi(new EpdApi(cache));
   var apiRouter = shelf_route.router();

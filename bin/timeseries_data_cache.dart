@@ -32,8 +32,6 @@ class TimeseriesDataCache {
 
   Future<TimeseriesAssembly> getTimeseriesAnalysis(TimeseriesNode node, DateTime analysis, DateTime validFrom, Duration period) async{
 
-    print("inside getTimeseries");
-
     Key key = new Key(node, analysis);
     
     TimeseriesAssembly assembly = await cache.get(key, ifAbsent: _loader);
@@ -56,9 +54,22 @@ class TimeseriesDataCache {
   }
 
   Future<TimeseriesBestSeries> getTimeseriesBestSeries(TimeseriesNode node, DateTime validFrom, Duration period) async{
-    
-    
-      return null;
+
+      new Period.create( validFrom, validFrom.add( period));
+      
+
+      List<DateTime> analysis = analysisQuery(node, new Period.create( validFrom, validFrom.add( period)));
+      if( analysis.length == 0){
+        return new TimeseriesBestSeries(node, new DateTime.now(), []); 
+      }
+
+      FutureGroup<TimeseriesAssembly> futureGroup = new FutureGroup();      
+      analysis.forEach( (analysis){
+          futureGroup.add( getTimeseriesAnalysis(node, analysis, validFrom, period));          
+      });
+      //Wait for the data to return 
+      List<TimeseriesAssembly> assemblies = await futureGroup.future;
+      return new TimeseriesBestSeries(node, new DateTime.now(), assemblies);
   }
   Future<List<TimeseriesBestSeries>> getTimeseriesBestSeriesSet(List<TimeseriesNode> nodes, DateTime validFrom, Duration period) async{
 
