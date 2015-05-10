@@ -5,6 +5,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
 
 import "timeseries_data_cache.dart";
+import "timeseries_catalogue.dart";
 import "caf_file_retriever.dart";
 import'json_converters.dart';
 
@@ -40,7 +41,7 @@ void main(List<String> args) {
   setUpJsonConverters();
   
   CafFileRetriever retriever = new CafFileRetriever("data");
-  TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres);
+  TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres, new TimeseriesCatalogue().findAnalysissForPeriod);
 
 
   Future<shelf.Response> processRequest(shelf.Request request) {

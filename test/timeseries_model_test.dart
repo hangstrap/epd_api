@@ -91,18 +91,18 @@ void main() {
   });
   group("TimeseriesBestSeries", () {
     test("Should be able to have empty set of analysis", () {
-      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, []);
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries.create(node, analysisAt, []);
       expect(underTest.editions.length, equals(0));
     });
     test("Should be able to have an analysis with a set of editions", () {
       TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, []);
-      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [assembly]);
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries.create(node, analysisAt, [assembly]);
       expect(underTest.editions.length, equals(0));
     });
     test("If only have one analys then use the editions in that analysis", () {
       Edition edition = new Edition.createMean(analysisAt, am1, am1, {});
       TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [edition]);
-      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [assembly]);
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries.create(node, analysisAt, [assembly]);
       expect(underTest.editions.length, equals(1));
       expect(underTest.editions.elementAt(0), equals(edition));
     });
@@ -114,7 +114,7 @@ void main() {
       Edition laterEdition = new Edition.createMean(assemblyAt2, am2, am2, {});
       TimeseriesAssembly laterAssembly = new TimeseriesAssembly.create(node, assemblyAt2, [laterEdition]);
 
-      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [earlyAssembly, laterAssembly]);
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries.create(node, analysisAt, [earlyAssembly, laterAssembly]);
       expect(underTest.editions.length, equals(2));
       expect(underTest.editions.elementAt(0), equals(earlyEdition));
       expect(underTest.editions.elementAt(1), equals(laterEdition));
@@ -128,7 +128,7 @@ void main() {
       Edition laterAssemblyEdition = new Edition.createMean(assemblyAt2, am1, am1, {});
       TimeseriesAssembly laterAssembly = new TimeseriesAssembly.create(node, assemblyAt2, [laterAssemblyEdition]);
 
-      TimeseriesBestSeries underTest = new TimeseriesBestSeries(node, analysisAt, [earlyAssembly, laterAssembly]);
+      TimeseriesBestSeries underTest = new TimeseriesBestSeries.create(node, analysisAt, [earlyAssembly, laterAssembly]);
       expect(underTest.editions.length, equals(1));
       expect(underTest.editions.elementAt(0), equals(laterAssemblyEdition));
     });
@@ -136,7 +136,7 @@ void main() {
       TimeseriesNode anotherNode = new TimeseriesNode.create("Another Product", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
       TimeseriesAssembly assemblyForAnotherNode = new TimeseriesAssembly.create(anotherNode, analysisAt, []);
 
-      expect(()=>new TimeseriesBestSeries(node, analysisAt, [assemblyForAnotherNode]), throwsA(exceptionMatching(ArgumentError, "An assembly is for the wrong node")));
+      expect(()=>new TimeseriesBestSeries.create(node, analysisAt, [assemblyForAnotherNode]), throwsA(exceptionMatching(ArgumentError, "An assembly is for the wrong node")));
     });
   });
 }

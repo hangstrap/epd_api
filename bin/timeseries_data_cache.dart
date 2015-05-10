@@ -60,7 +60,7 @@ class TimeseriesDataCache {
 
       List<DateTime> analysis = analysisQuery(node, new Period.create( validFrom, validFrom.add( period)));
       if( analysis.length == 0){
-        return new TimeseriesBestSeries(node, new DateTime.now(), []); 
+        return new TimeseriesBestSeries.create(node, new DateTime.now(), []); 
       }
 
       FutureGroup<TimeseriesAssembly> futureGroup = new FutureGroup();      
@@ -69,7 +69,7 @@ class TimeseriesDataCache {
       });
       //Wait for the data to return 
       List<TimeseriesAssembly> assemblies = await futureGroup.future;
-      return new TimeseriesBestSeries(node, new DateTime.now(), assemblies);
+      return new TimeseriesBestSeries.create(node, new DateTime.now(), assemblies);
   }
   Future<List<TimeseriesBestSeries>> getTimeseriesBestSeriesSet(List<TimeseriesNode> nodes, DateTime validFrom, Duration period) async{
 

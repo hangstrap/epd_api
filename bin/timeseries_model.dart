@@ -102,7 +102,8 @@ class TimeseriesBestSeries {
   DateTime latestAt;
   List<Edition> editions = [];
 
-  TimeseriesBestSeries(this.node, this.latestAt, List<TimeseriesAssembly> assemblies) {
+  TimeseriesBestSeries();
+  TimeseriesBestSeries.create(this.node, this.latestAt, List<TimeseriesAssembly> assemblies) {
     assemblies.forEach((assembly) {
       if (assembly.node != node) {
         throw new ArgumentError("An assembly is for the wrong node");
