@@ -91,34 +91,6 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(Uri url, Directory des
 }
 
 
-Future<String> download( Uri uri, Directory baseDir) async {
-  
-  File catalogFile = new File( baseDir.path +"/catalog.json");
-  
-  TimeseriesCatalogue catalog = await load( catalogFile);
-  
-  catalog = await downloaderCafFilesFromWebSite(uri, baseDir,  catalog);
-  
-  return _save( catalog, catalogFile);
-}
-
-Future<TimeseriesCatalogue> load( File sourceFile) async{
-
-    if( await sourceFile.exists()){
-      
-      String contents = await sourceFile.readAsString();
-      return jsonx.decode(contents, type: TimeseriesCatalogue);
-    }
-    return new TimeseriesCatalogue();
-}
-
-Future<String> _save( TimeseriesCatalogue catalogue, File catalogueFile) async{
-  
-  String contents = jsonx.encode( catalogue, indent: ' ');
-  await catalogueFile.writeAsString( contents);
-  return contents;
-}
-
 Future main() async {
   
   setUpJsonConverters();
@@ -126,7 +98,13 @@ Future main() async {
   Uri url = new Uri.http("amps-caf-output.met.co.nz", "/ICE");
   Directory destination = new Directory("/temp/epdapi/");
 
-  await download(url, destination);
+  File catalogFile = new File( destination.path +"/catalog.json");
+  
+  TimeseriesCatalogue catalog = await load( catalogFile);
+  
+  catalog = await downloaderCafFilesFromWebSite(url, destination,  catalog);
+  
+  await save( catalog, catalogFile);
    
   print( "Download finished");
   return null;

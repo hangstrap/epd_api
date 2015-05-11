@@ -69,12 +69,6 @@ main() {
       //catalog should not be updated
       catalogue.getLogs(callsTo("addAnalysis")).verify(neverHappened);
     });
-    
-    solo_test("full monty", () async {
-      
-      print( await downloader.download(uri, outputDirectory));
-      
-    });
   });
   
   

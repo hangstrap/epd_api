@@ -29,7 +29,11 @@ class TimeseriesNode {
   bool operator ==(other) {
     if (other is! TimeseriesNode) return false;
     TimeseriesNode key = other;
-    return (key.element == element && key.locationName == locationName && key.locationSuffix == locationSuffix && key.model == model && key.product == product);
+    return (key.element == element 
+        && key.locationName == locationName 
+        && key.locationSuffix == locationSuffix 
+        && key.model == model 
+        && key.product == product);
   }
   String toNamespace() => "${product}/${model}/${element}/${locationName}.${locationSuffix}";
   String toString() => toNamespace();

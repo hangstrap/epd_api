@@ -3,6 +3,7 @@ library timeseries_catalogue;
 import "dart:io";
 import 'dart:core';
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:jsonx/jsonx.dart' as jsonx;
 
@@ -57,7 +58,7 @@ class TimeseriesCatalogue {
 
     itemsDownloaded.add(source);
 
-    Map<DateTime, CatalogueItem> analayisMap = catalogue.putIfAbsent(assembly.node, () => {});
+    Map<DateTime, CatalogueItem> analayisMap = catalogue.putIfAbsent(assembly.node, () => new HashMap());
     analayisMap[assembly.analysis] = item;
   }
 
@@ -75,7 +76,7 @@ Future<TimeseriesCatalogue> load( File sourceFile) async{
       String contents = await sourceFile.readAsString();
       return jsonx.decode(contents, type: TimeseriesCatalogue);
     }
-    return new TimeseriesCatalogue();
+    return null;
 }
 
 Future<String> save( TimeseriesCatalogue catalogue, File catalogueFile) async{
