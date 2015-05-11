@@ -1,5 +1,11 @@
 library timeseries_catalogue;
 
+import "dart:io";
+import 'dart:core';
+import 'dart:async';
+
+import 'package:jsonx/jsonx.dart' as jsonx;
+
 import "timeseries_model.dart";
 import 'utils.dart';
 
@@ -58,4 +64,23 @@ class TimeseriesCatalogue {
   bool isDownloaded(Uri source) {
     return itemsDownloaded.contains(source);
   }
+}
+
+
+
+Future<TimeseriesCatalogue> load( File sourceFile) async{
+
+    if( await sourceFile.exists()){
+      
+      String contents = await sourceFile.readAsString();
+      return jsonx.decode(contents, type: TimeseriesCatalogue);
+    }
+    return new TimeseriesCatalogue();
+}
+
+Future<String> save( TimeseriesCatalogue catalogue, File catalogueFile) async{
+  
+  String contents = jsonx.encode( catalogue, indent: ' ');
+  await catalogueFile.writeAsString( contents);
+  return contents;
 }

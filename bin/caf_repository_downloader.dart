@@ -1,12 +1,14 @@
 library caf_repository_downloader;
 
+import "dart:io";
+import 'dart:core';
+import 'dart:async';
+
 import 'web_site_listing_crawler.dart' as crawler;
 import 'caf_file_decoder.dart' as deconder;
 import 'timeseries_catalogue.dart';
-import "dart:io";
-import 'dart:core';
 import 'package:http/http.dart' as http;
-import 'dart:async';
+
 import 'package:pool/pool.dart';
 import "package:quiver/async.dart";
 import 'package:jsonx/jsonx.dart' as jsonx;
@@ -93,14 +95,14 @@ Future<String> download( Uri uri, Directory baseDir) async {
   
   File catalogFile = new File( baseDir.path +"/catalog.json");
   
-  TimeseriesCatalogue catalog = await _load( catalogFile);
+  TimeseriesCatalogue catalog = await load( catalogFile);
   
   catalog = await downloaderCafFilesFromWebSite(uri, baseDir,  catalog);
   
   return _save( catalog, catalogFile);
 }
 
-Future<TimeseriesCatalogue> _load( File sourceFile) async{
+Future<TimeseriesCatalogue> load( File sourceFile) async{
 
     if( await sourceFile.exists()){
       
@@ -110,10 +112,10 @@ Future<TimeseriesCatalogue> _load( File sourceFile) async{
     return new TimeseriesCatalogue();
 }
 
-Future<String> _save( TimeseriesCatalogue catalogue, File catalogueFle) async{
+Future<String> _save( TimeseriesCatalogue catalogue, File catalogueFile) async{
   
   String contents = jsonx.encode( catalogue, indent: ' ');
-  await catalogueFle.writeAsString( contents);
+  await catalogueFile.writeAsString( contents);
   return contents;
 }
 
