@@ -22,8 +22,9 @@ final ApiServer _apiServer = new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: 
 
 Future main( List<String> arguments ) async{
   
-//  Directory destination = new Directory("/temp/epdapi/");
-    Directory dataDirectory = new Directory("data");
+//  Directory dataDirectory = new Directory("/temp/epdapi/");
+  Directory dataDirectory = new Directory("data");
+//  Directory dataDirectory = new Directory("test/test-data");
  
   print( "Starting up application, dataDirectory at ${dataDirectory}");
   setUpJsonConverters();

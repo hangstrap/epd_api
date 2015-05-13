@@ -14,13 +14,14 @@ class CatalogueItem {
   Uri source;
   DateTime analyis;
   Period fromTo;
+  
   CatalogueItem.create(this.source, this.analyis, this.fromTo);
-  CatalogueItem();
+  CatalogueItem(){}
 }
 
 class TimeseriesCatalogue {
-  Map<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue = {};
-  List<Uri> itemsDownloaded = [];
+  final Map<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue = {};
+  final List<Uri> itemsDownloaded = [];
 
   int get numberOfNodes => catalogue.length;
 

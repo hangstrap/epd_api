@@ -19,8 +19,8 @@ import "timeseries_data_cache.dart";
 
 //http://localhost:9090/api/discovery/v1/apis
 //http://localhost:9090/api/epd/v1/index
-//http://localhost:9090/api/epd/v1/byAnalysis/City Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z?locations=01492.INTL,03266.INTL&elements=TTTTT&validFrom=20150215T0400Z&validTo=20150215T0600Z
-//http://localhost:9090/api/epd/v1/byLatest/City Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z/20150215T0600Z?locations=01492.INTL,03266.INTL&elements=TTTTT
+//http://localhost:9090/api/epd/v1/byAnalysis/City, Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z?locations=01492.INTL,03266.INTL&elements=TTTTT&validFrom=20150215T0400Z&validTo=20150215T0600Z
+//http://localhost:9090/api/epd/v1/byLatest/City, Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z/20150215T0600Z?locations=01492.INTL,03266.INTL&elements=TTTTT
 class MyMessage {
   String message;
 }
