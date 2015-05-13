@@ -1,7 +1,9 @@
 import 'package:unittest/unittest.dart';
-import '../bin/timeseries_model.dart';
 import 'package:jsonx/jsonx.dart' as jsonx;
+
+import '../bin/timeseries_model.dart';
 import '../bin/json_converters.dart';
+
 import 'matchers.dart';
 
 TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");

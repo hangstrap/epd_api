@@ -1,7 +1,7 @@
+import 'matchers.dart';
+
 import 'package:unittest/unittest.dart';
 import 'package:mock/mock.dart';
-
-import 'matchers.dart';
 
 import '../bin/timeseries_data_cache.dart';
 import '../bin/epd_api.dart';
@@ -21,13 +21,13 @@ main() {
   group("byAnalysis", () {
     test("locations and elements must be query parameters", () {
       expect(() => underTest.byAnalysis("product", "model", "20150215T0300Z", elements: "aa"),
-          throwsA(exceptionMatching(ArgumentError, "locations and elements are required query paramters")));
+          throwsA(exceptionMatching(FormatException, "locations and elements are required query paramters")));
       expect(() => underTest.byAnalysis("product", "model", "20150215T0300Z", locations: "aa"),
-          throwsA(exceptionMatching(ArgumentError, "locations and elements are required query paramters")));
+          throwsA(exceptionMatching(FormatException, "locations and elements are required query paramters")));
     });
     test("analysis time must be valid ", (){
       expect(() => underTest.byAnalysis("product", "model", "junk", elements: "aa", locations:"9999.INTL"),
-          throwsA(exceptionMatching(ArgumentError, "Time value of 'junk' is invalid, must be ISO time format")));
+          throwsA(exceptionMatching(FormatException, "Time value of 'junk' is invalid, must be ISO time format")));
       
       
     });

@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:unittest/unittest.dart';
+
 import '../bin/timeseries_model.dart';
 import '../bin/timeseries_data_cache.dart';
 import '../bin/utils.dart';
 
-import 'dart:async';
+
 
 DateTime analysisAt = new DateTime.utc(2013, 04, 07, 20, 23);
 

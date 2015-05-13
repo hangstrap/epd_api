@@ -1,13 +1,12 @@
+import 'dart:io';
+
 import 'package:unittest/unittest.dart';
+import "package:mock/mock.dart";
+import 'package:http_server/http_server.dart' show VirtualDirectory;
 
 import '../bin/json_converters.dart';
-
 import "../bin/caf_repository_downloader.dart" as downloader;
 import '../bin/timeseries_catalogue.dart';
-import 'dart:io';
-import "package:mock/mock.dart";
-
-import 'package:http_server/http_server.dart' show VirtualDirectory;
 
 
 
