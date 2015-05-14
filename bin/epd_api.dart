@@ -56,6 +56,7 @@ class EpdApi {
 
   @ApiMethod(method: 'GET', path: 'byLatest/{product}/{model}/{validFrom}/{validTo}')
   Future<List<TimeseriesBestSeries>> byLatest(String product, String model, String validFrom, String validTo, {String locations, String elements}) {
+    try{
       if ((locations == null) || (elements == null)) {
         throw new FormatException("locations and elements are required query paramters");
       }
@@ -69,6 +70,10 @@ class EpdApi {
       List<TimeseriesNode> nodes = _extractNodes(locations, elements, product, model);
 
       return cache.getTimeseriesBestSeriesSet(nodes, validFromAt, duration);
+    }catch( e){
+      print( "had exception ${e}");
+      throw new ApplicationError( new Exception(e));      
+    }
   }
 
   List<TimeseriesNode> _extractNodes(String locations, String elements, String product, String model) {

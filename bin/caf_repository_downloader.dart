@@ -65,7 +65,7 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(Uri url, Directory des
 
   bool foundLink(crawler.Link link) {
 
-    print("found link ${link.name}");
+//    print("found link ${link.name}");
     if (link.isDirectory) {
       return true;
     }
@@ -75,7 +75,7 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(Uri url, Directory des
       if( !catalog.isDownloaded( link.url)){
         fg.add( downloadCafFile(link));
       }else{
-        print( "has been download");
+ //       print( "has been download");
       }
     }
     return true;

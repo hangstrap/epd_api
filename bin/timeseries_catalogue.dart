@@ -17,6 +17,7 @@ class CatalogueItem {
   
   CatalogueItem.create(this.source, this.analyis, this.fromTo);
   CatalogueItem(){}
+
 }
 
 class TimeseriesCatalogue {

@@ -22,14 +22,14 @@ final ApiServer _apiServer = new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: 
 
 Future main( List<String> arguments ) async{
   
-//  Directory dataDirectory = new Directory("/temp/epdapi/");
-  Directory dataDirectory = new Directory("data");
-//  Directory dataDirectory = new Directory("test/test-data");
+  Directory dataDirectory = new Directory("/temp/epdapi/");
+//  Directory dataDirectory = new Directory("data");
+
  
   print( "Starting up application, dataDirectory at ${dataDirectory}");
   setUpJsonConverters();
 
-  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE");
+  Uri uri = new Uri.http("-amps-caf-output.met.co.nz", "/ICE");
 
   File catalogFile = new File( dataDirectory.path +"/catalog.json");
   

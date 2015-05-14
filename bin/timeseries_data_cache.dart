@@ -70,6 +70,7 @@ class TimeseriesDataCache {
       //Wait for the data to return 
       List<TimeseriesAssembly> assemblies = await futureGroup.future;
       return new TimeseriesBestSeries.create(node, new DateTime.now(), assemblies);
+      
   }
   Future<List<TimeseriesBestSeries>> getTimeseriesBestSeriesSet(List<TimeseriesNode> nodes, DateTime validFrom, Duration period) async{
 
