@@ -35,7 +35,7 @@ String fileNameForTimeseriesAnalysis(TimeseriesNode node, DateTime analysis) {
   String element = sanitise(node.element);
   String nameSuffix = _createLocationSuffix(sanitise(node.locationName), node.locationSuffix);
 
-  return "${product}/${model}/${element}/${nameSuffix}/${analysisAt}Z/${product}.${model}.${element}.${analysisAt}Z.${nameSuffix}.caf";
+  return "${product}/${model}/${element}/${nameSuffix}/${product}.${model}.${element}.${analysisAt}Z.${nameSuffix}.caf";
 }
 
 String fileNameForCafFile(List<String> cafFileContents) {
@@ -51,7 +51,7 @@ String fileNameForCafFile(List<String> cafFileContents) {
   String suffix = _findToken("station-99suffix", cafFileContents);
   String locationSuffix = _createLocationSuffix(location, suffix);
 
-  return "${product}/${model}/${element}/${locationSuffix}/${analysis}/${product}.${model}.${element}.${analysis}.${locationSuffix}.caf";
+  return "${product}/${model}/${element}/${locationSuffix}/${product}.${model}.${element}.${analysis}.${locationSuffix}.caf";
 }
 TimeseriesNode toTimeseriesNode(List<String> cafHeaderBlock) {
   String product = _findToken("product", cafHeaderBlock);

@@ -13,12 +13,12 @@ main() {
     test("check the pattern for a 99xxx station", () {
       String cafFileName = caf.fileNameForCafFile(cafFileHeader99xxxx);
       expect(cafFileName, equals(
-          "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/99647-INTL/201502150300Z/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.99647-INTL.caf"));
+          "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/99647-INTL/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.99647-INTL.caf"));
     });
     test("check the pattern for a non 99xxx station", () {
       String cafFileName = caf.fileNameForCafFile(cafFileHeader123456);
       expect(cafFileName, equals(
-          "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/123456/201502150300Z/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.123456.caf"));
+          "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/123456/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.123456.caf"));
     });
   });
 
@@ -30,7 +30,7 @@ main() {
 
       String cafFileName = caf.fileNameForTimeseriesAnalysis(node, analysis);
       expect(cafFileName, equals(
-          "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/99647-INTL/201502150300Z/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.99647-INTL.caf"));
+          "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/99647-INTL/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.99647-INTL.caf"));
     });
   });
 

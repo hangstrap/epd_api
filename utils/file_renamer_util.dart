@@ -7,12 +7,12 @@ import '../bin/caf_file_decoder.dart' as caf;
 
 void main(){
   
-  var source = "/home/richard/Downloads/TTTTT";
-  var desct = "/home/richard/Documents/GitHub/epd_api_shelf/data";
+  var source = "/home/hangstrap/Documents/GitHub/epd_api/data/";
+  var desct = "/home/hangstrap/Documents/GitHub/epd_api/data2";
   
   io.visitDirectory( new Directory( source), (FileSystemEntity entity){
     
-    print( entity.path);
+//    print( entity.path);
     
     if( entity is File){
       if( entity.path.endsWith( ".caf")){
@@ -29,7 +29,7 @@ void main(){
             newParent.createSync(recursive:true);
           }
           
-          file.renameSync( newFileName);
+          file.copySync( newFileName);
       }
     }
     
