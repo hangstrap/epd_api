@@ -13,8 +13,8 @@ DateTime analysisAt = new DateTime.utc(2013, 04, 07, 20, 23);
 void main() {
   group("getTimeseries", () {
     
-    List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
-      return [];
+    Future<List<DateTime>> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+      return new Future.value([]);
     }
     
     TimeseriesNode node = new TimeseriesNode.create("City Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "01492", "INTL");
@@ -67,8 +67,8 @@ void main() {
     });
 
     group("getTimeseriesSet", () {
-      List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
-        return [];
+      Future<List<DateTime>> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+        return new Future.value([]);
       }
 
       
@@ -137,8 +137,8 @@ void main() {
     
     test( "when no analysis available then empty TimeseriesBestSeries returned", () async{
 
-      List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
-        return [];
+      Future<List<DateTime>> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+        return new Future.value([]);
       }
       Future<TimeseriesAssembly> timeseriesLoader(TimeseriesNode key, DateTime analysis) {
         throw "should not be called";
@@ -156,8 +156,8 @@ void main() {
       TimeseriesAssembly assembly = new TimeseriesAssembly.create(node, analysisAt, [edition]);
         
       
-      List<DateTime> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
-        return [analysisAt];
+      Future<List<DateTime>> analysissForPeriodQuery(TimeseriesNode node, Period validFromTo){
+        return new Future.value([analysisAt]);
       }
       Future<TimeseriesAssembly> timeseriesLoader(TimeseriesNode key, DateTime analysis) {
         return new Future.value( assembly);

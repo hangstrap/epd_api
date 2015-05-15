@@ -15,30 +15,24 @@ import "timeseries_data_cache.dart";
 import "epd_api.dart";
 import "json_converters.dart";
 import "caf_repository_downloader.dart";
-import "caf_file_system_datasource.dart";
 
 const _API_PREFIX = '/api';
 final ApiServer _apiServer = new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: true);
 
 Future main( List<String> arguments ) async{
+
+  Uri uri = new Uri.http("-amps-caf-output.met.co.nz", "/ICE");
   
   Directory dataDirectory = new Directory("/temp/epdapi/");
 //  Directory dataDirectory = new Directory("data");
 
+  setUpJsonConverters();
  
   print( "Starting up application, dataDirectory at ${dataDirectory}");
-  setUpJsonConverters();
 
-  Uri uri = new Uri.http("-amps-caf-output.met.co.nz", "/ICE");
-
-  File catalogFile = new File( dataDirectory.path +"/catalog.json");
   
-  TimeseriesCatalogue catalogue = await load( catalogFile);
-  if( catalogue == null){
-    print( "generating catalogue from files in ${dataDirectory}");
-    catalogue = await generateCataloge( dataDirectory);
-    print( "generated  catalogue from files in ${dataDirectory}");
-  }
+  CataloguePersister persister = new CataloguePersister( dataDirectory);  
+  TimeseriesCatalogue catalogue = new TimeseriesCatalogue( persister.load, persister.save);
   
   
   startCafRepositoryDownloader(uri, dataDirectory, catalogue);
@@ -56,12 +50,8 @@ void startCafRepositoryDownloader( Uri uri, Directory destination, TimeseriesCat
   
   new Timer.periodic( new Duration( minutes:1), (_) async{
     print( "downloading latest data from repository");
-    await downloaderCafFilesFromWebSite(uri, destination,  catalogue);
-    
-    print( "downloaded  latest data from repository");
-    File catalogFile = new File( destination.path +"/catalog.json");
-    await save( catalogue, catalogFile);
-    
+    await downloaderCafFilesFromWebSite(uri, destination,  catalogue);    
+    print( "downloaded  latest data from repository");    
   });
 }
 

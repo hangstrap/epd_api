@@ -14,7 +14,7 @@ import "utils.dart";
 typedef Future<TimeseriesAssembly> TimeseresLoader(TimeseriesNode key, DateTime analysis);
 
 /**normally supplied by the catalogue*/
-typedef List<DateTime> AnalysissForPeriodQuery(TimeseriesNode node, Period validFromTo);
+typedef Future<List<DateTime>> AnalysissForPeriodQuery(TimeseriesNode node, Period validFromTo);
 
 class TimeseriesDataCache {
 
@@ -58,7 +58,7 @@ class TimeseriesDataCache {
       new Period.create( validFrom, validFrom.add( period));
       
 
-      List<DateTime> analysis = analysisQuery(node, new Period.create( validFrom, validFrom.add( period)));
+      List<DateTime> analysis = await analysisQuery(node, new Period.create( validFrom, validFrom.add( period)));
       if( analysis.length == 0){
         return new TimeseriesBestSeries.create(node, new DateTime.now(), []); 
       }

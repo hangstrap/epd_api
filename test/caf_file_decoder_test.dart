@@ -23,15 +23,24 @@ main() {
   });
 
   group("create correct file name based on TimeseriesAnalysis", () {
+    DateTime analysis = new DateTime.utc(2015, 2, 15, 3, 0);
+    TimeseriesNode node =
+        new TimeseriesNode.create("City, Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "99647", "INTL");
+
+    
     test("check pattern for a 99xxx station", () {
-      DateTime analysis = new DateTime.utc(2015, 2, 15, 3, 0);
-      TimeseriesNode node =
-          new TimeseriesNode.create("City, Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "99647", "INTL");
 
       String cafFileName = caf.fileNameForTimeseriesAnalysis(node, analysis);
       expect(cafFileName, equals(
           "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/99647-INTL/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.99647-INTL.caf"));
     });
+    test("check path for a 9xxx status", (){
+      String fileNamePath = caf.pathNameForTimeseriesNode(node);
+           expect(fileNamePath, equals(
+               "CityTownSpotForecasts/PDF-PROFOUND/TTTTT/99647-INTL"));
+         
+    });    
+    
   });
 
   group("caf file parser", () {

@@ -6,18 +6,23 @@ import "timeseries_catalogue.dart";
 import "package:quiver/io.dart";
 import "caf_file_decoder.dart" as decoder;
 
-Future<TimeseriesCatalogue>  generateCataloge (Directory source) async {
-  TimeseriesCatalogue result = new TimeseriesCatalogue();
+
+///Create catalogue on a existing file structure
+///TODO do we need this?
+Future<TimeseriesCatalogue> generateCataloge(Directory source) async {
+  
+  CataloguePersister persister = new CataloguePersister(source);
+  TimeseriesCatalogue result = new TimeseriesCatalogue(persister.load, persister.save);
 
   Future<bool> _visit(FileSystemEntity f) {
-    
-//    print( f.path);
+
+
     if (f.path.endsWith(".caf")) {
-    
+      
       File cafFile = f;
 
       cafFile.readAsLines().then((cafFileContents) {
-        result.addAnalysis(decoder.toTimeseiesAssembly(cafFileContents), new Uri.file( f.path));
+        result.addAnalysis(decoder.toTimeseiesAssembly(cafFileContents));
       });
     }
     return new Future.value(true);

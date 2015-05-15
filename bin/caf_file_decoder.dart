@@ -22,20 +22,28 @@ TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {
   return new TimeseriesAssembly.create(node, analysis, editions);
 }
 
-String fileNameForTimeseriesAnalysis(TimeseriesNode node, DateTime analysis) {
-  String sanitise(String str) {
-    return str.replaceAll(new RegExp("[^0-9a-zA-Z/-]"), "");
-  }
+String pathNameForTimeseriesNode( TimeseriesNode node){
 
-  String product = sanitise(node.product);
-  String model = sanitise(node.model);
+  String product = _sanitise(node.product);
+  String model = _sanitise(node.model);
+  String element = _sanitise(node.element);
+  String nameSuffix = _createLocationSuffix(_sanitise(node.locationName), node.locationSuffix);
+
+  return "${product}/${model}/${element}/${nameSuffix}";
+  
+}
+
+String fileNameForTimeseriesAnalysis(TimeseriesNode node, DateTime analysis) {
+
+  String product = _sanitise(node.product);
+  String model = _sanitise(node.model);
 
   var formatter = new DateFormat('yyyyMMddHHmm');
   String analysisAt = formatter.format(analysis);
-  String element = sanitise(node.element);
-  String nameSuffix = _createLocationSuffix(sanitise(node.locationName), node.locationSuffix);
+  String element = _sanitise(node.element);
+  String nameSuffix = _createLocationSuffix(_sanitise(node.locationName), node.locationSuffix);
 
-  return "${product}/${model}/${element}/${nameSuffix}/${product}.${model}.${element}.${analysisAt}Z.${nameSuffix}.caf";
+  return "${pathNameForTimeseriesNode(node)}/${product}.${model}.${element}.${analysisAt}Z.${nameSuffix}.caf";
 }
 
 String fileNameForCafFile(List<String> cafFileContents) {
@@ -126,3 +134,6 @@ String _findToken(String token, List<String> lines) {
     throw new FormatException("Could not find token '${token}'");
   }
 }
+  String _sanitise(String str) {
+    return str.replaceAll(new RegExp("[^0-9a-zA-Z/-]"), "");
+  }
