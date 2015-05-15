@@ -29,6 +29,7 @@ class EpdApi {
 
   @ApiMethod(method: 'GET', path: 'byAnalysis/{product}/{model}/{analysis}')
   Future<List<TimeseriesAssembly>> byAnalysis(String product, String model, String analysis, {String locations, String elements, String validFrom, String validTo}) {
+    try {
       if ((locations == null) || (elements == null)) {
         throw new FormatException("locations and elements are required query paramters");
       }
@@ -51,12 +52,15 @@ class EpdApi {
       }
 
       return cache.getTimeseriesAnalysisSet(nodes, analysisAt, valid_From, period);
+    } catch (e) {
+      print("had exception ${e}");
+      throw new ApplicationError(new Exception(e));
+    }
   }
-
 
   @ApiMethod(method: 'GET', path: 'byLatest/{product}/{model}/{validFrom}/{validTo}')
   Future<List<TimeseriesBestSeries>> byLatest(String product, String model, String validFrom, String validTo, {String locations, String elements}) {
-    try{
+    try {
       if ((locations == null) || (elements == null)) {
         throw new FormatException("locations and elements are required query paramters");
       }
@@ -70,9 +74,9 @@ class EpdApi {
       List<TimeseriesNode> nodes = _extractNodes(locations, elements, product, model);
 
       return cache.getTimeseriesBestSeriesSet(nodes, validFromAt, duration);
-    }catch( e){
-      print( "had exception ${e}");
-      throw new ApplicationError( new Exception(e));      
+    } catch (e) {
+      print("had exception ${e}");
+      throw new ApplicationError(new Exception(e));
     }
   }
 
@@ -98,5 +102,4 @@ class EpdApi {
       throw new FormatException("Time value of '${time}' is invalid, must be ISO time format");
     }
   }
-  
 }
