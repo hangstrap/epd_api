@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:unittest/unittest.dart';
-import "package:mock/mock.dart";
 import 'package:http_server/http_server.dart' show VirtualDirectory;
 
 import '../bin/json_converters.dart';

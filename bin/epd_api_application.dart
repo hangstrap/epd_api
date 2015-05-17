@@ -23,8 +23,8 @@ Future main( List<String> arguments ) async{
 
   Uri uri = new Uri.http("-amps-caf-output.met.co.nz", "/ICE");
   
-  Directory dataDirectory = new Directory("/temp/epdapi/");
-//  Directory dataDirectory = new Directory("data");
+  //Directory dataDirectory = new Directory("/temp/epdapi/");
+  Directory dataDirectory = new Directory("data");
 
   setUpJsonConverters();
  

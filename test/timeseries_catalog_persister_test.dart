@@ -39,8 +39,12 @@ Directory outputDirectory;
     
     DateTime analysis = new DateTime(2015, 5,15);
     CatalogueItem item = new CatalogueItem.create(analysis, new Period.create(analysis, analysis));
+    DateTime analysis2 = new DateTime(2015, 5,16);
+    CatalogueItem item2 = new CatalogueItem.create(analysis2, new Period.create(analysis2, analysis2));
+
     
-    Map<DateTime, CatalogueItem> map = { analysis: item}; 
+    Map<DateTime, CatalogueItem> map = { analysis: item, 
+      analysis2:item2}; 
     
     await underTest.save(node, map);
     
@@ -56,7 +60,7 @@ Directory outputDirectory;
     jsonFile.writeAsStringSync( JSON);
 
     Map<DateTime, CatalogueItem> result = await underTest.load(node);
-    expect( result.length, equals(1));
+    expect( result.length, equals(2));
     DateTime analysis = new DateTime(2015, 5,15);
     CatalogueItem item = result[analysis];
     expect( item.analyis, equals(analysis));
@@ -64,12 +68,19 @@ Directory outputDirectory;
   });  
 }
 
-String JSON = """{
- "2015-05-15T00:00:00.000": {
+String JSON = """[
+ {
   "analyis": "2015-05-15T00:00:00.000",
   "fromTo": {
    "from": "2015-05-15T00:00:00.000",
    "toEx": "2015-05-15T00:00:00.000"
   }
+ },
+ {
+  "analyis": "2015-05-16T00:00:00.000",
+  "fromTo": {
+   "from": "2015-05-16T00:00:00.000",
+   "toEx": "2015-05-16T00:00:00.000"
+  }
  }
-}""";
+]""";

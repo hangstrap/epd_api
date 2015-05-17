@@ -8,7 +8,6 @@ import "caf_file_decoder.dart" as decoder;
 
 
 ///Create catalogue on a existing file structure
-///TODO do we need this?
 Future<TimeseriesCatalogue> generateCataloge(Directory source) async {
   
   CataloguePersister persister = new CataloguePersister(source);
@@ -29,4 +28,11 @@ Future<TimeseriesCatalogue> generateCataloge(Directory source) async {
   }
 
   return visitDirectory(source, _visit).then((_) => new Future.value(result));
+}
+
+
+Future main()async{
+  Directory base = new Directory( "data");
+  return await generateCataloge(base);
+  
 }

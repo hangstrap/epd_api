@@ -15,32 +15,40 @@ typedef Future CatalogForNodeSaver(TimeseriesNode node, Map<DateTime, CatalogueI
 
 class CataloguePersister {
   final Directory source;
-  CataloguePersister(this.source){
-    if( source ==null){
+  CataloguePersister(this.source) {
+    if (source == null) {
       throw "Source cannot be null";
     }
   }
   Future<Map<DateTime, CatalogueItem>> load(TimeseriesNode node) async {
-
     //load from disk
     File catalogFile = _catalogFileName(node);
+    
     if (await catalogFile.exists()) {
-      String json = await catalogFile.readAsString();
-      return new Future.value(_fromJson(json));
+      try {
+        String json = await catalogFile.readAsString();
+        return new Future.value(_fromJson(json));
+      } catch (e) {
+        print("error load ${catalogFile} ${e}");
+      }
     }
     return new Future.value({});
   }
+  num count= 0;
   Future save(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogueMap) async {
 
     //save to disk
     String json = _toJson(catalogueMap);
     File catalogFileName = _catalogFileName(node);
+    
+    
     Directory newParent = catalogFileName.parent;
     if (!await newParent.exists()) {
       await newParent.create(recursive: true);
-    }
-
-    return await catalogFileName.writeAsString(json);
+    }    
+    await catalogFileName.writeAsString(json);
+    
+    return new Future.value();
   }
 
   File _catalogFileName(TimeseriesNode node) {
@@ -49,20 +57,19 @@ class CataloguePersister {
   }
 
   Map<DateTime, CatalogueItem> _fromJson(String json) {
-    Map<String, CatalogueItem> temp =
-        jsonx.decode(json, type: const jsonx.TypeHelper<Map<String, CatalogueItem>>().type);
-    
-    Map<DateTime, CatalogueItem> result ={};
-    temp.forEach( (str, item){
-      result[ DateTime.parse(str)] = item;
+    List<CatalogueItem> temp = jsonx.decode(json, type: const jsonx.TypeHelper<List<CatalogueItem>>().type);
+
+    Map<DateTime, CatalogueItem> result = {};
+    temp.forEach((item) {
+      result[item.analyis] = item;
     });
     return result;
   }
 
   String _toJson(Map<DateTime, CatalogueItem> catalogueMap) {
-    var result = {};
+    var result = [];
     catalogueMap.forEach((analysis, item) {
-      result[analysis.toIso8601String()] = item;
+      result.add(item);
     });
 
     return jsonx.encode(result, indent: " ");
@@ -74,6 +81,16 @@ class CatalogueItem {
   Period fromTo;
   CatalogueItem.create(this.analyis, this.fromTo);
   CatalogueItem() {}
+
+  int get hashCode {
+    return analyis.hashCode;
+  }
+
+  bool operator ==(other) {
+    if (other is! CatalogueItem) return false;
+    CatalogueItem key = other;
+    return (key.analyis == analyis);
+  }
 }
 
 class TimeseriesCatalogue {
@@ -81,7 +98,7 @@ class TimeseriesCatalogue {
   final CatalogForNodeSaver saver;
 
   final Map<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue = {};
-  
+
   int get numberOfNodes => catalogue.length;
 
   TimeseriesCatalogue(this.loader, this.saver);

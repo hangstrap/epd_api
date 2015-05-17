@@ -19,7 +19,7 @@ main() {
         expect(timeseriesCatalogue.numberOfNodes, equals(1));
         Map<DateTime, CatalogueItem> ayalysiss = await timeseriesCatalogue.analysissFor(
             new TimeseriesNode.create("City, Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "99647", "INTL"));
-        expect(ayalysiss.length, equals(1));
+        expect(ayalysiss.length, equals(2));
         DateTime analysis = new DateTime.utc(2015, 02, 15, 03, 00);
         DateTime prog1 = new DateTime.utc(2015, 02, 15, 04, 00);
 
