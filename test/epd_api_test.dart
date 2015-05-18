@@ -10,7 +10,9 @@ import '../bin/timeseries_data_cache.dart';
 import '../bin/epd_api.dart';
 
 @proxy
-class MockTimeseriesDataCache extends Mock implements TimeseriesDataCache {}
+class MockTimeseriesDataCache extends Mock implements TimeseriesDataCache {
+  noSuchMethod(Invocation i) => super.noSuchMethod(i);
+}
 
 main() {
   EpdApi underTest;
