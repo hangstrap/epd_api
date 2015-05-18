@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:unittest/unittest.dart';
 
-
 import "../bin/timeseries_catalogue.dart";
 import "../bin/timeseries_model.dart";
 import '../bin/json_converters.dart';
@@ -36,7 +35,6 @@ main() {
   DateTime wellAfterAnalysis = _0am.add(new Duration(hours: 101));
 
   group("TimeseriesCatalog", () {
-
     test("Add a single Analysis with a single spot edition", () async {
       TimeseriesCatalogue catalog = new TimeseriesCatalogue(emptyLoader, nullSaver);
       TimeseriesAssembly assembly =
@@ -80,7 +78,7 @@ main() {
       expect(analysisMap[_0am].fromTo, equals(new Period.create(_1am, _1am)));
       expect(analysisMap[analysisAt2].fromTo, equals(new Period.create(_2am, _2am)));
     });
-    
+
     group("findAnalysisCoveredByPeriod", () {
       TimeseriesCatalogue catalog;
       TimeseriesAssembly assembly00 =
@@ -99,15 +97,17 @@ main() {
 
       test("an unknown node should return a empty map", () async {
         TimeseriesCatalogue catalog = new TimeseriesCatalogue(emptyLoader, nullSaver);
-        expect( await catalog.findAnalysissForPeriod(node, new Period.create(_1am, _2am)), isEmpty);
+        expect(await catalog.findAnalysissForPeriod(node, new Period.create(_1am, _2am)), isEmpty);
       });
       test("an period before the analysis should return a empty map", () async {
         await catalog.addAnalysis(assembly00);
-        expect(await catalog.findAnalysissForPeriod(node, new Period.create(wellBeforeAnalysis, beforeAnalysis)), isEmpty);
+        expect(
+            await catalog.findAnalysissForPeriod(node, new Period.create(wellBeforeAnalysis, beforeAnalysis)), isEmpty);
       });
 
       test("an period after the analysis should return a empty map", () async {
-        expect( await catalog.findAnalysissForPeriod(node, new Period.create(afterAnalysis, wellAfterAnalysis)), isEmpty);
+        expect(
+            await catalog.findAnalysissForPeriod(node, new Period.create(afterAnalysis, wellAfterAnalysis)), isEmpty);
       });
       test("an period that covers all the anaysis period should return all analysis", () async {
         List<DateTime> result = await catalog.findAnalysissForPeriod(node, new Period.create(_0am, _5am));
@@ -131,6 +131,20 @@ main() {
         expect(result.elementAt(0), equals(_2am));
         expect(result.elementAt(1), equals(_3am));
       });
+    });
+  });
+
+  group("loader", () {
+    test("loader should only be called once", () async {
+      num loadedCalled = 0;
+      Future<Map<DateTime, CatalogueItem>> myLoader(TimeseriesNode node) {
+        loadedCalled++;
+        return new Future.value({});
+      }
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue(myLoader, nullSaver);
+
+      await Future.wait([catalog.analysissFor(node), catalog.analysissFor(node)]);
+      expect(loadedCalled, equals(1));
     });
   });
 }

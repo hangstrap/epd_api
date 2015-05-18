@@ -23,12 +23,12 @@ class CataloguePersister {
   Future<Map<DateTime, CatalogueItem>> load(TimeseriesNode node) async {
     //load from disk
     File catalogFile = _catalogFileName(node);
-    
+
     if (await catalogFile.exists()) {
       try {
-  //      print( "loading ${catalogFile}");
+        //      print( "loading ${catalogFile}");
         String json = catalogFile.readAsStringSync();
-  //      print( "loaded  ${catalogFile}");
+        //      print( "loaded  ${catalogFile}");
         return new Future.value(_fromJson(json));
       } catch (e) {
         print("error load ${catalogFile} ${e}");
@@ -36,30 +36,27 @@ class CataloguePersister {
     }
     return new Future.value({});
   }
-  num count= 0;
+  num count = 0;
   Future save(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogueMap) async {
 
     //save to disk
     String json = _toJson(catalogueMap);
     File catalogFileName = _catalogFileName(node);
-    
-    
+
     Directory newParent = catalogFileName.parent;
     if (!await newParent.exists()) {
       await newParent.create(recursive: true);
     }
-    
+
     count++;
 //    print( "saving ${count} ${catalogFileName}");
-    
+
 //    if( node.locationName=='01492'){
- //     print( json);
+    //     print( json);
 //    }
     catalogFileName.writeAsStringSync(json);
 //    print( "saved  ${count} ${catalogFileName}");
-    
-    
-    
+
     return new Future.value();
   }
 
@@ -108,6 +105,7 @@ class CatalogueItem {
 class TimeseriesCatalogue {
   final CatalogForNodeLoader loader;
   final CatalogForNodeSaver saver;
+  final Map<TimeseriesNode, Future> loading = {};
 
   final Map<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue = {};
 
@@ -117,9 +115,30 @@ class TimeseriesCatalogue {
 
   Future<Map<DateTime, CatalogueItem>> analysissFor(TimeseriesNode node) async {
     if (catalogue.containsKey(node) == false) {
-      catalogue[node] = await loader(node);
+      return _loadAnalysissFor(node);
     }
     return new Future.value(catalogue[node]);
+  }
+
+  Future<Map<DateTime, CatalogueItem>> _loadAnalysissFor(TimeseriesNode node) {
+    if (loading.containsKey(node)) {
+      //are we currently  loading the data?
+      return loading[node].whenComplete(() {
+        return analysissFor(node);
+      });
+    } else {
+      //Start loading the data, keeping a record that we are busy
+      Future<Map<DateTime, CatalogueItem>> future = loader(node);
+      loading[node] = future;
+      return future.then((data) {
+        //No longer loading data
+        loading.remove(node);
+        //Store it in the catalogue
+        catalogue[node] = data;
+        //return it
+        return data;
+      });
+    }
   }
 
   Future<List<DateTime>> findAnalysissForPeriod(TimeseriesNode node, Period validFromTo) async {
@@ -157,13 +176,12 @@ class TimeseriesCatalogue {
 //print ("map has ${analayisMap.length}");
 //    }
 
-    
     analayisMap[assembly.analysis] = item;
 
 //    if( assembly.node.locationName=='01492'){
 //print ("map now has ${analayisMap.length}");
 //    }
-    
+
     return await saver(assembly.node, analayisMap);
   }
 }
