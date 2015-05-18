@@ -6,7 +6,9 @@ import '../bin/caf_file_decoder.dart' as caf;
 import '../bin/timeseries_model.dart';
 
 @proxy
-class MockTimeseriesNode extends Mock implements TimeseriesNode {}
+class MockTimeseriesNode extends Mock implements TimeseriesNode {
+  noSuchMethod(Invocation i) => super.noSuchMethod(i);
+}
 
 main() {
   group("create correct file name based on CAF file contents", () {
