@@ -28,10 +28,10 @@ Future main(List<String> arguments) async {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
   
-  Uri uri = new Uri.http("-amps-caf-output.met.co.nz", "/ICE");
+  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE");
 
-  //Directory dataDirectory = new Directory("/temp/epdapi/");
-  Directory dataDirectory = new Directory("data");
+  Directory dataDirectory = new Directory("/temp/epdapi/");
+  //Directory dataDirectory = new Directory("data");
 
   setUpJsonConverters();
 

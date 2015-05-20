@@ -22,10 +22,12 @@ class CafFileDownloader {
   final Uri url;
   final Directory destination;
   final TimeseriesCatalogue catalog;
+  
+  final List<Uri> downloaded = [];
 
   FutureGroup fg = new FutureGroup();
 
-  Pool pool = new Pool(10);
+  Pool pool = new Pool(1);
 
   CafFileDownloader(this.url, this.destination, this.catalog);
 
@@ -47,11 +49,10 @@ class CafFileDownloader {
     }
 
     if (link.name.endsWith('.caf')) {
-//      if (!catalog.isDownloaded(link.url)) {
+      if( !downloaded.contains( link.url)){
       fg.add(_downloadCafFile(link));
-//      } else {
-//        print("has been download");
-//      }
+      _log.fine( "${link.name} has been download");
+}
     }
     return true;
   }

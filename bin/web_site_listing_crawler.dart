@@ -1,10 +1,13 @@
 library web_site_listing_crawler;
 
-import "web_site_listing_parser.dart" as parser;
 import "dart:async";
-//import "dart:core";
+
 import 'package:http/http.dart' as http;
 import 'package:quiver/async.dart';
+import 'package:logging/logging.dart';
+
+import "web_site_listing_parser.dart" as parser;
+final Logger _log = new Logger('caf_repository_downloader');
 
 class Link {
   final Uri _baseUrl;
@@ -31,7 +34,7 @@ typedef bool FoundLink(Link link);
 
 ///Itterates through the links on the web site, optionally  decending into subpages
 Future crawl(Uri url, FoundLink callback) {
-  print("about to crawl ${url}");
+  _log.fine("about to crawl ${url}");
 
   FutureGroup fg = new FutureGroup();
 
@@ -46,7 +49,7 @@ Future crawl(Uri url, FoundLink callback) {
         fg.add(crawl(link.url, callback));
       }
     });
-  }).catchError((onError) => print("Error ${url}  ${onError}")));
+  }).catchError((onError) => _log.warning("Error ${url}  ${onError}")));
 
   return fg.future;
 }
