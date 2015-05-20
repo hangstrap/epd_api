@@ -51,11 +51,10 @@ Future main(List<String> arguments) async {
 }
 
 void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCatalogue catalogue) {
-  new Timer.periodic(new Duration(minutes: 1), (_) async {
-    _log.info("downloading latest data from repository");
-    await downloaderCafFilesFromWebSite(uri, destination, catalogue);
-    _log.info("downloaded  latest data from repository");
-  });
+  
+  CafFileDownloader downloader = new CafFileDownloader(uri, destination, catalogue);
+  
+  new Timer.periodic(new Duration(minutes: 1), (_) async =>await downloader.download());
 }
 
 Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) async {

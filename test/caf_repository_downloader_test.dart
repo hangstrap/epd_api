@@ -2,13 +2,20 @@ import 'dart:io';
 
 import 'package:unittest/unittest.dart';
 import 'package:http_server/http_server.dart' show VirtualDirectory;
+import 'package:logging/logging.dart';
 
 import '../bin/json_converters.dart';
-import "../bin/caf_repository_downloader.dart" as downloader;
+import "../bin/caf_repository_downloader.dart" ;
 import '../bin/timeseries_catalogue.dart';
 
 
 main() {
+  
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((LogRecord rec) {
+    print('${rec.level.name}: ${rec.time}: ${rec.message}');
+  });
+  
   Directory  outputDirectory = new Directory("temp/");
 
   CataloguePersister persister = new CataloguePersister( outputDirectory);
@@ -45,19 +52,23 @@ main() {
 
     solo_test("Empty catalog will download all caf files", () async {
       
-
-      expect(await downloader.downloaderCafFilesFromWebSite(uri, outputDirectory, catalogue), same(catalogue));
+      CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
+      await underTest.download();
       
       File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');
       expect(output.existsSync(), isTrue);
 
     });
 //TODO make this work!
-    test("No files have been downloaded as catalog contains entry", () async {
+    test("Should not download file twice", () async {
 
-      await downloader.downloaderCafFilesFromWebSite(uri, outputDirectory, catalogue);
+      CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
+      await underTest.download();
 
-      File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/201502150300Z/TTTTT/CityTownSpotForecasts.PDF-PROFOUND.201502150300Z.TTTTT.03772.caf');
+      File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');
+      output.deleteSync();
+      await underTest.download();
+      
       expect(output.existsSync(), isFalse);
 
     });

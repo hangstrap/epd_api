@@ -13,7 +13,7 @@ TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {
 
   blocks.forEach((List<String> block) {
     if (analysis == null) {
-      analysis = DateTime.parse(_findToken("init-time", block));
+      analysis = _dateTimeParseToken("init-time", block);
       node = toTimeseriesNode(block);
     } else {
       editions.add(toEdition(block, analysis));
@@ -22,19 +22,16 @@ TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {
   return new TimeseriesAssembly.create(node, analysis, editions);
 }
 
-String pathNameForTimeseriesNode( TimeseriesNode node){
-
+String pathNameForTimeseriesNode(TimeseriesNode node) {
   String product = _sanitise(node.product);
   String model = _sanitise(node.model);
   String element = _sanitise(node.element);
   String nameSuffix = _createLocationSuffix(_sanitise(node.locationName), node.locationSuffix);
 
   return "${product}/${model}/${element}/${nameSuffix}";
-  
 }
 
 String fileNameForTimeseriesAnalysis(TimeseriesNode node, DateTime analysis) {
-
   String product = _sanitise(node.product);
   String model = _sanitise(node.model);
 
@@ -127,13 +124,21 @@ String _createLocationSuffix(String name, String suffix) {
 
 String _findToken(String token, List<String> lines) {
   try {
-   
-    String line = lines.firstWhere((String line) => line.indexOf(token) == 0, orElse : ()=> throw new FormatException( "Could not find tokean ${token}"));
-    return line.substring(line.indexOf("=") + 1);
+    String line = lines.firstWhere((String line) => line.indexOf(token) == 0,
+        orElse: () => throw new FormatException("Could not find tokean ${token}"));
+    return line.substring(line.indexOf("=") + 1).replaceAll("\r", "");
   } catch (e) {
     throw new FormatException("Could not find token '${token}'");
   }
 }
-  String _sanitise(String str) {
-    return str.replaceAll(new RegExp("[^0-9a-zA-Z/-]"), "");
+String _sanitise(String str) {
+  return str.replaceAll(new RegExp("[^0-9a-zA-Z/-]"), "");
+}
+DateTime _dateTimeParseToken(String token, List<String> lines) {
+  String data = _findToken(token, lines);
+  try {
+    return DateTime.parse(data);
+  } catch (e) {
+    throw new FormatException("value of '${data}' for token '${token}' cannot be parsed to a String");
   }
+}
