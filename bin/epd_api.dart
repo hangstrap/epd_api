@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:core';
 
 import 'package:rpc/rpc.dart';
+import 'package:logging/logging.dart';
 
 import "timeseries_model.dart";
 import "timeseries_data_cache.dart";
@@ -12,6 +13,10 @@ import "timeseries_data_cache.dart";
 //http://localhost:9090/api/epd/v1/index
 //http://localhost:9090/api/epd/v1/byAnalysis/City, Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z?locations=01492.INTL,03266.INTL&elements=TTTTT&validFrom=20150215T0400Z&validTo=20150215T0600Z
 //http://localhost:9090/api/epd/v1/byLatest/City, Town & Spot Forecasts/PDF-PROFOUND/20150215T0300Z/20150215T0600Z?locations=01492.INTL,03266.INTL&elements=TTTTT
+
+
+final Logger _log = new Logger('epd_api');
+
 class MyMessage {
   String message;
 }
@@ -53,7 +58,7 @@ class EpdApi {
 
       return cache.getTimeseriesAnalysisSet(nodes, analysisAt, valid_From, period);
     } catch (e) {
-      print("had exception ${e}");
+      _log.warning("had exception ${e}");
       throw new ApplicationError(new Exception(e));
     }
   }
@@ -75,7 +80,7 @@ class EpdApi {
 
       return cache.getTimeseriesBestSeriesSet(nodes, validFromAt, duration);
     } catch (e) {
-      print("had exception ${e}");
+      _log.warning("had exception ${e}");
       throw new ApplicationError(new Exception(e));
     }
   }

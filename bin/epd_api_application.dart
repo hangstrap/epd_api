@@ -8,6 +8,7 @@ import 'package:shelf_route/shelf_route.dart' as shelf_route;
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:rpc/rpc.dart';
+import 'package:logging/logging.dart';
 
 import "timeseries_catalogue.dart";
 import "caf_file_retriever.dart";
@@ -18,46 +19,46 @@ import "caf_repository_downloader.dart";
 
 const _API_PREFIX = '/api';
 final ApiServer _apiServer = new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: true);
+final Logger _log = new Logger('epd_app_application');
 
-Future main( List<String> arguments ) async{
-
-  Uri uri = new Uri.http("-amps-caf-output.met.co.nz", "/ICE");
+Future main(List<String> arguments) async {
   
+  Logger.root.level = Level.INFO;
+  Logger.root.onRecord.listen((LogRecord rec) {
+    print('${rec.level.name}: ${rec.time}: ${rec.message}');
+  });
+  
+  Uri uri = new Uri.http("-amps-caf-output.met.co.nz", "/ICE");
+
   //Directory dataDirectory = new Directory("/temp/epdapi/");
   Directory dataDirectory = new Directory("data");
 
   setUpJsonConverters();
- 
-  print( "Starting up application, dataDirectory at ${dataDirectory}");
 
-  
-  CataloguePersister persister = new CataloguePersister( dataDirectory);  
-  TimeseriesCatalogue catalogue = new TimeseriesCatalogue( persister.load, persister.save);
-  
-  
+  _log.info("Starting up application, dataDirectory at ${dataDirectory}");
+
+  CataloguePersister persister = new CataloguePersister(dataDirectory);
+  TimeseriesCatalogue catalogue = new TimeseriesCatalogue(persister.load, persister.save);
+
   startCafRepositoryDownloader(uri, dataDirectory, catalogue);
- 
-  CafFileRetriever retriever = new CafFileRetriever( dataDirectory.path);
-  await startupServer(retriever, catalogue);   
 
-  print( "server now running");
-  
+  CafFileRetriever retriever = new CafFileRetriever(dataDirectory.path);
+  await startupServer(retriever, catalogue);
+
+  _log.info("server now running");
+
   return new Future.value();
 }
 
-void startCafRepositoryDownloader( Uri uri, Directory destination, TimeseriesCatalogue catalogue) {
- 
-  
-  new Timer.periodic( new Duration( minutes:1), (_) async{
-    print( "downloading latest data from repository");
-    await downloaderCafFilesFromWebSite(uri, destination,  catalogue);    
-    print( "downloaded  latest data from repository");    
+void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCatalogue catalogue) {
+  new Timer.periodic(new Duration(minutes: 1), (_) async {
+    _log.info("downloading latest data from repository");
+    await downloaderCafFilesFromWebSite(uri, destination, catalogue);
+    _log.info("downloaded  latest data from repository");
   });
 }
 
-
-Future startupServer( CafFileRetriever retriever, TimeseriesCatalogue catalogue) async {
-
+Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) async {
   TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres, catalogue.findAnalysissForPeriod);
 
   _apiServer.addApi(new EpdApi(cache));
@@ -69,7 +70,7 @@ Future startupServer( CafFileRetriever retriever, TimeseriesCatalogue catalogue)
   var server = await shelf_io.serve(handler, InternetAddress.ANY_IP_V6, 9090);
   var url = 'http://localhost:9090/';
   _apiServer.enableDiscoveryApi(url);
-  print('Listening at port ${server.port}.');
+  _log.info('Listening at port ${server.port}.');
 }
 
 Future<shelf.Response> _apiHandler(shelf.Request request) async {
@@ -83,3 +84,4 @@ Future<shelf.Response> _apiHandler(shelf.Request request) async {
     return new shelf.Response.internalServerError(body: e.toString());
   }
 }
+

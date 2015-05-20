@@ -7,14 +7,15 @@ import 'dart:async';
 import 'package:pool/pool.dart';
 import "package:quiver/async.dart";
 import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart';
 
 import 'web_site_listing_crawler.dart' as crawler;
 import 'caf_file_decoder.dart' as deconder;
 import 'timeseries_catalogue.dart';
 import 'json_converters.dart';
 
+final Logger _log = new Logger('caf_repository_downloader');
 
-//TODO Stop mutiple downloads
 Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(
     Uri url, Directory destination, TimeseriesCatalogue catalog) async {
   
@@ -25,14 +26,14 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(
 
   Future downloadCafFile(crawler.Link link) async {
     try {
-      print("downloading caf file from ${link.url}");
+      _log.fine("downloading caf file from ${link.url}");
       http.Response response = await pool.withResource(() => http.get(link.url));
 
       if (response.statusCode != 200) {
         throw "web request failed with code of ${response.statusCode}";
       }
 
-      print("downloaded caf file ${link.url}");
+      _log.fine("downloaded caf file ${link.url}");
 
       String contents = response.body;
       List<String> contentLines = contents.split("\n");
@@ -41,7 +42,7 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(
       try {
         fileName = deconder.fileNameForCafFile(contentLines);
       } catch (e) {
-        print("could not parse ${link.url} due to ${e}");
+        _log.warning( "could not parse ${link.url} due to ${e}");
       }
       File file = new File(destination.path + fileName);
 
@@ -54,7 +55,7 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(
 
       catalog.addAnalysis(deconder.toTimeseiesAssembly(contentLines));
 
-      print("processed file ${file.path}");
+      _log.info("processed file ${file.path}");
 
       return new Future.value();
     } catch (onError) {
@@ -63,7 +64,7 @@ Future<TimeseriesCatalogue> downloaderCafFilesFromWebSite(
   }
 
   bool foundLink(crawler.Link link) {
-    print("found link ${link.name}");
+    _log.fine("found link ${link.name}");
     if (link.isDirectory) {
       return true;
     }
@@ -95,9 +96,8 @@ Future main() async {
   CataloguePersister persister = new CataloguePersister(destination);
   TimeseriesCatalogue catalog = new TimeseriesCatalogue(persister.load, persister.save);
 
-  //TODO: persist the download urls
+
   catalog = await downloaderCafFilesFromWebSite(url, destination, catalog);
 
-  print("Download finished");
   return null;
 }

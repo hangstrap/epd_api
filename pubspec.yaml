@@ -9,8 +9,10 @@ dependencies:
   http_server: any
   intl: any
   jsonx: any
+  logging: any
   pool: any
   quiver: any
+  quiver_log: any
   rpc: any
   shelf: any
   shelf_route: any
