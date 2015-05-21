@@ -26,9 +26,8 @@ class CataloguePersister {
 
     if (await catalogFile.exists()) {
       try {
-        //      print( "loading ${catalogFile}");
+
         String json = catalogFile.readAsStringSync();
-        //      print( "loaded  ${catalogFile}");
         return new Future.value(_fromJson(json));
       } catch (e) {
         print("error load ${catalogFile} ${e}");
@@ -48,14 +47,7 @@ class CataloguePersister {
       await newParent.create(recursive: true);
     }
 
-    count++;
-//    print( "saving ${count} ${catalogFileName}");
-
-//    if( node.locationName=='01492'){
-    //     print( json);
-//    }
     catalogFileName.writeAsStringSync(json);
-//    print( "saved  ${count} ${catalogFileName}");
 
     return new Future.value();
   }
@@ -165,23 +157,9 @@ class TimeseriesCatalogue {
 
   Future addAnalysis(TimeseriesAssembly assembly) async {
 
-//    if( assembly.node.locationName=='01492'){
-//print ("about to load");
-//    }
-
     CatalogueItem item = new CatalogueItem.create(assembly.analysis, assembly.timePeriodOfEditions);
-
     Map<DateTime, CatalogueItem> analayisMap = await analysissFor(assembly.node);
-//    if( assembly.node.locationName=='01492'){
-//print ("map has ${analayisMap.length}");
-//    }
-
     analayisMap[assembly.analysis] = item;
-
-//    if( assembly.node.locationName=='01492'){
-//print ("map now has ${analayisMap.length}");
-//    }
-
     return await saver(assembly.node, analayisMap);
   }
 }

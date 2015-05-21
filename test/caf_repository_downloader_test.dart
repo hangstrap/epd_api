@@ -17,7 +17,7 @@ main() {
   });
   
   Directory  outputDirectory = new Directory("temp/");
-
+  
   CataloguePersister persister = new CataloguePersister( outputDirectory);
   TimeseriesCatalogue catalogue = new TimeseriesCatalogue(persister.load, persister.save);
 
@@ -31,6 +31,7 @@ main() {
       if (outputDirectory.existsSync()) {
         outputDirectory.deleteSync(recursive: true);
       }
+      outputDirectory.createSync();
 
       final MY_HTTP_ROOT_PATH = Platform.script.resolve('www').toFilePath();
       final virDir = new VirtualDirectory(MY_HTTP_ROOT_PATH)..allowDirectoryListing = true;
@@ -50,7 +51,7 @@ main() {
 
     Uri uri = new Uri.http("localhost:8080", "DLITE.html");
 
-    solo_test("Empty catalog will download all caf files", () async {
+    test("Empty catalog will download all caf files", () async {
       
       CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
       await underTest.download();
@@ -58,17 +59,21 @@ main() {
       File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');
       expect(output.existsSync(), isTrue);
 
-    });
-//TODO make this work!
-    test("Should not download file twice", () async {
+      File jsonFile = new File('temp/downloadedList.json');
+      expect( jsonFile.readAsStringSync(), equals( '["http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf"]'));
 
+    });
+
+    test("Should not download file if in downloaded list", () async {
+
+      File jsonFile = new File('temp/downloadedList.json');
+      
+      jsonFile.writeAsStringSync( '["http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf"]');
+      
       CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
       await underTest.download();
 
-      File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');
-      output.deleteSync();
-      await underTest.download();
-      
+      File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');      
       expect(output.existsSync(), isFalse);
 
     });

@@ -1,5 +1,7 @@
 library caf_repository_downloader;
 
+//http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf
+//http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf
 import "dart:io";
 import 'dart:core';
 import 'dart:async';
@@ -8,6 +10,7 @@ import 'package:pool/pool.dart';
 import "package:quiver/async.dart";
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
+import 'package:jsonx/jsonx.dart' as jsonx;
 
 import 'web_site_listing_crawler.dart' as crawler;
 import 'caf_file_decoder.dart' as deconder;
@@ -15,44 +18,57 @@ import 'timeseries_catalogue.dart';
 import 'timeseries_model.dart';
 import 'json_converters.dart';
 
-
 final Logger _log = new Logger('caf_repository_downloader');
 
 class CafFileDownloader {
   final Uri url;
   final Directory destination;
   final TimeseriesCatalogue catalog;
-  
+  File jsonFile;
   final List<Uri> downloaded = [];
 
-  FutureGroup fg = new FutureGroup();
+  final FutureGroup fg = new FutureGroup();
 
   Pool pool = new Pool(1);
 
-  CafFileDownloader(this.url, this.destination, this.catalog);
+  CafFileDownloader(this.url, this.destination, this.catalog) {
+
+    //Load download list from disk
+    jsonFile = new File(destination.path + "/downloadedList.json");
+    if (jsonFile.existsSync()) {
+      downloaded.addAll(jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type));
+    }
+  }
 
   Future download() async {
-    
     _log.info("downloading latest data from repository");
     await crawler.crawl(url, _foundLink);
 
+    //Insure that FutureGroup does not wait forever if there is nothing to do
+    fg.add( new Future.value());
+    
     //wait for everything to finish
     await fg.future;
     _log.info("finshed downloading latest data from repository");
+    //Save the final download list
+    await jsonFile.writeAsString(jsonx.encode(downloaded));
+
     return new Future.value();
   }
 
   bool _foundLink(crawler.Link link) {
-    _log.fine("found link ${link.name}");
+    _log.fine("found link ${link.url}");
     if (link.isDirectory) {
       return true;
     }
 
     if (link.name.endsWith('.caf')) {
-      if( !downloaded.contains( link.url)){
-      fg.add(_downloadCafFile(link));
-      _log.fine( "${link.name} has been download");
-}
+      if (!downloaded.contains(link.url)) {
+        fg.add(_downloadCafFile(link));
+        _log.fine("${link.name} will be downloaded");
+      } else {
+        _log.fine("${link.name} has already been download");
+      }
     }
     return true;
   }
@@ -67,6 +83,7 @@ class CafFileDownloader {
       }
 
       _log.fine("downloaded caf file ${link.url}");
+      downloaded.add(link.url);
 
       String contents = response.body;
       List<String> contentLines = contents.split("\n");
@@ -78,7 +95,7 @@ class CafFileDownloader {
       } catch (e) {
         throw "could not parse ${link.url} due to ${e}";
       }
-      
+
       TimeseriesAssembly assembly = deconder.toTimeseiesAssembly(contentLines);
       File file = new File(destination.path + fileName);
 
