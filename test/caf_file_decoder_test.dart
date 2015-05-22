@@ -1,7 +1,8 @@
+
 import 'package:unittest/unittest.dart';
 import 'package:mock/mock.dart';
-import 'matchers.dart';
 
+import 'matchers.dart';
 import '../bin/caf_file_decoder.dart' as caf;
 import '../bin/timeseries_model.dart';
 
