@@ -13,7 +13,7 @@ Future<TimeseriesCatalogue> generateCataloge(Directory source) async {
   List<File> cafFiles = [];
 
   CataloguePersister persister = new CataloguePersister(source);
-  TimeseriesCatalogue result = new TimeseriesCatalogue(persister.load, persister.save);
+  TimeseriesCatalogue result = new TimeseriesCatalogue({}, persister.save);
 
   Future<bool> _visit(FileSystemEntity f) {
     if (f.path.endsWith(".caf")) {

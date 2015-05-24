@@ -28,9 +28,9 @@ Directory outputDirectory;
     underTest = new CataloguePersister(outputDirectory);
   });
   
-  test( "when file does not exist should return empty map",() async{
+  test( "when no catalog.json file exist should return empty map",() async{
     
-    Map<DateTime, CatalogueItem> result = await underTest.load(node);
+    Map<TimeseriesNode, Map<DateTime, CatalogueItem>> result = await underTest.loadFromDisk();
     expect( result.length, equals(0));
     
   });
@@ -38,9 +38,9 @@ Directory outputDirectory;
   test( "saving the map should store it on the disk", () async{
     
     DateTime analysis = new DateTime(2015, 5,15);
-    CatalogueItem item = new CatalogueItem.create(analysis, new Period.create(analysis, analysis));
+    CatalogueItem item = new CatalogueItem.create(node, analysis, new Period.create(analysis, analysis));
     DateTime analysis2 = new DateTime(2015, 5,16);
-    CatalogueItem item2 = new CatalogueItem.create(analysis2, new Period.create(analysis2, analysis2));
+    CatalogueItem item2 = new CatalogueItem.create(node, analysis2, new Period.create(analysis2, analysis2));
 
     
     Map<DateTime, CatalogueItem> map = { analysis: item, 
@@ -59,10 +59,12 @@ Directory outputDirectory;
     }
     jsonFile.writeAsStringSync( JSON);
 
-    Map<DateTime, CatalogueItem> result = await underTest.load(node);
-    expect( result.length, equals(2));
+    Map<TimeseriesNode, Map<DateTime, CatalogueItem>> result = await underTest.loadFromDisk();
+    expect( result.length, equals(1));
+    Map<DateTime, CatalogueItem> analysisis = result[node];
+    expect( analysisis.length, equals(2));
     DateTime analysis = new DateTime(2015, 5,15);
-    CatalogueItem item = result[analysis];
+    CatalogueItem item = analysisis[analysis];
     expect( item.analyis, equals(analysis));
     expect( item.fromTo, equals(new Period.create(analysis, analysis)));
   });  
@@ -70,6 +72,13 @@ Directory outputDirectory;
 
 String JSON = """[
  {
+  "node": {
+   "product": "product",
+   "model": "model",
+   "element": "element",
+   "locationName": "01492",
+   "locationSuffix": "INTL"
+  },
   "analyis": "2015-05-15T00:00:00.000",
   "fromTo": {
    "from": "2015-05-15T00:00:00.000",
@@ -77,6 +86,13 @@ String JSON = """[
   }
  },
  {
+  "node": {
+   "product": "product",
+   "model": "model",
+   "element": "element",
+   "locationName": "01492",
+   "locationSuffix": "INTL"
+  },
   "analyis": "2015-05-16T00:00:00.000",
   "fromTo": {
    "from": "2015-05-16T00:00:00.000",

@@ -4,14 +4,16 @@ import "dart:io";
 import 'dart:core';
 import 'dart:async';
 
+import "package:quiver/io.dart";
+
 import 'package:jsonx/jsonx.dart' as jsonx;
 
 import "timeseries_model.dart";
 import "caf_file_decoder.dart" show pathNameForTimeseriesNode;
 import 'utils.dart';
 
-typedef Future<Map<DateTime, CatalogueItem>> CatalogForNodeLoader(TimeseriesNode node);
-typedef Future CatalogForNodeSaver(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogue);
+typedef Future Saver(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogueMap);
+
 
 class CataloguePersister {
   final Directory source;
@@ -20,14 +22,25 @@ class CataloguePersister {
       throw "Source cannot be null";
     }
   }
-  Future<Map<DateTime, CatalogueItem>> load(TimeseriesNode node) async {
-    //load from disk
-    File catalogFile = _catalogFileName(node);
 
+  Future<Map<TimeseriesNode, Map<DateTime, CatalogueItem>>> loadFromDisk() async {
+    Map<TimeseriesNode, Map<DateTime, CatalogueItem>> result = {};
+
+    Future<bool> _visit(FileSystemEntity f) async {
+      if (f.path.endsWith("catalog.json")) {
+        result.addAll(await _loadFromFile(f));
+      }
+      return new Future.value(true);
+    }
+
+    await visitDirectory(source, _visit);
+    return result;
+  }
+
+  Future<Map<TimeseriesNode, Map<DateTime, CatalogueItem>>> _loadFromFile(File catalogFile) async {
     if (await catalogFile.exists()) {
       try {
-
-        String json = catalogFile.readAsStringSync();
+        String json = await catalogFile.readAsString();
         return new Future.value(_fromJson(json));
       } catch (e) {
         print("error load ${catalogFile} ${e}");
@@ -35,7 +48,7 @@ class CataloguePersister {
     }
     return new Future.value({});
   }
-  num count = 0;
+
   Future save(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogueMap) async {
 
     //save to disk
@@ -57,12 +70,14 @@ class CataloguePersister {
     return catalogFile;
   }
 
-  Map<DateTime, CatalogueItem> _fromJson(String json) {
+  Map<TimeseriesNode, Map<DateTime, CatalogueItem>> _fromJson(String json) {
     List<CatalogueItem> temp = jsonx.decode(json, type: const jsonx.TypeHelper<List<CatalogueItem>>().type);
 
-    Map<DateTime, CatalogueItem> result = {};
+    Map<TimeseriesNode, Map<DateTime, CatalogueItem>> result = {};
     temp.forEach((item) {
-      result[item.analyis] = item;
+      Map<DateTime, CatalogueItem> analysiss = result.putIfAbsent(item.node, () => {});
+
+      analysiss[item.analyis] = item;
     });
     return result;
   }
@@ -78,65 +93,42 @@ class CataloguePersister {
 }
 
 class CatalogueItem {
+  TimeseriesNode node;
   DateTime analyis;
   Period fromTo;
-  CatalogueItem.create(this.analyis, this.fromTo);
+  CatalogueItem.create(this.node, this.analyis, this.fromTo);
   CatalogueItem() {}
 
   int get hashCode {
-    return analyis.hashCode;
+    return analyis.hashCode + node.hashCode;
   }
 
   bool operator ==(other) {
     if (other is! CatalogueItem) return false;
     CatalogueItem key = other;
-    return (key.analyis == analyis);
+    return (key.node == node) && (key.analyis == analyis);
   }
 }
 
 class TimeseriesCatalogue {
-  final CatalogForNodeLoader loader;
-  final CatalogForNodeSaver saver;
-  final Map<TimeseriesNode, Future> loading = {};
 
-  final Map<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue = {};
+  final Saver saver;
+
+  final Map<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue;
 
   int get numberOfNodes => catalogue.length;
 
-  TimeseriesCatalogue(this.loader, this.saver);
+  TimeseriesCatalogue(this.catalogue, this.saver);
+  
 
-  Future<Map<DateTime, CatalogueItem>> analysissFor(TimeseriesNode node) async {
-    if (catalogue.containsKey(node) == false) {
-      return _loadAnalysissFor(node);
-    }
-    return new Future.value(catalogue[node]);
-  }
-
-  Future<Map<DateTime, CatalogueItem>> _loadAnalysissFor(TimeseriesNode node) {
-    if (loading.containsKey(node)) {
-      //are we currently  loading the data?
-      return loading[node].whenComplete(() {
-        return analysissFor(node);
-      });
-    } else {
-      //Start loading the data, keeping a record that we are busy
-      Future<Map<DateTime, CatalogueItem>> future = loader(node);
-      loading[node] = future;
-      return future.then((data) {
-        //No longer loading data
-        loading.remove(node);
-        //Store it in the catalogue
-        catalogue[node] = data;
-        //return it
-        return data;
-      });
-    }
+  Map<DateTime, CatalogueItem> analysissFor(TimeseriesNode node) {    
+    return catalogue.putIfAbsent(node, ()=>{});
   }
 
   Future<List<DateTime>> findAnalysissForPeriod(TimeseriesNode node, Period validFromTo) async {
     List<DateTime> result = [];
 
-    Map<DateTime, CatalogueItem> analysiss = await analysissFor(node);
+    Map<DateTime, CatalogueItem> analysiss = analysissFor(node);
     if (analysiss != null) {
       analysiss.forEach((analysis, catalogueItem) {
         if (catalogueItem.fromTo.isPeriodOverlapping(validFromTo)) {
@@ -156,9 +148,8 @@ class TimeseriesCatalogue {
   }
 
   Future addAnalysis(TimeseriesAssembly assembly) async {
-
-    CatalogueItem item = new CatalogueItem.create(assembly.analysis, assembly.timePeriodOfEditions);
-    Map<DateTime, CatalogueItem> analayisMap = await analysissFor(assembly.node);
+    CatalogueItem item = new CatalogueItem.create(assembly.node, assembly.analysis, assembly.timePeriodOfEditions);
+    Map<DateTime, CatalogueItem> analayisMap = analysissFor(assembly.node);
     analayisMap[assembly.analysis] = item;
     return await saver(assembly.node, analayisMap);
   }

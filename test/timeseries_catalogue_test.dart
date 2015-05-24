@@ -7,9 +7,7 @@ import "../bin/timeseries_model.dart";
 import '../bin/json_converters.dart';
 import '../bin/utils.dart';
 
-Future<Map<DateTime, CatalogueItem>> emptyLoader(TimeseriesNode node) {
-  return new Future.value({});
-}
+
 Future nullSaver(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogue) {
   return new Future.value();
 }
@@ -36,7 +34,7 @@ main() {
 
   group("TimeseriesCatalog", () {
     test("Add a single Analysis with a single spot edition", () async {
-      TimeseriesCatalogue catalog = new TimeseriesCatalogue(emptyLoader, nullSaver);
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue({}, nullSaver);
       TimeseriesAssembly assembly =
           new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _1am, _1am, {})]);
       await catalog.addAnalysis(assembly);
@@ -49,7 +47,7 @@ main() {
     });
 
     test("Add a single Analysis with a two interval period editions", () async {
-      TimeseriesCatalogue catalog = new TimeseriesCatalogue(emptyLoader, nullSaver);
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue({}, nullSaver);
       TimeseriesAssembly assembly = new TimeseriesAssembly.create(
           node, _0am, [new Edition.createMean(_0am, _1am, _2am, {}), new Edition.createMean(_0am, _2am, _3am, {})]);
       await catalog.addAnalysis(assembly);
@@ -62,7 +60,7 @@ main() {
     });
 
     test("Add a two Analysis for the same node", () async {
-      TimeseriesCatalogue catalog = new TimeseriesCatalogue(emptyLoader, nullSaver);
+      TimeseriesCatalogue catalog = new TimeseriesCatalogue({}, nullSaver);
       TimeseriesAssembly assembly =
           new TimeseriesAssembly.create(node, _0am, [new Edition.createMean(_0am, _1am, _1am, {}),]);
       await catalog.addAnalysis(assembly);
@@ -89,14 +87,14 @@ main() {
           new TimeseriesAssembly.create(node, _2am, [new Edition.createMean(_2am, _2am, _5am, {})]);
 
       setUp(() async {
-        catalog = new TimeseriesCatalogue(emptyLoader, nullSaver);
+        catalog = new TimeseriesCatalogue({}, nullSaver);
         await catalog.addAnalysis(assembly00);
         await catalog.addAnalysis(assembly01);
         await catalog.addAnalysis(assembly02);
       });
 
       test("an unknown node should return a empty map", () async {
-        TimeseriesCatalogue catalog = new TimeseriesCatalogue(emptyLoader, nullSaver);
+        TimeseriesCatalogue catalog = new TimeseriesCatalogue({}, nullSaver);
         expect(await catalog.findAnalysissForPeriod(node, new Period.create(_1am, _2am)), isEmpty);
       });
       test("an period before the analysis should return a empty map", () async {
@@ -134,17 +132,4 @@ main() {
     });
   });
 
-  group("loader", () {
-    test("loader should only be called once", () async {
-      num loadedCalled = 0;
-      Future<Map<DateTime, CatalogueItem>> myLoader(TimeseriesNode node) {
-        loadedCalled++;
-        return new Future.value({});
-      }
-      TimeseriesCatalogue catalog = new TimeseriesCatalogue(myLoader, nullSaver);
-
-      await Future.wait([catalog.analysissFor(node), catalog.analysissFor(node)]);
-      expect(loadedCalled, equals(1));
-    });
-  });
 }

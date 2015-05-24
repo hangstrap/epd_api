@@ -38,7 +38,9 @@ Future main(List<String> arguments) async {
   _log.info("Starting up application, dataDirectory at ${dataDirectory}");
 
   CataloguePersister persister = new CataloguePersister(dataDirectory);
-  TimeseriesCatalogue catalogue = new TimeseriesCatalogue(persister.load, persister.save);
+  var catalogueContents = await persister.loadFromDisk();
+  
+  TimeseriesCatalogue catalogue = new TimeseriesCatalogue(catalogueContents, persister.save);
 
   startCafRepositoryDownloader(uri, dataDirectory, catalogue);
 

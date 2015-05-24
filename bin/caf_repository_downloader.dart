@@ -128,7 +128,8 @@ Future main() async {
   Directory destination = new Directory("/temp/epdapi/");
 
   CataloguePersister persister = new CataloguePersister(destination);
-  TimeseriesCatalogue catalog = new TimeseriesCatalogue(persister.load, persister.save);
+  var catalogue = await persister.loadFromDisk();
+  TimeseriesCatalogue catalog = new TimeseriesCatalogue(catalogue, persister.save);
 
   CafFileDownloader downloader = new CafFileDownloader(url, destination, catalog);
   return await downloader.download();
