@@ -22,29 +22,28 @@ final ApiServer _apiServer = new ApiServer(apiPrefix: _API_PREFIX, prettyPrint: 
 final Logger _log = new Logger('epd_app_application');
 
 Future main(List<String> arguments) async {
-  
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((LogRecord rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
-  
+
   Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE/PDF-PROFOUND/TTTTT");
 
-  Directory dataDirectory = new Directory("/temp/epdapi/");
-  //Directory dataDirectory = new Directory("data");
+//  Directory dataDirectory = new Directory("/temp/epdapi/");
+  Directory dataDirectory = new Directory("data");
 
   setUpJsonConverters();
 
   _log.info("Starting up application, dataDirectory at ${dataDirectory}");
 
   CataloguePersister persister = new CataloguePersister(dataDirectory);
-  _log.info( "About to load catalogue from disk");
+  _log.info("About to load catalogue from disk");
   var catalogueContents = await persister.loadFromDisk();
-  _log.info( "loaded catalogue from disk");
-  
+  _log.info("loaded catalogue from disk");
+
   TimeseriesCatalogue catalogue = new TimeseriesCatalogue(catalogueContents, persister.save);
 
-  startCafRepositoryDownloader(uri, dataDirectory, catalogue);
+  //startCafRepositoryDownloader(uri, dataDirectory, catalogue);
 
   CafFileRetriever retriever = new CafFileRetriever(dataDirectory.path);
   await startupServer(retriever, catalogue);
@@ -55,11 +54,21 @@ Future main(List<String> arguments) async {
 }
 
 void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCatalogue catalogue) {
-  
   CafFileDownloader downloader = new CafFileDownloader(uri, destination, catalogue);
-  downloader.download();
   
- // new Timer.periodic(new Duration(minutes: 10), (_) async =>await downloader.download());
+  Duration delay = new Duration(seconds: 10);
+
+  downloader.download().then((_){ 
+    
+    new Future.delayed(delay, ()=>downloader.download());
+  });
+  
+  
+  Future callback() async {
+    return downloader.download();
+  }
+
+  new Future.delayed(delay, callback);
 }
 
 Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) async {
@@ -79,7 +88,8 @@ Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) 
 
 Future<shelf.Response> _apiHandler(shelf.Request request) async {
   try {
-    var apiRequest = new HttpApiRequest(request.method, request.url.path, request.url.queryParameters, request.headers, request.read());
+    var apiRequest = new HttpApiRequest(
+        request.method, request.url.path, request.url.queryParameters, request.headers, request.read());
     var apiResponse = await _apiServer.handleHttpApiRequest(apiRequest);
     return new shelf.Response(apiResponse.status, body: apiResponse.body, headers: apiResponse.headers);
   } catch (e) {
@@ -88,4 +98,3 @@ Future<shelf.Response> _apiHandler(shelf.Request request) async {
     return new shelf.Response.internalServerError(body: e.toString());
   }
 }
-
