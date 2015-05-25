@@ -26,6 +26,7 @@ class CafFileDownloader {
   final TimeseriesCatalogue catalog;
   File jsonFile;
   final List<Uri> downloaded = [];
+  int filedownloaded = 0;
 
   final FutureGroup fg = new FutureGroup();
 
@@ -51,9 +52,14 @@ class CafFileDownloader {
     await fg.future;
     _log.info("finshed downloading latest data from repository");
     //Save the final download list
-    await jsonFile.writeAsString(jsonx.encode(downloaded));
+    await writeDownloadedList();
 
     return new Future.value();
+  }
+  
+  Future writeDownloadedList()async{
+    _log.info( "saving downloaded list ");
+    return jsonFile.writeAsString(jsonx.encode(downloaded, indent:' '));
   }
 
   bool _foundLink(crawler.Link link) {
@@ -105,7 +111,12 @@ class CafFileDownloader {
 
       catalog.addAnalysis(assembly);
 
-      _log.info("processed file ${file.path}");
+      _log.info("processed file ${file.path} ${filedownloaded}");
+      
+      filedownloaded++;
+      if( filedownloaded % 10 == 0){
+        await writeDownloadedList();
+      }
 
       return new Future.value();
     } catch (onError) {
@@ -121,16 +132,3 @@ class CafFileDownloader {
   }
 }
 
-Future main() async {
-  setUpJsonConverters();
-
-  Uri url = new Uri.http("amps-caf-output.met.co.nz", "/ICE");
-  Directory destination = new Directory("/temp/epdapi/");
-
-  CataloguePersister persister = new CataloguePersister(destination);
-  var catalogue = await persister.loadFromDisk();
-  TimeseriesCatalogue catalog = new TimeseriesCatalogue(catalogue, persister.save);
-
-  CafFileDownloader downloader = new CafFileDownloader(url, destination, catalog);
-  return await downloader.download();
-}

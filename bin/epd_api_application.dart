@@ -28,7 +28,7 @@ Future main(List<String> arguments) async {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
   
-  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE");
+  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE/PDF-PROFOUND/TTTTT");
 
   Directory dataDirectory = new Directory("/temp/epdapi/");
   //Directory dataDirectory = new Directory("data");
@@ -38,7 +38,9 @@ Future main(List<String> arguments) async {
   _log.info("Starting up application, dataDirectory at ${dataDirectory}");
 
   CataloguePersister persister = new CataloguePersister(dataDirectory);
+  _log.info( "About to load catalogue from disk");
   var catalogueContents = await persister.loadFromDisk();
+  _log.info( "loaded catalogue from disk");
   
   TimeseriesCatalogue catalogue = new TimeseriesCatalogue(catalogueContents, persister.save);
 
@@ -55,8 +57,9 @@ Future main(List<String> arguments) async {
 void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCatalogue catalogue) {
   
   CafFileDownloader downloader = new CafFileDownloader(uri, destination, catalogue);
+  downloader.download();
   
-  new Timer.periodic(new Duration(minutes: 1), (_) async =>await downloader.download());
+ // new Timer.periodic(new Duration(minutes: 10), (_) async =>await downloader.download());
 }
 
 Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) async {
