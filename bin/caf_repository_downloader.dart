@@ -36,8 +36,13 @@ class CafFileDownloader {
 
     //Load download list from disk
     jsonFile = new File(destination.path + "/downloadedList.json");
+
+    try{
     if (jsonFile.existsSync()) {
       downloaded.addAll(jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type));
+    }
+    }catch( e){
+      _log.warning("could not load list of downloaded urls ${e}");
     }
   }
 
