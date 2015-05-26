@@ -23,12 +23,12 @@ final Logger _log = new Logger('epd_app_application');
 
 Future main(List<String> arguments) async {
   
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((LogRecord rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
   
-  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE/PDF-PROFOUND/TTTTT");
+  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE/PDF-PROFOUND/TTTTT/");
 
   Directory dataDirectory = new Directory("/temp/epdapi/");
   //Directory dataDirectory = new Directory("data");
@@ -57,9 +57,19 @@ Future main(List<String> arguments) async {
 void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCatalogue catalogue) {
   
   CafFileDownloader downloader = new CafFileDownloader(uri, destination, catalogue);
-  downloader.download();
   
- // new Timer.periodic(new Duration(minutes: 10), (_) async =>await downloader.download());
+  bool busy = false;
+  new Timer.periodic(const Duration(minutes:1) , (_)async {
+    
+    if( !busy){
+      busy = true;
+      await downloader.download();
+      busy = false;
+    }    
+  });
+//  downloader.download();
+  
+//  new Future.delayed(const Duration(minutes:1),  ()=>downloader.download());
 }
 
 Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) async {

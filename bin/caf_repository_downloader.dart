@@ -28,7 +28,7 @@ class CafFileDownloader {
   final List<Uri> downloaded = [];
   int filedownloaded = 0;
 
-  final FutureGroup fg = new FutureGroup();
+  FutureGroup fg;
 
   Pool pool = new Pool(1);
 
@@ -37,12 +37,18 @@ class CafFileDownloader {
     //Load download list from disk
     jsonFile = new File(destination.path + "/downloadedList.json");
     if (jsonFile.existsSync()) {
+      try{
       downloaded.addAll(jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type));
+      }catch( e){
+        _log.warning( "could not load ${jsonFile} from json ${e}");
+      }
     }
   }
 
   Future download() async {
     _log.info("downloading latest data from repository");
+    
+    fg = new FutureGroup();
     await crawler.crawl(url, _foundLink);
 
     //Insure that FutureGroup does not wait forever if there is nothing to do
@@ -54,6 +60,8 @@ class CafFileDownloader {
     //Save the final download list
     await writeDownloadedList();
 
+    fg = null;
+    
     return new Future.value();
   }
   
