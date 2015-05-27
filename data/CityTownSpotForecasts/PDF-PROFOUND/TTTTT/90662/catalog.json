@@ -1,5 +1,12 @@
 [
  {
+  "node": {
+   "product": "City, Town & Spot Forecasts",
+   "model": "PDF-PROFOUND",
+   "element": "TTTTT",
+   "locationName": "90662",
+   "locationSuffix": "INTL"
+  },
   "analyis": "2015-02-15 09:00:00.000Z",
   "fromTo": {
    "from": "2015-02-15 09:00:00.000Z",
