@@ -23,7 +23,7 @@ final Logger _log = new Logger('epd_app_application');
 
 Future main(List<String> arguments) async {
   
-  Logger.root.level = Level.ALL;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((LogRecord rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
