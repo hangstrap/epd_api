@@ -60,7 +60,7 @@ main() {
       expect(output.existsSync(), isTrue);
 
       File jsonFile = new File('temp/downloadedList.json');
-      expect( jsonFile.readAsStringSync(), equals( '["http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf"]'));
+      expect( jsonFile.readAsStringSync(), equals( '[\n "http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf"\n]'));
 
     });
 
