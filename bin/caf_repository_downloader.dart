@@ -40,6 +40,7 @@ class CafFileDownloader {
     try{
     if (jsonFile.existsSync()) {
       try{
+        _log.info( "loading list downloaded locations ");
       downloaded.addAll(jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type));
       }catch( e){
         _log.warning( "could not load ${jsonFile} from json ${e}");

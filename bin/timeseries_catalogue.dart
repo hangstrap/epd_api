@@ -5,7 +5,8 @@ import 'dart:core';
 import 'dart:async';
 
 import "package:quiver/cache.dart";
-import "package:quiver/io.dart";
+import 'package:logging/logging.dart';
+
 
 import 'package:jsonx/jsonx.dart' as jsonx;
 
@@ -16,6 +17,7 @@ import 'utils.dart';
 typedef Future Saver(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogueMap);
 typedef Future<Map<DateTime, CatalogueItem>> Loader( TimeseriesNode node);
 
+final Logger _log = new Logger('timeseries_catalogue');
 
 class CataloguePersister {
   final Directory source;
@@ -27,11 +29,12 @@ class CataloguePersister {
 
   Future<Map<TimeseriesNode, Map<DateTime, CatalogueItem>>> _loadFromFile(File catalogFile) async {
     if (await catalogFile.exists()) {
+      _log.info( "loading catalogue $catalogFile");      
       try {
         String json = await catalogFile.readAsString();
         return new Future.value(_fromJson(json));
       } catch (e) {
-        print("error load ${catalogFile} ${e}");
+        _log.warning("error load ${catalogFile} ${e}");
       }
     }
     return new Future.value({});
@@ -52,10 +55,11 @@ class CataloguePersister {
   
   Future save(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogueMap) async {
 
-    //save to disk
+
     String json = _toJson(catalogueMap);
     File catalogFileName = _catalogFileName(node);
-
+    _log.info( "saving catalogue $catalogFileName");
+    
     Directory newParent = catalogFileName.parent;
     if (!await newParent.exists()) {
       await newParent.create(recursive: true);
