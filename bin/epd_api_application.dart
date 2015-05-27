@@ -27,10 +27,10 @@ Future main(List<String> arguments) async {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
   
-  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE/PDF-PROFOUND/TTTTT/");
+  Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE/PDF-PROFOUND/");
 
-//  Directory dataDirectory = new Directory("/temp/epdapi/");
-  Directory dataDirectory = new Directory("data");
+  Directory dataDirectory = new Directory("/temp/epdapi/");
+//  Directory dataDirectory = new Directory("data");
 
   setUpJsonConverters();
 
@@ -43,7 +43,7 @@ Future main(List<String> arguments) async {
 
   TimeseriesCatalogue catalogue = new TimeseriesCatalogue(catalogueContents, persister.save);
 
-  //startCafRepositoryDownloader(uri, dataDirectory, catalogue);
+  startCafRepositoryDownloader(uri, dataDirectory, catalogue);
 
   CafFileRetriever retriever = new CafFileRetriever(dataDirectory.path);
   await startupServer(retriever, catalogue);
