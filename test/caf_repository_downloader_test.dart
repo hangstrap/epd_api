@@ -19,7 +19,7 @@ main() {
   Directory  outputDirectory = new Directory("temp/");
   
   CataloguePersister persister = new CataloguePersister( outputDirectory);
-  TimeseriesCatalogue catalogue = new TimeseriesCatalogue({}, persister.save);
+  TimeseriesCatalogue catalogue = new TimeseriesCatalogue(persister.load, persister.save);
 
   
   setUpJsonConverters();  

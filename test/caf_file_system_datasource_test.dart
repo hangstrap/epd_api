@@ -16,7 +16,6 @@ main() {
         TimeseriesCatalogue timeseriesCatalogue = await underTest.generateCataloge(source);
 
         //Only expect to find one caf file
-        expect(timeseriesCatalogue.numberOfNodes, equals(1));
         Map<DateTime, CatalogueItem> ayalysiss = await timeseriesCatalogue.analysissFor(
             new TimeseriesNode.create("City, Town & Spot Forecasts", "PDF-PROFOUND", "TTTTT", "99647", "INTL"));
         expect(ayalysiss.length, equals(2));

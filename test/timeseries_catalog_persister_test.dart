@@ -30,7 +30,7 @@ Directory outputDirectory;
   
   test( "when no catalog.json file exist should return empty map",() async{
     
-    Map<TimeseriesNode, Map<DateTime, CatalogueItem>> result = await underTest.loadFromDisk();
+    Map<DateTime, CatalogueItem> result = await underTest.load( node);
     expect( result.length, equals(0));
     
   });
@@ -59,12 +59,10 @@ Directory outputDirectory;
     }
     jsonFile.writeAsStringSync( JSON);
 
-    Map<TimeseriesNode, Map<DateTime, CatalogueItem>> result = await underTest.loadFromDisk();
-    expect( result.length, equals(1));
-    Map<DateTime, CatalogueItem> analysisis = result[node];
-    expect( analysisis.length, equals(2));
+    Map<DateTime, CatalogueItem> result = await underTest.load( node);
+    expect( result.length, equals(2));
     DateTime analysis = new DateTime(2015, 5,15);
-    CatalogueItem item = analysisis[analysis];
+    CatalogueItem item = result[analysis];
     expect( item.analyis, equals(analysis));
     expect( item.fromTo, equals(new Period.create(analysis, analysis)));
   });  
