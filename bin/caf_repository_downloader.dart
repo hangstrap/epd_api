@@ -17,7 +17,6 @@ import 'caf_file_decoder.dart' as deconder;
 import 'timeseries_catalogue.dart';
 import 'timeseries_model.dart';
 
-
 final Logger _log = new Logger('caf_repository_downloader');
 
 class CafFileDownloader {
@@ -27,9 +26,8 @@ class CafFileDownloader {
   final TimeseriesCatalogue catalog;
   File jsonFile;
   final Map<Uri, Object> downloaded = {};
+  final List<crawler.Link> toDownload = [];
   int filedownloaded = 0;
-
-  FutureGroup fg;
 
   Pool pool = new Pool(1);
 
@@ -37,49 +35,35 @@ class CafFileDownloader {
 
     //Load download list from disk
     jsonFile = new File(destination.path + "/downloadedList.json");
-
-    try{
-    if (jsonFile.existsSync()) {
-      try{
-        _log.info( "loading list downloaded locations ");
-        List<Uri> urls = jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type);        
-        urls.forEach((url)=>downloaded[url]  = true);
-      }catch( e){
-        _log.warning( "could not load ${jsonFile} from json ${e}");
-      }
-    }
-    }catch( e){
-      _log.warning("could not load list of downloaded urls ${e}");
-    }
+    _extractDownloadedListFromDisk();
   }
 
-  Future download() async {
-    _log.info("downloading latest data from repository");
-    
-    fg = new FutureGroup();
-    //Insure that FutureGroup does not wait forever if there is nothing to do
-    fg.add( new Future.value());
-    
-    
+  Future<int> findFilesToDownload() async {
+    _log.info("checking what needs to be downloaded");
+
     await crawler.crawl(url, _foundLink);
-
-
-    //wait for everything to finish
-    await fg.future;
-    _log.info("finshed downloading latest data from repository");
-    //Save the final download list
-    await writeDownloadedList();
-
-    fg = null;
-    
+    _log.info("finshed. ${downloaded.length} files to download");
     return new Future.value();
   }
-  
-  Future writeDownloadedList()async{
-    _log.info( "saving downloaded list ");
+
+  Future downloadFiles() async {
+    if( toDownload.isEmpty){
+      return new Future.value();
+    }
+    Stream<crawler.Link> s = new Stream.fromIterable( toDownload);
+    s.listen((link) {
+      _downloadCafFile(link);
+    });
+    return s.isEmpty;
+//    _writeDownloadedList();
+//    return new Future.value();
+  }
+
+  Future _writeDownloadedList() async {
+    _log.info("saving downloaded list ");
     List<Uri> urls = [];
     urls.addAll(downloaded.keys);
-    return jsonFile.writeAsString(jsonx.encode(urls, indent:' '));
+    return jsonFile.writeAsString(jsonx.encode(urls, indent: ' '));
   }
 
   bool _foundLink(crawler.Link link) {
@@ -90,8 +74,8 @@ class CafFileDownloader {
 
     if (link.name.endsWith('.caf')) {
       if (!downloaded.containsKey(link.url)) {
-        fg.add(_downloadCafFile(link));
-        _log.fine("${link.name} will be downloaded");
+        toDownload.add(link);
+        _log.fine("${link.name} still to downloaded");
       } else {
         _log.fine("${link.name} has already been download");
       }
@@ -132,9 +116,9 @@ class CafFileDownloader {
       catalog.addAnalysis(assembly);
 
       _log.info("processed file ${file.path} ${filedownloaded}");
-      
+
       filedownloaded++;
-      if( filedownloaded % 10 == 0){
+      if (filedownloaded % 10 == 0) {
         await writeDownloadedList();
       }
 
@@ -150,5 +134,19 @@ class CafFileDownloader {
       await newParent.create(recursive: true);
     }
   }
+  void _extractDownloadedListFromDisk() {
+    try {
+      if (jsonFile.existsSync()) {
+        try {
+          _log.info("loading list downloaded locations ");
+          List<Uri> urls = jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type);
+          urls.forEach((url) => downloaded[url] = true);
+        } catch (e) {
+          _log.warning("could not load ${jsonFile} from json ${e}");
+        }
+      }
+    } catch (e) {
+      _log.warning("could not load list of downloaded urls ${e}");
+    }
+  }
 }
-

@@ -59,7 +59,7 @@ void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCata
     
     if( !busy){
       busy = true;
-      await downloader.download();
+      await downloader.findFilesToDownload();
       busy = false;
     }    
   });

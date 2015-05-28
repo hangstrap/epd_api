@@ -51,10 +51,11 @@ main() {
 
     Uri uri = new Uri.http("localhost:8080", "DLITE.html");
 
-    test("Empty catalog will download all caf files", () async {
+    solo_test("Empty catalog will download all caf files", () async {
       
       CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
-      await underTest.download();
+      await underTest.findFilesToDownload();
+      await underTest.downloadFiles();
       
       File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');
       expect(output.existsSync(), isTrue);
@@ -71,7 +72,7 @@ main() {
       jsonFile.writeAsStringSync( '["http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf"]');
       
       CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
-      await underTest.download();
+      await underTest.findFilesToDownload();
 
       File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');      
       expect(output.existsSync(), isFalse);
