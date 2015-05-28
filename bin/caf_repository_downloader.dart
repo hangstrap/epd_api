@@ -23,9 +23,10 @@ final Logger _log = new Logger('caf_repository_downloader');
 class CafFileDownloader {
   final Uri url;
   final Directory destination;
+
   final TimeseriesCatalogue catalog;
   File jsonFile;
-  final List<Uri> downloaded = [];
+  final Map<Uri, Object> downloaded = {};
   int filedownloaded = 0;
 
   FutureGroup fg;
@@ -41,7 +42,8 @@ class CafFileDownloader {
     if (jsonFile.existsSync()) {
       try{
         _log.info( "loading list downloaded locations ");
-      downloaded.addAll(jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type));
+        List<Uri> urls = jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type);        
+        urls.forEach((url)=>downloaded[url]  = true);
       }catch( e){
         _log.warning( "could not load ${jsonFile} from json ${e}");
       }
@@ -55,11 +57,13 @@ class CafFileDownloader {
     _log.info("downloading latest data from repository");
     
     fg = new FutureGroup();
-    await crawler.crawl(url, _foundLink);
-
     //Insure that FutureGroup does not wait forever if there is nothing to do
     fg.add( new Future.value());
     
+    
+    await crawler.crawl(url, _foundLink);
+
+
     //wait for everything to finish
     await fg.future;
     _log.info("finshed downloading latest data from repository");
@@ -73,7 +77,9 @@ class CafFileDownloader {
   
   Future writeDownloadedList()async{
     _log.info( "saving downloaded list ");
-    return jsonFile.writeAsString(jsonx.encode(downloaded, indent:' '));
+    List<Uri> urls = [];
+    urls.addAll(downloaded.keys);
+    return jsonFile.writeAsString(jsonx.encode(urls, indent:' '));
   }
 
   bool _foundLink(crawler.Link link) {
@@ -83,7 +89,7 @@ class CafFileDownloader {
     }
 
     if (link.name.endsWith('.caf')) {
-      if (!downloaded.contains(link.url)) {
+      if (!downloaded.containsKey(link.url)) {
         fg.add(_downloadCafFile(link));
         _log.fine("${link.name} will be downloaded");
       } else {
@@ -103,7 +109,7 @@ class CafFileDownloader {
       }
 
       _log.fine("downloaded caf file ${link.url}");
-      downloaded.add(link.url);
+      downloaded[link.url] = true;
 
       String contents = response.body;
       List<String> contentLines = contents.split("\n");
