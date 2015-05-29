@@ -29,7 +29,7 @@ class CafFileDownloader {
   final List<crawler.Link> toDownload = [];
   int filedownloaded = 0;
 
-  Pool pool = new Pool(1);
+
 
   CafFileDownloader(this.url, this.destination, this.catalog) {
 
@@ -50,13 +50,18 @@ class CafFileDownloader {
     if( toDownload.isEmpty){
       return new Future.value();
     }
-    Stream<crawler.Link> s = new Stream.fromIterable( toDownload);
-    s.listen((link) {
-      _downloadCafFile(link);
+    FutureGroup fg = new FutureGroup();
+    Pool pool = new Pool(10);
+    
+    toDownload.forEach( (link){
+      
+      Future futureDownloaded = pool.withResource(() =>_downloadCafFile(link));
+      fg.add( futureDownloaded);
+      
     });
-    return s.isEmpty;
-//    _writeDownloadedList();
-//    return new Future.value();
+    await fg.future;
+    await _writeDownloadedList();
+    return new Future.value();
   }
 
   Future _writeDownloadedList() async {
@@ -86,7 +91,7 @@ class CafFileDownloader {
   Future _downloadCafFile(crawler.Link link) async {
     try {
       _log.fine("downloading caf file from ${link.url}");
-      http.Response response = await pool.withResource(() => http.get(link.url));
+      http.Response response = await http.get(link.url);
 
       if (response.statusCode != 200) {
         throw "web request failed with code of ${response.statusCode}";
@@ -94,8 +99,11 @@ class CafFileDownloader {
 
       _log.fine("downloaded caf file ${link.url}");
       downloaded[link.url] = true;
-
+      toDownload.remove( link);
+       
+      
       String contents = response.body;
+      contents = contents.replaceAll('\r', '');
       List<String> contentLines = contents.split("\n");
 
       String fileName;
@@ -119,7 +127,7 @@ class CafFileDownloader {
 
       filedownloaded++;
       if (filedownloaded % 10 == 0) {
-        await writeDownloadedList();
+        await _writeDownloadedList();
       }
 
       return new Future.value();

@@ -51,7 +51,7 @@ main() {
 
     Uri uri = new Uri.http("localhost:8080", "DLITE.html");
 
-    solo_test("Empty catalog will download all caf files", () async {
+    test("Empty download list will download all caf files", () async {
       
       CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
       await underTest.findFilesToDownload();
