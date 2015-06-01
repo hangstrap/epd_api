@@ -53,14 +53,11 @@ Future main(List<String> arguments) async {
 void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCatalogue catalogue) {
   CafFileDownloader downloader = new CafFileDownloader(uri, destination, catalogue);
   
-
-  bool busy = false;
   new Timer.periodic(const Duration(minutes:1) , (_)async {
     
-    if( !busy){
-      busy = true;
+    if( !downloader.busy){
       await downloader.findFilesToDownload();
-      busy = false;
+      await downloader.downloadFiles();
     }    
   });
 }

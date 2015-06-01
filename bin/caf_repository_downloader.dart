@@ -28,8 +28,8 @@ class CafFileDownloader {
   final Map<Uri, Object> downloaded = {};
   final List<crawler.Link> toDownload = [];
   int filedownloaded = 0;
-
-
+  bool _busy = false;
+  bool get busy => busy || toDownload.length > 0;
 
   CafFileDownloader(this.url, this.destination, this.catalog) {
 
@@ -39,25 +39,27 @@ class CafFileDownloader {
   }
 
   Future<int> findFilesToDownload() async {
-    _log.info("checking what needs to be downloaded");
-
-    await crawler.crawl(url, _foundLink);
-    _log.info("finshed. ${downloaded.length} files to download");
-    return new Future.value();
+    try {
+      _log.info("checking what needs to be downloaded");
+      _busy = true;
+      await crawler.crawl(url, _foundLink);
+      _log.info("finshed. ${downloaded.length} files to download");
+      return new Future.value();
+    } finally {
+      _busy = false;
+    }
   }
 
   Future downloadFiles() async {
-    if( toDownload.isEmpty){
+    if (toDownload.isEmpty) {
       return new Future.value();
     }
     FutureGroup fg = new FutureGroup();
     Pool pool = new Pool(10);
-    
-    toDownload.forEach( (link){
-      
-      Future futureDownloaded = pool.withResource(() =>_downloadCafFile(link));
-      fg.add( futureDownloaded);
-      
+
+    toDownload.forEach((link) {
+      Future futureDownloaded = pool.withResource(() => _downloadCafFile(link));
+      fg.add(futureDownloaded);
     });
     await fg.future;
     await _writeDownloadedList();
@@ -99,9 +101,8 @@ class CafFileDownloader {
 
       _log.fine("downloaded caf file ${link.url}");
       downloaded[link.url] = true;
-      toDownload.remove( link);
-       
-      
+      toDownload.remove(link);
+
       String contents = response.body;
       contents = contents.replaceAll('\r', '');
       List<String> contentLines = contents.split("\n");
