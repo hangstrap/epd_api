@@ -16,7 +16,6 @@ import "timeseries_data_cache.dart";
 
 //http://localhost:9090/api/epd/v1/byLatest/City,%20Town%20&%20Spot%20Forecasts/PDF-PROFOUND/20150516T0700Z/20150520T0700Z?locations=01492.INTL,03266.INTL&elements=TTTTT
 
-
 final Logger _log = new Logger('epd_api');
 
 class MyMessage {
@@ -35,16 +34,20 @@ class EpdApi {
   }
 
   @ApiMethod(method: 'GET', path: 'byAnalysis/{product}/{model}/{analysis}')
-  Future<List<TimeseriesAssembly>> byAnalysis(String product, String model, String analysis, {String locations, String elements, String validFrom, String validTo}) {
+  Future<List<TimeseriesAssembly>> byAnalysis(
+      String product, String model, String analysis,
+      {String locations, String elements, String validFrom, String validTo}) {
     try {
       if ((locations == null) || (elements == null)) {
-        throw new FormatException("locations and elements are required query paramters");
+        throw new FormatException(
+            "locations and elements are required query paramters");
       }
       product = Uri.decodeComponent(product);
       model = Uri.decodeComponent(model);
       analysis = Uri.decodeComponent(analysis);
 
-      List<TimeseriesNode> nodes = _extractNodes(locations, elements, product, model);
+      List<TimeseriesNode> nodes =
+      _extractNodes(locations, elements, product, model);
 
       DateTime analysisAt = _parseDateTime(analysis);
 
@@ -58,18 +61,23 @@ class EpdApi {
         }
       }
 
-      return cache.getTimeseriesAnalysisSet(nodes, analysisAt, valid_From, period);
+      return cache.getTimeseriesAnalysisSet(
+          nodes, analysisAt, valid_From, period);
     } catch (e) {
       _log.warning("had exception ${e}");
       throw new ApplicationError(new Exception(e));
     }
   }
 
-  @ApiMethod(method: 'GET', path: 'byLatest/{product}/{model}/{validFrom}/{validTo}')
-  Future<List<TimeseriesBestSeries>> byLatest(String product, String model, String validFrom, String validTo, {String locations, String elements}) {
+  @ApiMethod(
+      method: 'GET', path: 'byLatest/{product}/{model}/{validFrom}/{validTo}')
+  Future<List<TimeseriesBestSeries>> byLatest(
+      String product, String model, String validFrom, String validTo,
+      {String locations, String elements}) {
     try {
       if ((locations == null) || (elements == null)) {
-        throw new FormatException("locations and elements are required query paramters");
+        throw new FormatException(
+            "locations and elements are required query paramters");
       }
       product = Uri.decodeComponent(product);
       model = Uri.decodeComponent(model);
@@ -78,7 +86,8 @@ class EpdApi {
       DateTime validToAt = _parseDateTime(Uri.decodeComponent(validTo));
       Duration duration = validToAt.difference(validFromAt);
 
-      List<TimeseriesNode> nodes = _extractNodes(locations, elements, product, model);
+      List<TimeseriesNode> nodes =
+      _extractNodes(locations, elements, product, model);
 
       return cache.getTimeseriesBestSeriesSet(nodes, validFromAt, duration);
     } catch (e) {
@@ -87,7 +96,8 @@ class EpdApi {
     }
   }
 
-  List<TimeseriesNode> _extractNodes(String locations, String elements, String product, String model) {
+  List<TimeseriesNode> _extractNodes(
+      String locations, String elements, String product, String model) {
     List<TimeseriesNode> nodes = [];
     List<String> locationList = locations.split(",");
     List<String> elementList = elements.split(",");
@@ -96,7 +106,8 @@ class EpdApi {
       elementList.forEach((element) {
         String locationName = location.split("\.")[0];
         String locationSuffix = location.split("\.")[1];
-        nodes.add(new TimeseriesNode.create(product, model, element, locationName, locationSuffix));
+        nodes.add(new TimeseriesNode.create(
+            product, model, element, locationName, locationSuffix));
       });
     });
     return nodes;
@@ -106,7 +117,8 @@ class EpdApi {
     try {
       return DateTime.parse(time);
     } catch (a) {
-      throw new FormatException("Time value of '${time}' is invalid, must be ISO time format");
+      throw new FormatException(
+          "Time value of '${time}' is invalid, must be ISO time format");
     }
   }
 }
