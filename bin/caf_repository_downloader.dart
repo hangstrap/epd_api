@@ -29,7 +29,7 @@ class CafFileDownloader {
   final List<crawler.Link> toDownload = [];
   int filedownloaded = 0;
   bool _busy = false;
-  bool get busy => busy || toDownload.length > 0;
+  bool get busy => _busy || toDownload.length > 0;
 
   CafFileDownloader(this.url, this.destination, this.catalog) {
 
