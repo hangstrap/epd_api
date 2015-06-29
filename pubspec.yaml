@@ -16,9 +16,8 @@ dependencies:
   rpc: any
   shelf: any
   shelf_route: any
-  quiver: any
 dev_dependencies:
   mock: any
   unittest: any
 dependency_overrides:
-
+  quiver: '>=0.21.3'
