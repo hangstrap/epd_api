@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:http_server/http_server.dart' show VirtualDirectory;
 import 'package:logging/logging.dart';
 

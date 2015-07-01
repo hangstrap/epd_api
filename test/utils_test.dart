@@ -1,4 +1,4 @@
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import '../bin/utils.dart';
 import 'matchers.dart';

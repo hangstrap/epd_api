@@ -6,18 +6,16 @@ environment:
 dependencies:
   html: any
   http: any
-  http_server: any
   intl: any
   jsonx: any
   logging: any
-  pool: any
-  quiver: any
-  quiver_log: any
+##  pool: any
+##  quiver: any
+##  quiver_log: any
   rpc: any
-  shelf: any
-  shelf_route: any
 dev_dependencies:
   mock: any
-  unittest: any
+  test: any
+  http_server: any
 dependency_overrides:
   quiver: '>=0.21.3'

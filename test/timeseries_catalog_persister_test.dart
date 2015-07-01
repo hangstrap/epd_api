@@ -1,7 +1,7 @@
 import 'dart:io';
 
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 
 import '../bin/timeseries_catalogue.dart';

@@ -1,6 +1,6 @@
 library matchers;
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 ///assumes exception has a field called message
 class _ExceptionWithMessageMatcher extends Matcher {

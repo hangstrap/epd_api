@@ -1,4 +1,4 @@
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:jsonx/jsonx.dart' as jsonx;
 
 import '../bin/timeseries_model.dart';

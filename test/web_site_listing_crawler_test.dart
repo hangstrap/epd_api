@@ -1,7 +1,7 @@
 
 import 'dart:io';
 import 'package:http_server/http_server.dart' show VirtualDirectory;
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import '../bin/web_site_listing_crawler.dart' as crawler;
 

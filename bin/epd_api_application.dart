@@ -4,10 +4,9 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:core';
 
-import 'package:shelf_route/shelf_route.dart' as shelf_route;
-import 'package:shelf/shelf.dart' as shelf;
-import 'package:shelf/shelf_io.dart' as shelf_io;
+import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
+
 import 'package:logging/logging.dart';
 
 import "timeseries_catalogue.dart";
@@ -29,8 +28,8 @@ Future main(List<String> arguments) async {
   
   Uri uri = new Uri.http("amps-caf-output.met.co.nz", "/ICE/PDF-PROFOUND/");
 
-  Directory dataDirectory = new Directory("/temp/epdapi/");
-//  Directory dataDirectory = new Directory("data");
+//  Directory dataDirectory = new Directory("/temp/epdapi/");
+  Directory dataDirectory = new Directory("data");
 
   setUpJsonConverters();
 
@@ -66,21 +65,18 @@ Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) 
   TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres, catalogue.findAnalysissForPeriod);
 
   _apiServer.addApi(new EpdApi(cache));
-  var apiRouter = shelf_route.router();
-  apiRouter.add(_API_PREFIX, ['GET', 'POST'], _apiHandler, exactMatch: false);
+  _apiServer.enableDiscoveryApi();
 
-  var handler = const shelf.Pipeline().addMiddleware(shelf.logRequests()).addHandler(apiRouter.handler);
-
-  var server = await shelf_io.serve(handler, InternetAddress.ANY_IP_V6, 9090);
-  var url = 'http://localhost:9090/';
-  _apiServer.enableDiscoveryApi(url);
+  HttpServer server = await HttpServer.bind(InternetAddress.ANY_IP_V4, 9090);
+  server.listen(_apiServer.httpRequestHandler);
   _log.info('Listening at port ${server.port}.');
 }
 
 Future<shelf.Response> _apiHandler(shelf.Request request) async {
   try {
+
     var apiRequest = new HttpApiRequest(
-        request.method, request.url.path, request.url.queryParameters, request.headers, request.read());
+        request.method, request.url.path, request.headers, request.read());
     var apiResponse = await _apiServer.handleHttpApiRequest(apiRequest);
     return new shelf.Response(apiResponse.status, body: apiResponse.body, headers: apiResponse.headers);
   } catch (e) {

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import '../bin/timeseries_model.dart';
 import '../bin/timeseries_data_cache.dart';
