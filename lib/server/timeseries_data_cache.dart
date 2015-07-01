@@ -5,8 +5,8 @@ import "package:quiver/cache.dart";
 import "package:quiver/async.dart";
 import "package:quiver/core.dart";
 
-import "timeseries_model.dart";
-import "utils.dart";
+import "../common/timeseries_model.dart";
+import "../common/utils.dart";
 
 /**Used to load timeseres data when there is a cache miss*/
 typedef Future<TimeseriesAssembly> TimeseresLoader(

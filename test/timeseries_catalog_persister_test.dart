@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 
 import '../bin/timeseries_catalogue.dart';
-import '../bin/timeseries_model.dart';
-import '../bin/utils.dart';
+import '../lib/common/timeseries_model.dart';
+import '../lib/common/utils.dart';
 import '../bin/json_converters.dart';
 
 void main(){

@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import '../bin/utils.dart';
+import '../lib/common/utils.dart';
 import 'matchers.dart';
 
 main() {

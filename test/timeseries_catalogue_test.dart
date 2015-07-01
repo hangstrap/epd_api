@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:test/test.dart';
 
 import "../bin/timeseries_catalogue.dart";
-import "../bin/timeseries_model.dart";
+import "../lib/common/timeseries_model.dart";
 import '../bin/json_converters.dart';
-import '../bin/utils.dart';
+import '../lib/common/utils.dart';
 
 
 Future<Map<DateTime, CatalogueItem>>  nullLoader(TimeseriesNode node) {

@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import '../bin/caf_file_retriever.dart';
-import '../bin/timeseries_model.dart';
+import '../lib/common/timeseries_model.dart';
 
 void main() {
   CafFileRetriever retriever = new CafFileRetriever("data");

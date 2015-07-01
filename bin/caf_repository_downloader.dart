@@ -15,7 +15,7 @@ import 'package:jsonx/jsonx.dart' as jsonx;
 import 'web_site_listing_crawler.dart' as crawler;
 import 'caf_file_decoder.dart' as deconder;
 import 'timeseries_catalogue.dart';
-import 'timeseries_model.dart';
+import '../lib/common/timeseries_model.dart';
 
 final Logger _log = new Logger('caf_repository_downloader');
 

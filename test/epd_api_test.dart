@@ -6,8 +6,8 @@ import 'package:mock/mock.dart';
 import 'package:rpc/rpc.dart';
 
 
-import '../bin/timeseries_data_cache.dart';
-import '../bin/epd_api.dart';
+import '../lib/server/timeseries_data_cache.dart';
+import '../lib/server/epd_api.dart';
 
 @proxy
 class MockTimeseriesDataCache extends Mock implements TimeseriesDataCache {
@@ -20,7 +20,7 @@ main() {
 
   setUp(() {
     cache = new MockTimeseriesDataCache();
-    underTest = new EpdApi(cache);
+    underTest = new EpdApi.create(cache);
   });
 
   group("byAnalysis", () {

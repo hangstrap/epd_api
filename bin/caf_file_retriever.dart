@@ -6,7 +6,7 @@ import "dart:io";
 import 'package:logging/logging.dart';
 
 
-import "timeseries_model.dart";
+import "../lib/common/timeseries_model.dart";
 import "caf_file_decoder.dart" as decoder;
 
 final Logger _log = new Logger('caf_file_retriever');

@@ -3,7 +3,7 @@ import 'package:mock/mock.dart';
 
 import 'matchers.dart';
 import '../bin/caf_file_decoder.dart' as caf;
-import '../bin/timeseries_model.dart';
+import '../lib/common/timeseries_model.dart';
 
 @proxy
 class MockTimeseriesNode extends Mock implements TimeseriesNode {

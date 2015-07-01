@@ -10,9 +10,9 @@ import 'package:logging/logging.dart';
 
 import 'package:jsonx/jsonx.dart' as jsonx;
 
-import "timeseries_model.dart";
+import "../lib/common/timeseries_model.dart";
 import "caf_file_decoder.dart" show pathNameForTimeseriesNode;
-import 'utils.dart';
+import '../lib/common/utils.dart';
 
 typedef Future Saver(TimeseriesNode node, Map<DateTime, CatalogueItem> catalogueMap);
 typedef Future<Map<DateTime, CatalogueItem>> Loader( TimeseriesNode node);

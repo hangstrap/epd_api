@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:test/test.dart';
 
-import '../bin/timeseries_model.dart';
-import '../bin/timeseries_data_cache.dart';
-import '../bin/utils.dart';
+import '../lib/common/timeseries_model.dart';
+import '../lib/server/timeseries_data_cache.dart';
+import '../lib/common/utils.dart';
 
 
 

@@ -2,8 +2,8 @@ library caf_file_decoder;
 
 import 'package:intl/intl.dart';
 
-import "timeseries_model.dart";
-import "utils.dart" as utils;
+import "../lib/common/timeseries_model.dart";
+import "../lib/common/utils.dart" as utils;
 
 
 TimeseriesAssembly toTimeseiesAssembly(List<String> cafFileContents) {

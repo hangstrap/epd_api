@@ -7,12 +7,10 @@ import 'dart:core';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 
-import 'package:logging/logging.dart';
-
 import "timeseries_catalogue.dart";
 import "caf_file_retriever.dart";
-import "timeseries_data_cache.dart";
-import "epd_api.dart";
+import "../lib/server/timeseries_data_cache.dart";
+import "../lib/server/epd_api.dart";
 import "json_converters.dart";
 import "caf_repository_downloader.dart";
 
@@ -64,7 +62,7 @@ void startCafRepositoryDownloader(Uri uri, Directory destination, TimeseriesCata
 Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) async {
   TimeseriesDataCache cache = new TimeseriesDataCache(retriever.loadTimeseres, catalogue.findAnalysissForPeriod);
 
-  _apiServer.addApi(new EpdApi(cache));
+  _apiServer.addApi(new EpdApi.create(cache));
   _apiServer.enableDiscoveryApi();
 
   HttpServer server = await HttpServer.bind(InternetAddress.ANY_IP_V4, 9090);
@@ -72,16 +70,3 @@ Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) 
   _log.info('Listening at port ${server.port}.');
 }
 
-Future<shelf.Response> _apiHandler(shelf.Request request) async {
-  try {
-
-    var apiRequest = new HttpApiRequest(
-        request.method, request.url.path, request.headers, request.read());
-    var apiResponse = await _apiServer.handleHttpApiRequest(apiRequest);
-    return new shelf.Response(apiResponse.status, body: apiResponse.body, headers: apiResponse.headers);
-  } catch (e) {
-    // Should never happen since the apiServer.handleHttpRequest method
-    // always returns a response.
-    return new shelf.Response.internalServerError(body: e.toString());
-  }
-}

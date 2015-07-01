@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:test/test.dart';
 
 import '../bin/caf_file_system_datasource.dart' as underTest;
-import '../bin/timeseries_model.dart';
+import '../lib/common/timeseries_model.dart';
 import '../bin/timeseries_catalogue.dart';
-import '../bin/utils.dart';
+import '../lib/common/utils.dart';
 
 main() {
   group("CafFileSystemDatasource", () {
