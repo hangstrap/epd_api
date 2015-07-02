@@ -113,7 +113,10 @@ class Epd {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<core.List<TimeseriesBestSeries>> byLatest(core.String product, core.String model, core.String validFrom, core.String validTo, {core.String locations, core.String elements}) {
+  async.Future<core.List<TimeseriesBestSeries>> byLatest(core.String product, core.String model,
+                                                         core.String validFrom, core.String validTo,
+                                                         {core.String locations,
+                                                         core.String elements}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;

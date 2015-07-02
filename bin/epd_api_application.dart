@@ -65,7 +65,7 @@ Future startupServer(CafFileRetriever retriever, TimeseriesCatalogue catalogue) 
   _apiServer.addApi(new EpdApi.create(cache));
   _apiServer.enableDiscoveryApi();
 
-  HttpServer server = await HttpServer.bind(InternetAddress.ANY_IP_V4, 9090);
+  HttpServer server = await HttpServer.bind(InternetAddress.ANY_IP_V4, 8080);
   server.listen(_apiServer.httpRequestHandler);
   _log.info('Listening at port ${server.port}.');
 }

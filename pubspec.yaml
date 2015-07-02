@@ -13,6 +13,7 @@ dependencies:
 ##  quiver: any
 ##  quiver_log: any
   rpc: any
+  browser: any
 dev_dependencies:
   mock: any
   test: any
