@@ -12,5 +12,19 @@
    "from": "2015-02-15 06:00:00.000Z",
    "toEx": "2015-02-15 07:00:00.000Z"
   }
+ },
+ {
+  "node": {
+   "product": "City, Town & Spot Forecasts",
+   "model": "PDF-PROFOUND",
+   "element": "TTTTT",
+   "locationName": "99647",
+   "locationSuffix": "INTL"
+  },
+  "analyis": "2015-02-15 03:00:00.000Z",
+  "fromTo": {
+   "from": "2015-02-15 03:00:00.000Z",
+   "toEx": "2015-02-15 04:00:00.000Z"
+  }
  }
 ]

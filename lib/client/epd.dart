@@ -4,12 +4,11 @@ library epd_api_shelf.epd.client;
 
 import 'dart:core' as core;
 import 'dart:async' as async;
-
+import 'dart:convert' as convert;
 
 import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
 import 'package:http/http.dart' as http;
 import 'package:epd_api_shelf/common/timeseries_model.dart';
-import 'package:epd_api_shelf/server/epd_api.dart';
 export 'package:_discoveryapis_commons/_discoveryapis_commons.dart' show
     ApiRequestError, DetailedApiRequestError;
 
@@ -113,10 +112,7 @@ class Epd {
    * If the used [http.Client] completes with an error when making a REST call,
    * this method will complete with the same error.
    */
-  async.Future<core.List<TimeseriesBestSeries>> byLatest(core.String product, core.String model,
-                                                         core.String validFrom, core.String validTo,
-                                                         {core.String locations,
-                                                         core.String elements}) {
+  async.Future<core.List<TimeseriesBestSeries>> byLatest(core.String product, core.String model, core.String validFrom, core.String validTo, {core.String locations, core.String elements}) {
     var _url = null;
     var _queryParams = new core.Map();
     var _uploadMedia = null;
@@ -155,38 +151,6 @@ class Epd {
     return _response.then((data) => data.map((value) => TimeseriesBestSeriesFactory.fromJson(value)).toList());
   }
 
-  /**
-   * Request parameters:
-   *
-   * Completes with a [MyMessage].
-   *
-   * Completes with a [commons.ApiRequestError] if the API endpoint returned an
-   * error.
-   *
-   * If the used [http.Client] completes with an error when making a REST call,
-   * this method will complete with the same error.
-   */
-  async.Future<MyMessage> index() {
-    var _url = null;
-    var _queryParams = new core.Map();
-    var _uploadMedia = null;
-    var _uploadOptions = null;
-    var _downloadOptions = commons.DownloadOptions.Metadata;
-    var _body = null;
-
-
-    _url = 'index';
-
-    var _response = _requester.request(_url,
-                                       "GET",
-                                       body: _body,
-                                       queryParams: _queryParams,
-                                       uploadOptions: _uploadOptions,
-                                       uploadMedia: _uploadMedia,
-                                       downloadOptions: _downloadOptions);
-    return _response.then((data) => MyMessageFactory.fromJson(data));
-  }
-
 }
 
 
@@ -222,24 +186,6 @@ class EditionFactory {
     }
     if (message.validTo != null) {
       _json["validTo"] = (message.validTo).toIso8601String();
-    }
-    return _json;
-  }
-}
-
-class MyMessageFactory {
-  static MyMessage fromJson(core.Map _json) {
-    var message = new MyMessage();
-    if (_json.containsKey("message")) {
-      message.message = _json["message"];
-    }
-    return message;
-  }
-
-  static core.Map toJson(MyMessage message) {
-    var _json = new core.Map();
-    if (message.message != null) {
-      _json["message"] = message.message;
     }
     return _json;
   }

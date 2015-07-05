@@ -19,10 +19,6 @@ import "timeseries_data_cache.dart";
 
 final Logger _log = new Logger('epd_api');
 
-class MyMessage {
-  String message;
-}
-
 @ApiClass(version: 'v1', description: 'Epd Api', name: 'epd')
 class EpdApi {
   TimeseriesDataCache cache;
@@ -30,10 +26,6 @@ class EpdApi {
   EpdApi();
   EpdApi.create(this.cache);
 
-  @ApiMethod(method: 'GET', path: 'index')
-  MyMessage index() {
-    return new MyMessage()..message = "index message";
-  }
 
   @ApiMethod(method: 'GET', path: 'byAnalysis/{product}/{model}/{analysis}')
   Future<List<TimeseriesAssembly>> byAnalysis(

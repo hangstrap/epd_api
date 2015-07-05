@@ -7,11 +7,6 @@ import 'package:epd_api_shelf/client/epd.dart';
 import 'package:epd_api_shelf/common/timeseries_model.dart';
 
 
-
-// By default the generated client code uses
-// 'http://localhost:8080/'. Since our server is running on
-// port 8088 we override the default url when instantiating
-// the generated PiratesApi class.
 final BrowserClient _client = new BrowserClient();
 Epd _api;
 
