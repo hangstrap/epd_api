@@ -68,22 +68,22 @@ class ProbabilityDensityFunction
    List<double> m_x;
   List<double> m_y;
   List<double> m_c;
-   final int m_k;
-   final boolean m_tailL;
-   final boolean m_tailR;
+  int m_k;
+  bool m_tailL;
+  bool m_tailR;
 
   List<double> m_a;
   List<double> m_b;
-  
-  ProbabilityDensityFunction(List<double> x, List<double> logny, List<double> c, boolean tailL, boolean tailR)
+
+  ProbabilityDensityFunction(List<double> x, List<double> logny, List<double> c, bool tailL, bool tailR)
   {
-    if (x == null) throw new IllegalArgumentException("x is null");
-    if (logny == null) throw new IllegalArgumentException("logny is null");
-    if (c == null) throw new IllegalArgumentException("c is null");
-    
-    if (x.length != logny.length) throw new IllegalArgumentException("x,y length mismatch");
-    if (x.length != c.length + 1) throw new IllegalArgumentException("x,c length mismatch");
-    if (c.length == 0) throw new IllegalArgumentException("no segments");
+    if (x == null) throw new Exception("x is null");
+    if (logny == null) throw new Exception("logny is null");
+    if (c == null) throw new Exception("c is null");
+
+    if (x.length != logny.length) throw new Exception("x,y length mismatch");
+    if (x.length != c.length + 1) throw new Exception("x,c length mismatch");
+    if (c.length == 0) throw new Exception("no segments");
     
     m_x = x;
     m_y = logny;
