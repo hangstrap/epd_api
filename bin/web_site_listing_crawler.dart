@@ -7,22 +7,32 @@ import 'package:quiver/async.dart';
 import 'package:logging/logging.dart';
 
 import "web_site_listing_parser.dart" as parser;
+
 final Logger _log = new Logger('caf_repository_downloader');
 
 class Link {
   final Uri _baseUrl;
   final parser.Item _item;
+
   Link(this._baseUrl, this._item);
 
-  Uri get url {
-    
+  ///Given http://server/path/name.txt
+  ///will return /path/name.txt
+  String get pathName {
     String path = _baseUrl.path;
     //Remove any extentions
-    if( path.lastIndexOf( ".") > 0){
-      path = path.substring(0,path.lastIndexOf( ".") );
+    if (path.lastIndexOf(".") > 0) {
+      path = path.substring(0, path.lastIndexOf("."));
     }
-    return new Uri.http( _baseUrl.authority, "${path}/${_item.uri}");
-   }
+    if (path[0] != "/") {
+      path = "/${path}";
+    }
+    return "${path}/${_item.uri}";
+  }
+
+  Uri get url {
+    return new Uri.http(_baseUrl.authority, pathName);
+  }
   String get name => _item.name;
   String get size => _item.size;
   String get lastModifiedAt => _item.lastModifiedAt;
