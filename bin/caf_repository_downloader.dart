@@ -22,20 +22,14 @@ final Logger _log = new Logger('caf_repository_downloader');
 class CafFileDownloader {
   final Uri url;
   final Directory destination;
-
   final TimeseriesCatalogue catalog;
-  File jsonFile;
-  final Map<Uri, Object> downloaded = {};
+
   final List<crawler.Link> toDownload = [];
-  int filedownloaded = 0;
+  int filesDownloaded = 0;
   bool _busy = false;
   bool get busy => _busy || toDownload.length > 0;
 
   CafFileDownloader(this.url, this.destination, this.catalog) {
-
-    //Load download list from disk
-    jsonFile = new File(destination.path + "/downloadedList.json");
-    _extractDownloadedListFromDisk();
   }
 
   Future<int> findFilesToDownload() async {
@@ -43,7 +37,7 @@ class CafFileDownloader {
       _log.info("checking what needs to be downloaded");
       _busy = true;
       await crawler.crawl(url, _foundLink);
-      _log.info("finshed. ${downloaded.length} files to download");
+      _log.info("finshed. ${toDownload.length} files to download");
       return new Future.value();
     } finally {
       _busy = false;
@@ -62,15 +56,7 @@ class CafFileDownloader {
       fg.add(futureDownloaded);
     });
     await fg.future;
-    await _writeDownloadedList();
     return new Future.value();
-  }
-
-  Future _writeDownloadedList() async {
-    _log.info("saving downloaded list ");
-    List<Uri> urls = [];
-    urls.addAll(downloaded.keys);
-    return jsonFile.writeAsString(jsonx.encode(urls, indent: ' '));
   }
 
   bool _foundLink(crawler.Link link) {
@@ -80,14 +66,18 @@ class CafFileDownloader {
     }
 
     if (link.name.endsWith('.caf')) {
-      if (!downloaded.containsKey(link.url)) {
-        toDownload.add(link);
-        _log.fine("${link.name} still to downloaded");
-      } else {
-        _log.fine("${link.name} has already been download");
-      }
+      _checkAndDownload(link);
     }
     return true;
+  }
+
+  void _checkAndDownload(crawler.Link link) {
+    if (!_checkIfDownloaded(link.pathName)) {
+      toDownload.add(link);
+      _log.fine("${link.name} still to downloaded");
+    } else {
+      _log.fine("${link.name} has already been download");
+    }
   }
 
   Future _downloadCafFile(crawler.Link link) async {
@@ -100,7 +90,6 @@ class CafFileDownloader {
       }
 
       _log.fine("downloaded caf file ${link.url}");
-      downloaded[link.url] = true;
       toDownload.remove(link);
 
       String contents = response.body;
@@ -124,12 +113,10 @@ class CafFileDownloader {
 
       catalog.addAnalysis(assembly);
 
-      _log.info("processed file ${file.path} ${filedownloaded}");
+      _log.info("processed file ${file.path} ${filesDownloaded}");
 
-      filedownloaded++;
-      if (filedownloaded % 10 == 0) {
-        await _writeDownloadedList();
-      }
+      filesDownloaded++;
+      await _markFileAsDownloaded(link.pathName);
 
       return new Future.value();
     } catch (onError) {
@@ -137,25 +124,21 @@ class CafFileDownloader {
     }
   }
 
+  Future _markFileAsDownloaded(String fileName) async {
+    return createDownloadedFlagFile(fileName).create(recursive: true);
+  }
+
+  bool _checkIfDownloaded(String fileName) {
+    return createDownloadedFlagFile(fileName).existsSync();
+  }
+
+  File createDownloadedFlagFile(String fileName) {
+    return new File("${destination.path}\downloaded${fileName}");
+  }
   Future _insureDirectoryExists(File file) async {
     Directory newParent = file.parent;
     if (!await newParent.exists()) {
       await newParent.create(recursive: true);
-    }
-  }
-  void _extractDownloadedListFromDisk() {
-    try {
-      if (jsonFile.existsSync()) {
-        try {
-          _log.info("loading list downloaded locations ");
-          List<Uri> urls = jsonx.decode(jsonFile.readAsStringSync(), type: const jsonx.TypeHelper<List<Uri>>().type);
-          urls.forEach((url) => downloaded[url] = true);
-        } catch (e) {
-          _log.warning("could not load ${jsonFile} from json ${e}");
-        }
-      }
-    } catch (e) {
-      _log.warning("could not load list of downloaded urls ${e}");
     }
   }
 }

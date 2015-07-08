@@ -56,25 +56,27 @@ main() {
       CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
       await underTest.findFilesToDownload();
       await underTest.downloadFiles();
-      
+
       File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');
       expect(output.existsSync(), isTrue);
 
-      File jsonFile = new File('temp/downloadedList.json');
-      expect( jsonFile.readAsStringSync(), equals( '[\n "http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf"\n]'));
+      output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/catalog.json');
+      expect(output.existsSync(), isTrue);
+
+      File downloadedFlagFile = new File('temp/downloaded/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf');
+      expect(downloadedFlagFile.existsSync(), isTrue);
 
     });
 
-    test("Should not download file if in downloaded list", () async {
+    test("Should not download file if flag file exists", () async {
 
-      File jsonFile = new File('temp/downloadedList.json');
-      
-      jsonFile.writeAsStringSync( '["http://localhost:8080/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf"]');
-      
+      File downloadedFlagFile = new File('temp/downloaded/DLITE/TTTTT/20150327T22Z/TTTTT_20150327T18Z_03772.caf');
+      downloadedFlagFile.createSync(recursive:true);
+
       CafFileDownloader underTest = new CafFileDownloader(uri, outputDirectory, catalogue);
       await underTest.findFilesToDownload();
 
-      File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');      
+      File output = new File('temp/CityTownSpotForecasts/PDF-PROFOUND/TTTTT/03772/CityTownSpotForecasts.PDF-PROFOUND.TTTTT.201502150300Z.03772.caf');
       expect(output.existsSync(), isFalse);
 
     });
