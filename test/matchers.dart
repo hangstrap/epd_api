@@ -31,15 +31,16 @@ class _DoubleMatcher extends Matcher {
 
   _DoubleMatcher(this.expected, this.error);
 
-  bool matches(item, Map matchState) {
-    num diff = item - expected;
-    diff = diff.abs();
-    if (diff > error) {
-      err = "                          diff=${diff}";
-      return false;
-    } else {
-      return true;
+  bool matches(actual, Map matchState) {
+    final double adiff = (expected - actual).abs();
+    
+    if (actual == 0.0) {
+      return adiff <= error;
     }
+    else
+    {
+      return (adiff / actual) <= error;
+    }    
   }
 
   Description describe(Description description) => description.add("${expected}").addDescriptionOf(err);
