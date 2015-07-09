@@ -20,7 +20,7 @@ class TimeseriesDataCache {
   TimeseresLoader loader;
   AnalysissForPeriodQuery analysisQuery;
 
-  MapCache<Key, TimeseriesAssembly> cache = new MapCache.lru();
+  MapCache<Key, TimeseriesAssembly> cache = new MapCache.lru( maximumSize:1000);
 
   TimeseriesDataCache(this.loader, this.analysisQuery);
 
