@@ -63,7 +63,7 @@ void main() {
       //mean=9.083023 var=0.742779
       pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
     }
-    
+
     { //                      0            1         2          3           4          5          6           7           8          9
       final List<double> x = [7.283316, 8.626362, 8.852718, 9.074044, 9.260159, 9.486515, 9.697780, 10.160553, 10.839621, 12.313450];
       final List<double> y = [-6.850090, -0.355071, -0.628447, -0.731994, -0.807844, -1.620172, -2.211907, -2.086753, -2.024621, -7.383823];
@@ -73,7 +73,7 @@ void main() {
       //mean=9.083366 var=0.743867
       pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
     }
-    
+
     { //                      0            1         2          3           4          5          6           7           8
       List<double> x = [7.000000, 7.000250, 7.018750, 7.045000, 7.105000, 7.258750, 7.675000, 9.500000, 10.750000];
       List<double> y = [-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577];
@@ -85,9 +85,9 @@ void main() {
     }
 
     test("", () {
-      for (int ipdf = 0; ipdf < pdfArray.length; ipdf++)
+      for (int ipdf = 1; ipdf < pdfArray.length; ipdf++)
     {
-      final ProbabilityDensityFunction pdf = pdfArray[ipdf];
+      final ProbabilityDensityFunction pdf = pdfArray[ipdf-1];
 
         for (int i=0; i < expectedDensityArray.length; i++)
         {
@@ -340,8 +340,8 @@ final List<List<double>> expectedInverseCumulativeArray = [
   [0.98, 11.181094963, 11.1826152279, 11.1810664427, 11.1825834923, 9.33390449564],
   [0.99, 11.3778567433, 11.3805294689, 11.3778329951, 11.3805002995, 9.67072439559]
 ];
-  
-  
+
+
   /*
    * x, erf(x), erfi(x)
    */
