@@ -1,4 +1,7 @@
+library probability_desity_function;
 import "dart:math";
+import "erf.dart";
+import "maths_const.dart";
 
 class ProbabilityDensityFunction
 {
@@ -8,18 +11,18 @@ class ProbabilityDensityFunction
     if (i == NoSegment) {
       return 0.0;
     }
-    final double z = z(i, x);
+    double z = z_(i, x);
     return exp(m_a[i] + (m_b[i]*z) + (m_c[i] * (1+z) * (1-z)));
   }
   
   
   double cdf(double x)
   {
-    final int j = segment(x);
+    int j = segment(x);
     if (j == NoSegment) {
       return (x <= m_x[0]) ? 0.0 : 1.0;
     }
-    final double z = z(j, x);
+    double z = z_(j, x);
     if (j==0 && m_tailL) {
       return (cdfI_zi(z, j) - cdfI_zi(double.NEGATIVE_INFINITY, j)) * xd(j) / 2.0;
     }
@@ -27,7 +30,7 @@ class ProbabilityDensityFunction
     for (int i=0; i < j; i++) {
       r += cdfA(i) * xd(i) / 2.0;
     }
-    r += (cdfI_zi(z,j) - cdfI_zi(-1,j)) * xd(j) / 2.0;
+    r += (cdfI_zi(z, j) - cdfI_zi(-1.0, j)) * xd(j) / 2.0;
     return r;
   }
   
@@ -72,8 +75,8 @@ class ProbabilityDensityFunction
   bool m_tailL;
   bool m_tailR;
 
-  List<double> m_a;
-  List<double> m_b;
+  Map<int, double> m_a = {};
+  Map<int, double> m_b = {};
 
   ProbabilityDensityFunction(List<double> x, List<double> logny, List<double> c, bool tailL, bool tailR)
   {
@@ -91,7 +94,7 @@ class ProbabilityDensityFunction
     m_k = c.length;
     m_tailL = tailL;
     m_tailR = tailR;
-    for (int i=0; i < m_k; i++)
+    for (num i = 0; i < m_k; i++)
     {
       final double ai = (m_y[i+1] + m_y[i]) / 2.0; 
       final double bi = m_y[i+1] - ai; 
@@ -145,12 +148,12 @@ class ProbabilityDensityFunction
           return -e / 2.0 / sqrt(c);
       }
       final double z1 = ( (2 * c * z) - b) / 2.0 / sqrt(c);
-      return e * Erf.erf(z1) / 2.0 / sqrt(c);
+      return e * erf(z1) / 2.0 / sqrt(c);
     }
     else
     {
       final double z1 = (b - (2 * c * z)) / 2.0 / sqrt(-c);
-      return e * Erf.erfi(z1) / 2.0 / sqrt(-c);
+      return e * erfi(z1) / 2.0 / sqrt(-c);
     }
   }
   
@@ -165,8 +168,8 @@ class ProbabilityDensityFunction
    double xd(int i) {
     return m_x[i+1] - m_x[i];
   }
-  
-   double z(int i, double x) {
+
+  double z_(int i, double x) {
     return (2.0 * x - m_x[i+1] - m_x[i]) / (m_x[i+1]-m_x[i]);
   }
   
@@ -186,7 +189,7 @@ class ProbabilityDensityFunction
         if (m_x[i] < x) {
           return i;
         }
-        throw new Exception("x array is unordered (detected at "+i+")");
+        throw new Exception("x array is unordered (detected at ${i})");
       }
     }
     throw new Exception("x array is unordered (detected at end)");

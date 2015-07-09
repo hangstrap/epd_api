@@ -1,3 +1,5 @@
+import "dart:math";
+
 import 'package:test/test.dart';
 
 import "../ice-code/probability_density_function.dart";
@@ -13,154 +15,123 @@ display(int index, num x, num expected, num actual) {
 void main() {
   test("erf", () {
 
-    for (int i = 48; i < expectedErf.length; i += 3)
+    for (int i = 0; i < expectedErf.length; i += 3)
     {
-
       double x = expectedErf[i];
-
       double expected_erfx = expectedErf[i + 1];
       double expected_erfix = expectedErf[i + 2];
 
       double actual_erfx = erf(x);
       double actual_erfix = erfi(x);
 
-      display(i, x, expected_erfx, actual_erfx);
-      display(i, x, expected_erfix, actual_erfix);
-
-      expect(actual_erfx, doubleMatcher(expected_erfx, error:0.01));
-      expect(actual_erfix, doubleMatcher(expected_erfix, error:0.01));
-
-//      assertMargin("erf",  i, x, expected_erfx,  actual_erfx,  1.0e-11);
-//      assertMargin("erfi", i, x, expected_erfix, actual_erfix, 1.0e-11);
+      expect(actual_erfx, doubleMatcher(expected_erfx));
+      expect(actual_erfix, doubleMatcher(expected_erfix));
     }
-
-
   });
 
-}
-/*
-  static void test_density()
+
+  group("density", ()
   {
-    final ProbabilityDensityFunction[] pdfArray = new ProbabilityDensityFunction[6];
+
+    final List<ProbabilityDensityFunction> pdfArray = [];
     {
       //                      0            1         2          3         4           5         6          7          8          9
-      final double[] x = { 7.283316,   8.626362,  8.852718,  9.074044,  9.260159,  9.486515,  9.697780, 10.160553, 10.839621, 12.313450};
-      final double[] y = {-6.849891,  -0.354872, -0.628248, -0.731795, -0.807645, -1.619973, -2.211708, -2.086554, -2.024422, -7.383624};
-      final double[] c = { 1.786991,   0.038937, -0.098030,  0.118087, -0.086712,  0.106517, -0.421220,  0.280183,  0.759790};
-      final boolean tailL = false;
-      final boolean tailR = false;
+      List<double> x = [ 7.283316, 8.626362, 8.852718, 9.074044, 9.260159, 9.486515, 9.697780, 10.160553, 10.839621, 12.313450];
+      List<double> y = [-6.849891, -0.354872, -0.628248, -0.731795, -0.807645, -1.619973, -2.211708, -2.086554, -2.024422, -7.383624];
+      List<double> c = [ 1.786991, 0.038937, -0.098030, 0.118087, -0.086712, 0.106517, -0.421220, 0.280183, 0.759790];
+      bool tailL = false;
+      bool tailR = false;
       //mean=9.083207 var=0.742504
-      pdfArray[1] = new ProbabilityDensityFunction(x,y,c,tailL,tailR);
+      pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
     }
-    
-    { //                      0            1         2          3           4          5          6           7           8          9
-      final double[] x = {7.283316,   8.626362, 8.852718,    9.074044,  9.260159,  9.486515,  9.697780, 10.160553,  10.839621,  12.313450};
-      final double[] y = {-6.849992, -0.354974, -0.628349, -0.731896, -0.807746, -1.620074, -2.211810, -2.086656, -2.024523,  -7.383725};
-      final double[] c = {1.786991,   0.038937, -0.098030,   0.118087, -0.086712,  0.106517, -0.421220, 0.280183,   0.759790}; 
-      final boolean tailL = false;
-      final boolean tailR = true;
+    {
+      //                      0            1         2          3           4          5          6           7           8          9
+      List<double> x = [7.283316, 8.626362, 8.852718, 9.074044, 9.260159, 9.486515, 9.697780, 10.160553, 10.839621, 12.313450];
+      List<double> y = [-6.849992, -0.354974, -0.628349, -0.731896, -0.807746, -1.620074, -2.211810, -2.086656, -2.024523, -7.383725];
+      List<double> c = [1.786991, 0.038937, -0.098030, 0.118087, -0.086712, 0.106517, -0.421220, 0.280183, 0.759790];
+      bool tailL = false;
+      bool tailR = true;
       //mean=9.083550 var=0.743591
-      pdfArray[2] = new ProbabilityDensityFunction(x,y,c,tailL,tailR);
+      pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
     }
-    
     { //                      0            1         2          3           4          5          6           7           8          9
-      final double[] x = {7.283316,   8.626362,  8.852718,   9.074044,  9.260159,  9.486515,  9.697780,  10.160553, 10.839621,  12.313450};
-      final double[] y = {-6.849988, -0.354970, -0.628346, -0.731893, -0.807742, -1.620071, -2.211806,  -2.086652, -2.024519, -7.383722};
-      final double[] c = {1.786991,   0.038937, -0.098030,  0.118087,  -0.086712,  0.106517, -0.421220,   0.280183,  0.759790}; 
-      final boolean tailL = true;
-      final boolean tailR = false;
+      List<double> x = [7.283316, 8.626362, 8.852718, 9.074044, 9.260159, 9.486515, 9.697780, 10.160553, 10.839621, 12.313450];
+      List<double> y = [-6.849988, -0.354970, -0.628346, -0.731893, -0.807742, -1.620071, -2.211806, -2.086652, -2.024519, -7.383722];
+      List<double> c = [1.786991, 0.038937, -0.098030, 0.118087, -0.086712, 0.106517, -0.421220, 0.280183, 0.759790];
+      bool tailL = true;
+      bool tailR = false;
       //mean=9.083023 var=0.742779
-      pdfArray[3] = new ProbabilityDensityFunction(x,y,c,tailL,tailR);
+      pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
     }
     
     { //                      0            1         2          3           4          5          6           7           8          9
-      final double[] x = {7.283316,   8.626362,  8.852718,  9.074044,  9.260159,  9.486515,  9.697780, 10.160553, 10.839621, 12.313450};
-      final double[] y = {-6.850090, -0.355071, -0.628447, -0.731994, -0.807844, -1.620172, -2.211907, -2.086753, -2.024621, -7.383823};
-      final double[] c = {1.786991,   0.038937, -0.098030,  0.118087, -0.086712,  0.106517, -0.421220,  0.280183,  0.759790}; 
-      final boolean tailL = true;
-      final boolean tailR = true;
+      final List<double> x = [7.283316, 8.626362, 8.852718, 9.074044, 9.260159, 9.486515, 9.697780, 10.160553, 10.839621, 12.313450];
+      final List<double> y = [-6.850090, -0.355071, -0.628447, -0.731994, -0.807844, -1.620172, -2.211907, -2.086753, -2.024621, -7.383823];
+      final List<double> c = [1.786991, 0.038937, -0.098030, 0.118087, -0.086712, 0.106517, -0.421220, 0.280183, 0.759790];
+      final bool tailL = true;
+      final bool tailR = true;
       //mean=9.083366 var=0.743867
-      pdfArray[4] = new ProbabilityDensityFunction(x,y,c,tailL,tailR);
+      pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
     }
     
     { //                      0            1         2          3           4          5          6           7           8
-      final double[] x = {7.000000,   7.000250,  7.018750,  7.045000,  7.105000,  7.258750,  7.675000,  9.500000, 10.750000};
-      final double[] y = {-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577};
-      final double[] c = {3.920818,   0.337233,  0.019309,  0.018923,  0.024092,  0.036923,  0.154945,  0.000000}; 
-      final boolean tailL = false;
-      final boolean tailR = true;
+      List<double> x = [7.000000, 7.000250, 7.018750, 7.045000, 7.105000, 7.258750, 7.675000, 9.500000, 10.750000];
+      List<double> y = [-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577];
+      List<double> c = [3.920818, 0.337233, 0.019309, 0.018923, 0.024092, 0.036923, 0.154945, 0.000000];
+      bool tailL = false;
+      bool tailR = true;
       //mean=7.715046 var=0.286490
-      pdfArray[5] = new ProbabilityDensityFunction(x,y,c,tailL,tailR);
+      pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
     }
-    
-    for (int ipdf=1; ipdf < pdfArray.length; ipdf++)
+
+    test("", () {
+      for (int ipdf = 0; ipdf < pdfArray.length; ipdf++)
     {
       final ProbabilityDensityFunction pdf = pdfArray[ipdf];
-      try
-      {
-        System.out.println("Density.pdf"+ipdf+": expected:actual");
+
         for (int i=0; i < expectedDensityArray.length; i++)
         {
           final double z = expectedDensityArray[i][0];
           final double exp = expectedDensityArray[i][ipdf];
           final double act = pdf.pdf(z);
 //          System.out.println(exp+":"+act);
-          assertDecimalPlaces("Density.pdf"+ipdf,i,z, exp, act, 10);
+          assertDecimalPlaces("Density.pdf $ipdf", i, z, exp, act, 10);
         }
-        System.out.println("Cumulative.pdf"+ipdf+": expected:actual");
+
         for (int i=0; i < expectedCumulativeArray.length; i++)
         {
           final double z = expectedCumulativeArray[i][0];
           final double exp = expectedCumulativeArray[i][ipdf];
           final double act = pdf.cdf(z);
 //          System.out.println(expCumulative+":"+actCumulative);
-          assertDecimalPlaces("Cumulative.pdf"+ipdf,i,z, exp, act, 6);
+          assertDecimalPlaces("Cumulative.pdf ${ipdf}", i, z, exp, act, 6);
         }
-        System.out.println("InverseCumulative.pdf"+ipdf+": expected:actual");
+
         for (int i=0; i < expectedInverseCumulativeArray.length; i++)
         {
           final double z = expectedInverseCumulativeArray[i][0];
           final double exp = expectedInverseCumulativeArray[i][ipdf];
           final double act = pdf.cdfInverse(z);
 //          System.out.println(expCumulative+":"+actCumulative);
-          assertDecimalPlaces("InverseCumulative.pdf"+ipdf,i,z, exp, act, 6);
+          assertDecimalPlaces("InverseCumulative.pdf $ipdf", i, z, exp, act, 6);
         }
       }
-      catch (MathException exMATH)
-      {}
-    }
-  }
-  
-  private static void assertMargin(String fn, int i, double x, double expected, double actual, double margin)
+    });
+
+  });
+}
+
+void assertDecimalPlaces(String fn, int i, double x, double expected, double actual, int places)
   {
-    final double adiff = Math.abs(expected - actual);
-    boolean accept;
-    if (actual == 0.0f) {
-      accept = adiff <= margin;
-    }
-    else
-    {
-      accept = (adiff / actual) <= margin;
-    }
+
+    final double mul = pow(10.0, places);
+    final int rExp = (expected * mul).round();
+    final int rActual = (actual * mul).round();
+    bool accept = rExp == rActual;
     if (!accept) {
-      System.out.println(fn+"("+i+":"+x+")="+actual+", but expected "+expected);
+      throw "${fn} (${i}: ${x})=${actual}, but expected ${expected}";
     }
-    assertTrue(accept);
   }
-  
-  private static void assertDecimalPlaces(String fn, int i, double x, double expected, double actual, int places)
-  {
-    final double mul = Math.pow(10.0, places);
-    final long rExp = Math.round(expected * mul);
-    final long rActual = Math.round(actual * mul);
-    boolean accept = rExp == rActual;
-    if (!accept) {
-      System.out.println(fn+"("+i+":"+x+")="+actual+", but expected "+expected);
-    }
-    assertTrue(accept);
-  }
-  
-*/
 final List<List<double>> expectedDensityArray = [
 
   [ 6.0, 0.0, 0.0, 3.38208105349e-12, 3.38173286748e-12, 0.0],
