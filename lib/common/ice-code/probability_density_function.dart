@@ -85,14 +85,17 @@ class ProbabilityDensityFunction {
   ///Inverse cumulative distribution
   ///gives level such that the probability of outcome less than level is x
   ///X must be between 0 and 1
-  double cdfInverse(double x) {
+  double cdfInverse(double probability) {
+    if (probability < 0 || probability > 1) {
+      throw "probality must be between 0 and 1, value was ${probability}";
+    }
     double lhs = -1.0;
     double rhs = 1.0;
-    while (cdf(lhs) > x) {
+    while (cdf(lhs) > probability) {
       rhs = lhs;
       lhs = lhs * 2.0;
     }
-    while (cdf(rhs) < x) {
+    while (cdf(rhs) < probability) {
       rhs = rhs * 2.0;
     }
 
@@ -100,7 +103,7 @@ class ProbabilityDensityFunction {
     double cm = cdf(m);
     int i = 1;
     while (i <= BISECTION_ITERATION_LIMIT) {
-      if (cm < x) {
+      if (cm < probability) {
         lhs = m;
       } else {
         rhs = m;
