@@ -121,12 +121,14 @@ void checkEdition(Edition edition, DateTime analysis) {
   expect(edition.validFrom, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.validTo, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.datum['mean'], equals(5.516087));
-  expect(edition.datum['control-points'], equals([1.587835, 4.687500, 5.524008]));
-  expect(edition.datum['logn-pdf-values'], equals([-6.502432, -1.297167, -0.893834]));
-  expect(edition.datum['curvature-values'], equals([0.416317, 0.094229, 0.000001]));
-  expect(edition.datum['tail-left'], equals(1));
+  expect(edition.datum['control-points'], equals([7.000000, 7.000250, 7.018750, 7.045000, 7.105000, 7.258750, 7.675000, 9.500000, 10.750000]));
+  expect(edition.datum['logn-pdf-values'], equals([-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577]));
+  expect(edition.datum['curvature-values'], equals([3.920818, 0.337233, 0.019309, 0.018923, 0.024092, 0.036923, 0.154945, 0.000000]));
+  expect(edition.datum['tail-left'], equals(0));
   expect(edition.datum['tail-right'], equals(1));
   expect(edition.datum['variance'], equals(1.111753));
+
+  edition.pdf;
 }
 
 void check99647Node(TimeseriesNode analysis) {
@@ -160,10 +162,10 @@ init-time:=20150215 0300 Z
 """.split("\n");
 
 List<String> cafFileBlock = """prog=1h
-control-points=1.587835,4.687500,5.524008
-logn-pdf-values=-6.502432,-1.297167,-0.893834
-curvature-values=0.416317,0.094229,0.000001
-tail-left=1
+control-points=7.000000, 7.000250, 7.018750, 7.045000, 7.105000, 7.258750, 7.675000, 9.500000, 10.750000
+logn-pdf-values=-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577
+curvature-values=3.920818, 0.337233, 0.019309, 0.018923, 0.024092, 0.036923, 0.154945, 0.000000
+tail-left=0
 tail-right=1
 mean=5.516087
 variance=1.111753

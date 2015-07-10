@@ -2,6 +2,7 @@ library timeseries_model;
 
 import "package:quiver/core.dart";
 import 'utils.dart';
+import 'ice-code/probability_density_function.dart';
 
 class TimeseriesNode {
   String product;
@@ -45,10 +46,19 @@ class Edition {
   DateTime validTo;
 
   Map<String, double> datum;
+  ProbabilityDensityFunction _pdf;
+
+  ProbabilityDensityFunction get pdf {
+    if( _pdf==null){
+      _pdf = ProbabilityDensityFunction.createFromMap( datum);
+    }
+    return _pdf;
+  }
 
   Edition();
-
   Edition.createMean(this.analysisAt, this.validFrom, this.validTo, this.datum);
+
+
 }
 
 class TimeseriesAssembly {

@@ -2,8 +2,9 @@ import "dart:math";
 
 import 'package:test/test.dart';
 
-import "../ice-code/probability_density_function.dart";
-import "../ice-code/erf.dart";
+import "../lib/common/ice-code/probability_density_function.dart";
+import "../lib/common/ice-code/erf.dart";
+
 import "matchers.dart";
 
 display(int index, num x, num expected, num actual) {
@@ -75,13 +76,16 @@ void main() {
     }
 
     { //                      0            1         2          3           4          5          6           7           8
-      List<double> x = [7.000000, 7.000250, 7.018750, 7.045000, 7.105000, 7.258750, 7.675000, 9.500000, 10.750000];
-      List<double> y = [-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577];
-      List<double> c = [3.920818, 0.337233, 0.019309, 0.018923, 0.024092, 0.036923, 0.154945, 0.000000];
-      bool tailL = false;
-      bool tailR = true;
+
+      Map datum = {
+      'control-points':     [7.000000, 7.000250, 7.018750, 7.045000, 7.105000, 7.258750, 7.675000, 9.500000, 10.750000],
+      'logn-pdf-values':    [-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577],
+      'curvature-values':  [3.920818, 0.337233, 0.019309, 0.018923, 0.024092, 0.036923, 0.154945, 0.000000],
+      'tail-left': 0,
+      'tail-right': 1
+      };
       //mean=7.715046 var=0.286490
-      pdfArray.add(new ProbabilityDensityFunction(x, y, c, tailL, tailR));
+      pdfArray.add( ProbabilityDensityFunction.createFromMap( datum));
     }
 
     test("", () {
@@ -94,7 +98,6 @@ void main() {
           final double z = expectedDensityArray[i][0];
           final double exp = expectedDensityArray[i][ipdf];
           final double act = pdf.pdf(z);
-//          System.out.println(exp+":"+act);
           assertDecimalPlaces("Density.pdf $ipdf", i, z, exp, act, 10);
         }
 
@@ -103,7 +106,6 @@ void main() {
           final double z = expectedCumulativeArray[i][0];
           final double exp = expectedCumulativeArray[i][ipdf];
           final double act = pdf.cdf(z);
-//          System.out.println(expCumulative+":"+actCumulative);
           assertDecimalPlaces("Cumulative.pdf ${ipdf}", i, z, exp, act, 6);
         }
 
