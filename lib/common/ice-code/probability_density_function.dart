@@ -53,6 +53,7 @@ class ProbabilityDensityFunction {
     }
   }
 
+  ///probability density at X
   double pdf(double x) {
     final int i = _segment(x);
     if (i == NoSegment) {
@@ -61,7 +62,8 @@ class ProbabilityDensityFunction {
     double z = _z(i, x);
     return exp(m_a[i] + (m_b[i] * z) + (m_c[i] * (1 + z) * (1 - z)));
   }
-
+  ///Cumulative distribution at X
+  ///probability outcome will be less than z
   double cdf(double x) {
     int j = _segment(x);
     if (j == NoSegment) {
@@ -80,7 +82,9 @@ class ProbabilityDensityFunction {
     r += (_cdfI_zi(z, j) - _cdfI_zi(-1.0, j)) * _xd(j) / 2.0;
     return r;
   }
-
+  ///Inverse cumulative distribution
+  ///gives level such that the probability of outcome less than level is x
+  ///X must be between 0 and 1
   double cdfInverse(double x) {
     double lhs = -1.0;
     double rhs = 1.0;

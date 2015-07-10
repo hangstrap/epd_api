@@ -20,7 +20,11 @@ Future main() async {
   result.forEach( (series){
 
     print( "latest at ${series.latestAt}");
-    series.editions.forEach( (edition) => print( "analysisAt=${edition.analysisAt}  validFrom=${edition.validFrom} mean=${edition.datum['mean']}"));
+    double mean = edition.datum['mean'];
+    double cdfI_10 = edition.pdf.cdfInverse(10);
+    double cdfI_50 = edition.pdf.cdfInverse(50);
+    double cdfI_90 = edition.pdf.cdfInverse(90);
+    series.editions.forEach( (edition) => print( "analysisAt=${edition.analysisAt}  validFrom=${edition.validFrom} mean=${mean} 10%=${cdfI_10} 50%=${cdfI_50} 50%=${cdfI_90}"));
   });
 
   print( "done");
