@@ -12,13 +12,14 @@ dependencies:
 ##  pool: any
 ##  quiver: any
 ##  quiver_log: any
+  quiver: any
   rpc: any
   browser: any
+  google_charts: any
 dev_dependencies:
   mock: any
   test: any
   http_server: any
 dependency_overrides:
-  quiver: '>=0.21.3'
   crypto: '>=0.9.0 <0.10.0'
   _discoveryapis_commons: '>=0.1.0 <0.2.0'
