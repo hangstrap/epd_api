@@ -121,6 +121,7 @@ void checkEdition(Edition edition, DateTime analysis) {
   expect(edition.validFrom, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.validTo, equals(analysis.add(new Duration(hours: 1))));
   expect(edition.datum['mean'], equals(5.516087));
+  expect(edition.mean, equals(5.516087));
   expect(edition.datum['control-points'], equals([7.000000, 7.000250, 7.018750, 7.045000, 7.105000, 7.258750, 7.675000, 9.500000, 10.750000]));
   expect(edition.datum['logn-pdf-values'], equals([-9.999820, -1.131157, -0.279547, -0.126680, -0.017522, -0.021517, -0.432122, -3.529888, -6.106577]));
   expect(edition.datum['curvature-values'], equals([3.920818, 0.337233, 0.019309, 0.018923, 0.024092, 0.036923, 0.154945, 0.000000]));

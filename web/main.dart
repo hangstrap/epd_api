@@ -13,34 +13,45 @@ Epd _api;
 
 Future main() async {
   await LineChart.load();
-  var data = arrayToDataTable([[20, 80], [30, 55], [40, 68]], true);
-
+  print("loading epd data");
+  List<TimeseriesBestSeries> series = await loadEpdData();
+  dumpTimeseriesBestSeries(series);
+  print("Extracting data set");
+  DataTable data = arrayToDataTable(extractDataSet(series.first), true);
+  print("drawing chart");
   var chart = new LineChart(document.getElementById('pdfChart'));
 
   chart.draw(data);
-
+  print("done");
   return null;
 }
 
-//List<List<num>> extractDataSet( TimeseriesBestSeries series){
-//  List<List<num>>  result = [];
-//  series.editions.forEach( (edition)=> result.add( edition.validFrom)); ///????
-//}
+List<List<Object>> extractDataSet(TimeseriesBestSeries series) {
+  List<List<Object>> result = [];
+  series.editions.forEach((edition) {
+    List value = [];
+
+    value.add(edition.validFrom.toIso8601String());
+    value.add(edition.pdf.cdfInverse(0.1));
+    value.add(edition.mean);
+    value.add(edition.pdf.cdfInverse(0.9));
+
+    result.add(value);
+  });
+  print(result);
+  return result;
+}
 Future<List<TimeseriesBestSeries>> loadEpdData() async{
 
   _api = new Epd(_client, servicePath: "api/epd/v1/");
   return _api.byLatest(
-      "City, Town & Spot Forecasts", "PDF-PROFOUND", "20150215T0300Z",
-      "20150215T0600Z", locations: "01492.INTL,03266.INTL", elements: "TTTTT");
+      "City, Town & Spot Forecasts", "PDF-PROFOUND", "20150215T0000Z",
+      "20150217T0000Z", locations: "93466.INTL", elements: "TTTTT");
 }
 
-Future main1() async {
-  _api = new Epd(_client, servicePath: "api/epd/v1/");
-  List<TimeseriesBestSeries> result = await _api.byLatest(
-      "City, Town & Spot Forecasts", "PDF-PROFOUND", "20150215T0300Z",
-      "20150215T0600Z", locations: "01492.INTL,03266.INTL", elements: "TTTTT");
+void dumpTimeseriesBestSeries(List<TimeseriesBestSeries> seriesArray) {
 
-  result.forEach((TimeseriesBestSeries series) {
+  seriesArray.forEach((TimeseriesBestSeries series) {
     print("latest at ${series.latestAt} for ${series.node.locationName}");
 
     series.editions.forEach((Edition edition) {

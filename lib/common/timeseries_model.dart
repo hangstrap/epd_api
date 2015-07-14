@@ -55,6 +55,8 @@ class Edition {
     return _pdf;
   }
 
+  double get mean => datum['mean'];
+
   Edition();
   Edition.createMean(this.analysisAt, this.validFrom, this.validTo, this.datum);
 
