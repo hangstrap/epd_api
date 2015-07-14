@@ -19,7 +19,7 @@ Future main() async {
   print("Extracting data set");
 
   DataTable dataTable = new DataTable();
-  dataTable.addColumn("string", "time");
+  dataTable.addColumn("datetime", "Date");
   dataTable.addColumn("number", "10%");
   dataTable.addColumn("number", "50%");
   dataTable.addColumn("number", "mean");
@@ -41,7 +41,7 @@ List<List<Object>> extractDataSet(TimeseriesBestSeries series) {
   series.editions.forEach((edition) {
     List value = [];
 
-    value.add(edition.validFrom.toIso8601String());
+    value.add(edition.validFrom);
     value.add(edition.pdf.cdfInverse(0.1));
     value.add(edition.pdf.cdfInverse(0.5));
     value.add(edition.mean);
