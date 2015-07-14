@@ -15,13 +15,23 @@ Future main() async {
   await LineChart.load();
   print("loading epd data");
   List<TimeseriesBestSeries> series = await loadEpdData();
-  dumpTimeseriesBestSeries(series);
+//  dumpTimeseriesBestSeries(series);
   print("Extracting data set");
-  DataTable data = arrayToDataTable(extractDataSet(series.first), true);
+
+  DataTable dataTable = new DataTable();
+  dataTable.addColumn("string", "time");
+  dataTable.addColumn("number", "10%");
+  dataTable.addColumn("number", "50%");
+  dataTable.addColumn("number", "mean");
+  dataTable.addColumn("number", "90%");
+
+  var data = extractDataSet(series.first);
+  dataTable.addRows(data);
+
   print("drawing chart");
   var chart = new LineChart(document.getElementById('pdfChart'));
 
-  chart.draw(data);
+  chart.draw(dataTable);
   print("done");
   return null;
 }
@@ -33,6 +43,7 @@ List<List<Object>> extractDataSet(TimeseriesBestSeries series) {
 
     value.add(edition.validFrom.toIso8601String());
     value.add(edition.pdf.cdfInverse(0.1));
+    value.add(edition.pdf.cdfInverse(0.5));
     value.add(edition.mean);
     value.add(edition.pdf.cdfInverse(0.9));
 
