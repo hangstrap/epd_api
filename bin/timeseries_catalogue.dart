@@ -120,7 +120,7 @@ class TimeseriesCatalogue {
   final Saver saver;
   final Loader loader;
 
-  final MapCache<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue =new MapCache.lru();
+  final MapCache<TimeseriesNode, Map<DateTime, CatalogueItem>> catalogue = new MapCache.lru();
 
 
   TimeseriesCatalogue(this.loader, this.saver);
