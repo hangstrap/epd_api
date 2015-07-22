@@ -1,7 +1,9 @@
 library web_site_listing_parser;
 
+import 'dart:async';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+
 
 class Item {
   final String uri;
@@ -14,9 +16,11 @@ class Item {
   Item(this.uri, this.name, this.size, this.lastModifiedAt);
 }
 
-typedef void ProcessItem(Item item);
+typedef Future ProcessItem(Item item);
 
-void parseWebSite(String htmlPage, ProcessItem callback) {
+Future<num> parseWebSite(String htmlPage, ProcessItem callback) async{
+
+  num found = 0;
   Document document = parse(htmlPage);
   List<Element> table = document.getElementsByTagName('table');
   if (table.length != 1) {
@@ -31,8 +35,8 @@ void parseWebSite(String htmlPage, ProcessItem callback) {
  
   //remove the header stuff
   rows = rows.sublist(3);
-  
-  rows.forEach((row) {
+
+  for (Element row in rows) {
 
     List<Element> tableDatas = row.getElementsByTagName("td");
 
@@ -49,13 +53,14 @@ void parseWebSite(String htmlPage, ProcessItem callback) {
       }
       String url = links[0].attributes["href"];
       String name = links[0].text;
-      
-      String lastModified = tableDatas[2].text; 
-      
-      callback( new Item(url, name, "", lastModified));
-      
+
+      String lastModified = tableDatas[2].text;
+      await callback(new Item(url, name, "", lastModified));
+      found ++;
     }
-  });
+  };
+
+  return new Future.value(found);
 }
 
 

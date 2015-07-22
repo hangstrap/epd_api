@@ -43,23 +43,27 @@ class Link {
 typedef bool FoundLink(Link link);
 
 ///Itterates through the links on the web site, optionally  decending into subpages
-Future crawl(Uri url, FoundLink callback) {
-  _log.fine("about to crawl ${url}");
+Future crawl(Uri url, FoundLink callback) async {
+  _log.info("about to crawl ${url}");
+  try {
+    http.Response response = await http.get(url);
 
-  FutureGroup fg = new FutureGroup();
-
-  fg.add(http.get(url).then((response) {
-    if( response.statusCode != 200){
+    if (response.statusCode != 200) {
       throw "request return status of ${response.statusCode}";
     }
-    parser.parseWebSite(response.body, (parser.Item item) {
+    num count = await parser.parseWebSite(response.body, (parser.Item item) async{
       Link link = new Link(url, item);
       bool goInto = callback(link);
       if ((item.isDirectory) && (goInto)) {
-        fg.add(crawl(link.url, callback));
+        await crawl(link.url, callback);
       }
     });
-  }).catchError((onError) => _log.warning("Error ${url}  ${onError}")));
+    _log.info("Crawled ${url} found ${count} links");
 
-  return fg.future;
+  } catch (onError) {
+    _log.warning("Error ${url}  ${onError}");
+  }
+
+
+  return new Future.value();
 }
