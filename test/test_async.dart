@@ -3,8 +3,10 @@ import 'package:test/test.dart';
 
 main() {
 
-  test("test2", () async {
-    expect(await throws, throwsException);
+
+  test("test2", () {
+    // with or without `async`
+    expect(throws(), throwsA(new isInstanceOf<FormatException>()));
   });
 
 //  test("test", () async {
