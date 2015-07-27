@@ -43,27 +43,62 @@ class Link {
 typedef bool FoundLink(Link link);
 
 ///Itterates through the links on the web site, optionally  decending into subpages
-Future crawl(Uri url, FoundLink callback) async {
-  _log.info("about to crawl ${url}");
-  try {
-    http.Response response = await http.get(url);
+Future crawl(Uri url, FoundLink callback) {
+  FutureGroup futureGroup = new FutureGroup();
 
-    if (response.statusCode != 200) {
-      throw "request return status of ${response.statusCode}";
-    }
-    num count = await parser.parseWebSite(response.body, (parser.Item item) async{
+  void _crawl(Uri url) {
+    
+    Completer completer = new Completer();
+    futureGroup.add(completer.future);
+
+    Future processItem(parser.Item item) {
       Link link = new Link(url, item);
       bool goInto = callback(link);
       if ((item.isDirectory) && (goInto)) {
-        await crawl(link.url, callback);
+        _crawl(link.url);
       }
+      return new Future.value();
+    }
+
+    _log.info("about to crawl ${url}");
+    http.get(url).then((response) {
+      if (response.statusCode != 200) {
+        throw "request return status of ${response.statusCode}";
+      }
+      parser.parseWebSite(response.body, processItem).then((number) {
+        _log.info("Crawled ${url} found ${number} links");
+        completer.complete(null);
+      });
     });
-    _log.info("Crawled ${url} found ${count} links");
-
-  } catch (onError) {
-    _log.warning("Error ${url}  ${onError}");
   }
-
-
-  return new Future.value();
+  _crawl(url);
+  return futureGroup.future;
 }
+
+/*
+///Itterates through the links on the web site, optionally  decending into subpages
+Future crawl(Uri url, FoundLink callback) async {
+_log.info("about to crawl ${url}");
+try {
+  http.Response response = await http.get(url);
+
+  if (response.statusCode != 200) {
+    throw "request return status of ${response.statusCode}";
+  }
+  num count = await parser.parseWebSite(response.body, (parser.Item item) async{
+    Link link = new Link(url, item);
+    bool goInto = callback(link);
+    if ((item.isDirectory) && (goInto)) {
+      await crawl(link.url, callback);
+    }
+  });
+  _log.info("Crawled ${url} found ${count} links");
+
+} catch (onError) {
+  _log.warning("Error ${url}  ${onError}");
+}
+
+
+return new Future.value();
+}
+*/

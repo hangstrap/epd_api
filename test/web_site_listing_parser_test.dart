@@ -11,7 +11,7 @@ void main() {
   </head><body></body></html>""";
 
     Future processItem(Item item) {
-      return new Future();
+      return new Future.value();
     }
 
     expect(parseWebSite(html, processItem), throwsA(exceptionMatching(FormatException, "Html page did not contain one and only one table element")));
@@ -27,7 +27,7 @@ void main() {
   </body></html>""";
 
     Future processItem(Item item) {
-      return new Future();
+      return new Future.value();
     }
 
     expect(parseWebSite(html, processItem), throwsA(exceptionMatching(FormatException, "Html page did not contain a table with at least 4 rows")));
@@ -46,7 +46,7 @@ void main() {
   </body></html>""";
 
     Future processItem(Item item) {
-      return new Future();
+      return new Future.value();
     }
 
     expect(parseWebSite(html, processItem), throwsA(exceptionMatching(FormatException, "Html page contained a listing row without 5 cells but had 4")));

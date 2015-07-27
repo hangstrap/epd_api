@@ -37,23 +37,23 @@ void main() {
 
     Uri uri = new Uri.http("localhost:8080", "DLITE.html");
 
-//    test("finds link in first page", () async {
-//      crawler.Link result;
-//
-//      bool foundLink(crawler.Link link) {
-//        expect(result, isNull);
-//        result = link;
-//        return false;
-//      }
-//
-//      await crawler.crawl(uri, foundLink);
-//      expect(result, isNotNull);
-//      expect(result.url, equals(new Uri.http("localhost:8080", "DLITE/TTTTT.html")));
-//      expect(result.name, equals("TTTTT/"));
-//      expect(result.size, equals(""));
-//      expect(result.lastModifiedAt, equals("01-Apr-2015 01:19  "));
-//      expect(result.isDirectory, isTrue);
-//    });
+    test("finds link in first page", () async {
+      crawler.Link result;
+
+      bool foundLink(crawler.Link link) {
+        expect(result, isNull);
+        result = link;
+        return false;
+      }
+
+      await crawler.crawl(uri, foundLink);
+      expect(result, isNotNull);
+      expect(result.url, equals(new Uri.http("localhost:8080", "DLITE/TTTTT.html")));
+      expect(result.name, equals("TTTTT/"));
+      expect(result.size, equals(""));
+      expect(result.lastModifiedAt, equals("01-Apr-2015 01:19  "));
+      expect(result.isDirectory, isTrue);
+    });
     test("finds links in all pages", () async {
       List<crawler.Link> result = [];
 
@@ -62,12 +62,9 @@ void main() {
         return true;
       }
 
-      Future f = crawler.crawl(uri, foundLink);
+      await crawler.crawl(uri, foundLink);
 
-      f.then((__) => print("Main craller has finished"));
-
-      await new Future.delayed(new Duration(seconds:10));
-      print("delay has passed");
+      print("Main craller has finished");
 
       expect(result.length, equals(3));
       expect(result[0].name, equals("TTTTT/"));
