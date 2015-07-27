@@ -24,40 +24,23 @@ Future main() async {
   dataTable.addColumn("datetime", "Date");
   dataTable.addColumn("number", "Mean", "the average or mean");
   dataTable.addColumn("number", "10%");
-  dataTable.addColumn("number", "25%");
   dataTable.addColumn("number", "50%");
-  dataTable.addColumn("number", "75%");
   dataTable.addColumn("number", "90%");
 
   var data = extractDataSet(series.first);
   var options = {
     'curveType':'function',
-//    'lineWidth': 4,
-    //'series': [{'color': '#F1CA3A'}],
     'intervals': { 'style':'area' },
   };
 
   dataTable.addRows(data);
 
   print("drawing chart");
-  var chart = new LineChart(document.getElementById('pdfChart'));
+  var chart = new LineChart(document.getElementById('pdfChartValues'));
 
   chart.draw(dataTable, options);
   print("done");
 
-
-  chart = new AnnotationChart(document.getElementById('pdfChartAnnotate'));
-
-  options = {
-    'displayAnnotations': false,
-    'thickness':1,
-    'displayZoomButtons':false,
-    'max':30,
-    'min':0,
-    'scaleType':'maximized'
-  };
-
-  chart.draw(dataTable, options);
 
   return null;
 }
@@ -70,9 +53,7 @@ List<List<Object>> extractDataSet(TimeseriesBestSeries series) {
     value.add(edition.validFrom);
     value.add(edition.mean);
     value.add(edition.pdf.cdfInverse(0.1));
-    value.add(edition.pdf.cdfInverse(0.25));
     value.add(edition.pdf.cdfInverse(0.50));
-    value.add(edition.pdf.cdfInverse(0.75));
     value.add(edition.pdf.cdfInverse(0.90));
 
     result.add(value);

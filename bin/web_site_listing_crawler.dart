@@ -69,6 +69,10 @@ Future crawl(Uri url, FoundLink callback) {
         _log.info("Crawled ${url} found ${number} links");
         completer.complete(null);
       });
+    }, onError: (e){
+      _log.info("Error downloading from ${url} = ${e}");
+      completer.complete(null);
+      
     });
   }
   _crawl(url);
