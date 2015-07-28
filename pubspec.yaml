@@ -15,7 +15,7 @@ dependencies:
   quiver: any
   rpc: any
   browser: any
-  google_charts: any
+  google_charts: "^0.1.4"
 dev_dependencies:
   mock: any
   test: any

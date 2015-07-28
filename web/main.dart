@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:google_charts/google_charts.dart'
-show AnnotationChart, Gauge, LineChart, DataTable, arrayToDataTable;
+show AnnotationChart, Gauge, LineChart, DataTable, arrayToDataTable, SelectionObjects, SelectedObject;
 
 import 'package:http/browser_client.dart';
 import 'package:epd_api_shelf/client/epd.dart';
@@ -11,12 +11,14 @@ import 'package:epd_api_shelf/common/timeseries_model.dart';
 final BrowserClient _client = new BrowserClient();
 Epd _api;
 
+TimeseriesBestSeries series; 
 Future main() async {
   await LineChart.load();
-  await AnnotationChart.load();
 
   print("loading epd data");
-  List<TimeseriesBestSeries> series = await loadEpdData();
+  var seriesList = await loadEpdData();
+  series =seriesList.first;
+  
 //  dumpTimeseriesBestSeries(series);
   print("Extracting data set");
 
@@ -27,7 +29,7 @@ Future main() async {
   dataTable.addColumn("number", "50%");
   dataTable.addColumn("number", "90%");
 
-  var data = extractDataSet(series.first);
+  var data = extractDataSet(series);
   var options = {
     'curveType':'function',
     'intervals': { 'style':'area' },
@@ -36,14 +38,59 @@ Future main() async {
   dataTable.addRows(data);
 
   print("drawing chart");
-  var chart = new LineChart(document.getElementById('pdfChartValues'));
+  
+  LineChart chart = new LineChart(document.getElementById('pdfChartValues'));
+  selectHandler(_) {
+    SelectionObjects selectedItems = chart.getSelection();
+    if (selectedItems != null) {
+      print(selectedItems.moveNext());
+      SelectedObject item = selectedItems.current;
 
+      print( data[item.row][0]);
+      
+      DateTime selectedTime = data[item.row][0];
+      displayPdf( selectedTime);
+    }
+  }
+  
+  chart.onSelect.listen( selectHandler);
   chart.draw(dataTable, options);
   print("done");
 
 
   return null;
 }
+
+void displayPdf( selectedTime){
+  
+  
+  Edition edition = series.editions.firstWhere((edition) { 
+    print( edition.validFrom);
+    return edition.validFrom == selectedTime;
+    });
+  
+  List<List<Object>> data = [];
+  
+  for( num x=0; x < 1; x+=0.1){
+    List value = [];
+    value.add( x);
+    value.add( edition.pdf.pdf( x.roundToDouble()));
+    data.add( value);
+  }
+
+  DataTable dataTable = new DataTable();
+  dataTable.addColumn("number", "pdf");
+  dataTable.addColumn("number", "x");
+  dataTable.addRow( data);
+  
+  var options = {
+     'curveType':'function',
+   };
+  LineChart chart = new LineChart(document.getElementById('pdfChartPdf'));
+  chart.draw(dataTable, options);    
+
+}
+
 
 List<List<Object>> extractDataSet(TimeseriesBestSeries series) {
   List<List<Object>> result = [];
