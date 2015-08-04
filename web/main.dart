@@ -18,8 +18,7 @@ Future main() async {
   print("loading epd data");
   var seriesList = await loadEpdData();
   series = seriesList.first;
-
-//  dumpTimeseriesBestSeries(series);
+  
   print("Extracting data set");
 
   DataTable dataTable = new DataTable();
@@ -58,30 +57,16 @@ void displayPdf(selectedTime) {
   Edition edition = series.editions.firstWhere((edition) =>edition.validFrom == selectedTime);
 
   DataTable dataTable = new DataTable();
-  dataTable.addColumn("string", "x");
+  dataTable.addColumn("number", "x");
   dataTable.addColumn("number", "pdf");
-  var data = extractPdfDataSet(edition);
-  dataTable.addRow( data);
+  
 
-  var options = {'curveType': 'function',};
-  LineChart chart = new LineChart(document.getElementById('pdfChartPdf'));
-  chart.draw(dataTable, options);
-}
-List<List<Object>> extractPdfDataSet(Edition edition) {
-  List<List<Object>> result = [];
-
-  for (double x = 0.0; x < 2; x += 1) {
-    List value = [x.toString(), x*x];
-    result.add(value);
+  for (num x = 0; x < 50; x += 0.05) {
+    num pdf = edition.pdf.pdf(x.roundToDouble());
+    dataTable.addRow([x, pdf]);
   }
 
-//  for (num x = 0; x < 1; x += 0.1) {
-//    List value = [];
-//    value.add(x);
-//    value.add(edition.pdf.pdf(x.roundToDouble()));
-//    result.add(value);
-//  }
-  return result;
+  new LineChart(document.getElementById('pdfChartPdf')).draw(dataTable, {});
 }
 
 List<List<Object>> extractDataSet(TimeseriesBestSeries series) {
@@ -117,6 +102,6 @@ void dumpTimeseriesBestSeries(List<TimeseriesBestSeries> seriesArray) {
       double cdfI_90 = edition.pdf.cdfInverse(0.9);
       print(
           "analysisAt=${edition.analysisAt}  validFrom=${edition.validFrom} mean=${mean} 10%=${cdfI_10.toStringAsFixed(6)} 50%=${cdfI_50.toStringAsFixed(6)} 50%=${cdfI_90.toStringAsFixed(6)}");
-    });
+   });
   });
 }
